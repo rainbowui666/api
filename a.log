@@ -1,0 +1,861 @@
+
+> jyhs@0.1.0 start /root/jyhs
+> node index.js
+
+14:29:46 14.11.2017, [log,hapi-plugin-mysql,database] data: Connection to the database successfull
+14:29:46 14.11.2017, [log,info] data: Adding a new policy called errorResponse
+14:29:46 14.11.2017, [log,info] data: Adding a new policy called logRequest
+14:29:46 14.11.2017, [log,startup,route-load] data: POST /api/bill/add/detail
+14:29:46 14.11.2017, [log,startup,route-load] data: POST /api/bill/delete/detail
+14:29:46 14.11.2017, [log,startup,route-load] data: POST /api/bill/delete
+14:29:46 14.11.2017, [log,startup,route-load] data: GET /api/bill/detail
+14:29:46 14.11.2017, [log,startup,route-load] data: GET /api/bill/get
+14:29:46 14.11.2017, [log,startup,route-load] data: GET /api/bill/get/detail
+14:29:46 14.11.2017, [log,startup,route-load] data: GET /api/bill/list
+14:29:46 14.11.2017, [log,startup,route-load] data: POST /api/bill/update/detail
+14:29:46 14.11.2017, [log,startup,route-load] data: POST /api/bill/update
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/bill/upload
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/cart/add/detail
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/cart/add
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/cart/count
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/cart/delete/detail
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/cart/delete
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/cart/get
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/cart/get/groupId
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/cart/list/detail
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/cart/list
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/cart/sub/detail
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/group/add
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/group/count
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/group/finish
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/group/get
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/group/list
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/group/update
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/material/add
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/category
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/checkName
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/compatibility
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/delete
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/deleteImage
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/get
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/imageList
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/level
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/list
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/material/types
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/material/update
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/material/upload
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/me
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/tools/citys
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/tools/paytype
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/tools/verification
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/tools/yesno
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/users/changPassword
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/users/checkName
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/users/current
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/users/getByType
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/users/get
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/users/list
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/users/login
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/users/logout
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/users/register
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/users/search
+14:29:47 14.11.2017, [log,startup,route-load] data: GET /api/users/types
+14:29:47 14.11.2017, [log,startup,route-load] data: POST /api/users/update
+14:29:47 14.11.2017, [log,startup] data: Server running at http://127.0.0.1:3000
+{ name: '印尼蓝眼海金鱼', price: '40' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼蓝眼海金鱼','',40,0,40) 
+{ name: '清洁虾', price: '55', size: 'L', point: '11' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'清洁虾','L',55,11,null) 
+{ name: '清洁虾', price: '45', size: 'M' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'清洁虾','M',45,0,null) 
+{ name: '白须龙虾', price: '80' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'白须龙虾','',80,0,null) 
+{ name: '火焰虾', price: '65' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'火焰虾','',65,0,null) 
+{ name: '小丑虾 对装', price: '110' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'小丑虾 对装','',110,0,null) 
+{ name: '小丑虾', price: '55' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'小丑虾','',55,0,null) 
+{ name: '五彩螳螂虾', price: '30' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'五彩螳螂虾','',30,0,null) 
+{ name: '紫头美人虾', price: '30' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫头美人虾','',30,0,null) 
+{ name: '紫光虾', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫光虾','',35,0,null) 
+{ name: '美人虾', price: '20' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'美人虾','',20,0,null) 
+{ name: '机械虾', price: '15' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'机械虾','',15,0,null) 
+{ name: '蜜蜂虾', price: '15' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蜜蜂虾','',15,0,null) 
+{ name: '假绵羊虾', price: '18' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'假绵羊虾','',18,0,null) 
+{ name: '红斑节虾虎+枪虾', price: '58' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红斑节虾虎+枪虾','',58,0,null) 
+{ name: '海葵蟹', price: '12' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'海葵蟹','',12,0,null) 
+{ name: '红斑马寄居蟹', price: '20' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红斑马寄居蟹','',20,0,null) 
+{ name: '蓝眼黄脚寄居蟹', price: '20' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝眼黄脚寄居蟹','',20,0,null) 
+{ name: '蓝脚寄居蟹', price: '25' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝脚寄居蟹','',25,0,null) 
+{ name: '红脚寄居蟹', price: '20' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红脚寄居蟹','',20,0,null) 
+{ name: '蓝色珊瑚蟹', price: '15' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝色珊瑚蟹','',15,0,null) 
+{ name: '西班牙舞娘（红）', price: '28' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'西班牙舞娘（红）','',28,0,null) 
+{ name: '彩色海蛞蝓', price: '24' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'彩色海蛞蝓','',24,0,null) 
+{ name: '蓝点章鱼', price: '65' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝点章鱼','',65,0,null) 
+{ name: '火焰红肚海龙', price: '90' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'火焰红肚海龙','',90,0,null) 
+{ name: '绿海龙', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'绿海龙','',50,0,null) 
+{ name: '黄线海龙', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黄线海龙','',35,0,null) 
+{ name: '红斑节海龙', price: '40' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红斑节海龙','',40,0,null) 
+{ name: '彩色礼服海胆', price: '40' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'彩色礼服海胆','',40,0,null) 
+{ name: '蓝礼服海胆', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝礼服海胆','',35,0,null) 
+{ name: '魔鬼海胆', price: '40' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'魔鬼海胆','',40,0,null) 
+{ name: '斑节魔鬼海胆', price: '40' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'斑节魔鬼海胆','',40,0,null) 
+{ name: '铅笔海胆', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'铅笔海胆','',35,0,null) 
+{ name: '虎尾海参', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'虎尾海参','',35,0,null) 
+{ name: '红海参', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红海参','',35,0,null) 
+{ name: '黄海参', price: '15' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黄海参','',15,0,null) 
+{ name: '蓝海星', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝海星','',35,0,null) 
+{ name: '双子饼干星', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'双子饼干星','',50,0,null) 
+{ name: '巴里海星', price: '30' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'巴里海星','',30,0,null) 
+{ name: '美国金眼吊', price: '160' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'美国金眼吊','',160,0,null) 
+{ name: '火焰仙', price: '200', size: 'XL' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'火焰仙','XL',200,0,null) 
+{ name: '火焰仙', price: '190', size: 'L' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'火焰仙','L',190,0,null) 
+{ name: '变种柠檬批', price: '300' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'变种柠檬批','',300,0,null) 
+{ name: '大溪地火鸟', price: '300' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'大溪地火鸟','',300,0,null) 
+{ name: '红海日出龙', price: '130' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红海日出龙','',130,0,null) 
+{ name: '夏威夷星纹西瓜刨', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'夏威夷星纹西瓜刨','',70,0,null) 
+{ name: '大头盔黑毕加索P1级', price: '650' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'大头盔黑毕加索P1级','',650,0,null) 
+{ name: '大头盔黑毕加索P2级', price: '450' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'大头盔黑毕加索P2级','',450,0,null) 
+{ name: '毕加索黑边A1对称', price: '240' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'毕加索黑边A1对称','',240,0,null) 
+{ name: '毕加索黑边A1级', price: '180' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'毕加索黑边A1级','',180,0,null) 
+{ name: '毕加索黑边A2级', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'毕加索黑边A2级','',120,0,null) 
+{ name: '毕加索黑边C级', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'毕加索黑边C级','',70,0,null) 
+{ name: '迷你毕加索C级', price: '30' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'迷你毕加索C级','',30,0,null) 
+{ name: '黑冰小丑', price: '110' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黑冰小丑','',110,0,null) 
+{ name: '黑武士小丑', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黑武士小丑','',100,0,null) 
+{ name: '黑边雪印', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黑边雪印','',100,0,null) 
+{ name: '大头盔特纹黑背心', price: '380' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'大头盔特纹黑背心','',380,0,null) 
+{ name: '特纹黑背心（全黑）', price: '140' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'特纹黑背心（全黑）','',140,0,null) 
+{ name: '人工透红小丑', price: '30' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'人工透红小丑','',30,0,null) 
+{ name: '人工黑公子', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'人工黑公子','',70,0,null) 
+{ name: '人工黑边公子5-6', price: '45' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'人工黑边公子5-6','',45,0,null) 
+{ name: '印尼人工公子3cm', price: '18' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼人工公子3cm','',18,0,null) 
+{ name: '透红小丑', price: '40' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'透红小丑','',40,0,null) 
+{ name: '黑豹小丑', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黑豹小丑','',35,0,null) 
+{ name: '红小丑', price: '22' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红小丑','',22,0,null) 
+{ name: '双带小丑', price: '15' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'双带小丑','',15,0,null) 
+{ name: '斐济公子', price: '20', size: 'S' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'斐济公子','S',20,0,null) 
+{ name: '公子小丑', price: '15', size: 'S' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'公子小丑','S',15,0,null) 
+{ name: '蓿雾闪千手', price: '130' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓿雾闪千手','',130,0,null) 
+{ name: '人工澳洲绿皮革2-3', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'人工澳洲绿皮革2-3','',120,0,null) 
+{ name: '人工超长须皮革2左右', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'人工超长须皮革2左右','',70,0,null) 
+{ name: '印尼荧光绿手指皮革', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼荧光绿手指皮革','',120,0,null) 
+{ name: '印尼绿皮革', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼绿皮革','',120,0,null) 
+{ name: '分枝黄金蛙卵4-5头', price: '280' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'分枝黄金蛙卵4-5头','',280,0,null) 
+{ name: '（双头）黄金蛙卵', price: '140' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'（双头）黄金蛙卵','',140,0,null) 
+{ name: '（单头）黄金蛙卵', price: '80' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'（单头）黄金蛙卵','',80,0,null) 
+{ name: '分枝紫头绿蛙卵', price: '240' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'分枝紫头绿蛙卵','',240,0,null) 
+{ name: '（单头）绿蛙卵', price: '65' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'（单头）绿蛙卵','',65,0,null) 
+{ name: '紫头绿蛙卵', price: '350', size: '特大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫头绿蛙卵','特大',350,0,null) 
+{ name: '紫头绿蛙卵', price: '240', size: '中' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫头绿蛙卵','中',240,0,null) 
+{ name: '分枝紫葡萄', price: '170' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'分枝紫葡萄','',170,0,null) 
+{ name: '分枝绿猪腰', price: '150' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'分枝绿猪腰','',150,0,null) 
+{ name: '（单头）绿猪腰', price: '60' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'（单头）绿猪腰','',60,0,null) 
+{ name: '多色分枝茉莉', price: '150' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'多色分枝茉莉','',150,0,null) 
+{ name: '分枝幻彩绿茉莉', price: '150' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'分枝幻彩绿茉莉','',150,0,null) 
+{ name: '印尼红茉莉', price: '240', size: '大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼红茉莉','大',240,0,null) 
+{ name: '印尼紫茉莉', price: '150', size: '大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼紫茉莉','大',150,0,null) 
+{ name: '印尼绿茉莉', price: '130', size: '大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼绿茉莉','大',130,0,null) 
+{ name: '蓝头金属绿尼罗河', price: '320', size: '特大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝头金属绿尼罗河','特大',320,0,null) 
+{ name: '印尼超艳红硬管虫', price: '280', size: '特大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼超艳红硬管虫','特大',280,0,null) 
+{ name: '印尼超艳红硬管虫', price: '220', size: '中' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼超艳红硬管虫','中',220,0,null) 
+{ name: '印尼红白硬管虫', price: '130', size: '大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼红白硬管虫','大',130,0,null) 
+{ name: '黄金粗管虫', price: '80' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黄金粗管虫','',80,0,null) 
+{ name: '紫红粗管虫', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫红粗管虫','',70,0,null) 
+{ name: '多层彩色粗管虫', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'多层彩色粗管虫','',70,0,null) 
+{ name: '红白软管虫', price: '22' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红白软管虫','',22,0,null) 
+{ name: '羽毛管虫', price: '22' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'羽毛管虫','',22,0,null) 
+{ name: '紫色千手佛', price: '60' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫色千手佛','',60,0,null) 
+{ name: '红须千手佛 无皮', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红须千手佛 无皮','',50,0,null) 
+{ name: '紫须千手佛 无皮', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫须千手佛 无皮','',50,0,null) 
+{ name: '黄须千手佛 无皮', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黄须千手佛 无皮','',50,0,null) 
+{ name: '海苹果', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'海苹果','',50,0,null) 
+{ name: '火焰贝', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'火焰贝','',35,0,null) 
+{ name: '虎斑贝', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'虎斑贝','',35,0,null) 
+{ name: '金钱贝', price: '5', size: '小' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'金钱贝','小',5,0,null) 
+{ name: '食藻螺', price: '5' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'食藻螺','',5,0,null) 
+{ name: '红麒麟仙', price: '300' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红麒麟仙','',300,0,null) 
+{ name: '白尾蓝环14-15', price: '460' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'白尾蓝环14-15','',460,0,null) 
+{ name: '印尼橙尾皇后16-17', price: '470' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼橙尾皇后16-17','',470,0,null) 
+{ name: '印尼橙尾皇后13-14', price: '370' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼橙尾皇后13-14','',370,0,null) 
+{ name: '圈帝10左右', price: '220' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'圈帝10左右','',220,0,null) 
+{ name: '蓝嘴', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝嘴','',120,0,null) 
+{ name: '蓝纹', price: '120', size: 'L' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝纹','L',120,0,null) 
+{ name: '蓝纹', price: '100', size: 'M' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝纹','M',100,0,null) 
+{ name: '马鞍11-12', price: '320' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'马鞍11-12','',320,0,null) 
+{ name: '马鞍8-9', price: '260' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'马鞍8-9','',260,0,null) 
+{ name: '马鞍6-7', price: '240' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'马鞍6-7','',240,0,null) 
+{ name: '土耳其仙（胜利女王）', price: '270' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'土耳其仙（胜利女王）','',270,0,null) 
+{ name: '六线仙', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'六线仙','',120,0,null) 
+{ name: '虎皮王 雌', price: '90' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'虎皮王 雌','',90,0,null) 
+{ name: '印尼老虎仙', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼老虎仙','',50,0,null) 
+{ name: '蓝宝石新娘', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝宝石新娘','',100,0,null) 
+{ name: '宝马幼鱼', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'宝马幼鱼','',50,0,null) 
+{ name: '白点仙', price: '40' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'白点仙','',40,0,null) 
+{ name: '石美人', price: '65', size: 'XL' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'石美人','XL',65,0,null) 
+{ name: '黄尾仙', price: '40', size: 'M' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黄尾仙','M',40,0,null) 
+{ name: '菲律宾番王', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'菲律宾番王','',100,0,null) 
+{ name: '内格罗斯电光龙', price: '60' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'内格罗斯电光龙','',60,0,null) 
+{ name: '新几内亚五线狐', price: '68' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'新几内亚五线狐','',68,0,null) 
+{ name: '圣诞龙', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'圣诞龙','',50,0,null) 
+{ name: '彩虹豹龙', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'彩虹豹龙','',35,0,null) 
+{ name: '绿龙', price: '24' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'绿龙','',24,0,null) 
+{ name: '漂漂', price: '16' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'漂漂','',16,0,null) 
+{ name: '印尼双色草莓', price: '25' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼双色草莓','',25,0,null) 
+{ name: '双色草莓', price: '20' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'双色草莓','',20,0,null) 
+{ name: '紫草莓', price: '24' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫草莓','',24,0,null) 
+{ name: '荧光绿瓦片脑', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'荧光绿瓦片脑','',120,0,null) 
+{ name: '红玻璃脑', price: '180' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红玻璃脑','',180,0,null) 
+{ name: '荧光绿玻璃脑', price: '130' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'荧光绿玻璃脑','',130,0,null) 
+{ name: '绿玻璃脑', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'绿玻璃脑','',100,0,null) 
+{ name: '印尼红纽扣脑', price: '150' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼红纽扣脑','',150,0,null) 
+{ name: '印尼荧光绿巴里脑', price: '110' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼荧光绿巴里脑','',110,0,null) 
+{ name: '印尼精品双色八字脑', price: '130' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼精品双色八字脑','',130,0,null) 
+{ name: '印尼荧光绿八字脑A级', price: '130' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼荧光绿八字脑A级','',130,0,null) 
+{ name: '印尼分枝荧光绿脑', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼分枝荧光绿脑','',120,0,null) 
+{ name: '印尼红河古脑', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼红河古脑','',120,0,null) 
+{ name: '印尼红迷宫脑', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼红迷宫脑','',120,0,null) 
+{ name: '印尼红边绿芯迷宫脑', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼红边绿芯迷宫脑','',120,0,null) 
+{ name: '印尼幻彩红糖果脑', price: '360', size: '特大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼幻彩红糖果脑','特大',360,0,null) 
+{ name: '印尼幻彩红糖果脑', price: '260', size: '大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼幻彩红糖果脑','大',260,0,null) 
+{ name: '印尼红猫眼脑', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼红猫眼脑','',120,0,null) 
+{ name: '印尼绿边红猫眼脑', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼绿边红猫眼脑','',120,0,null) 
+{ name: '印尼荧光绿猫眼脑', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼荧光绿猫眼脑','',100,0,null) 
+{ name: '印尼透明白气泡', price: '220', size: '特大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼透明白气泡','特大',220,0,null) 
+{ name: '印尼透明白气泡', price: '160', size: '大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼透明白气泡','大',160,0,null) 
+{ name: '大种超红纽扣5-7头', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'大种超红纽扣5-7头','',50,0,null) 
+{ name: '印尼大种粉红纽扣', price: '150' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼大种粉红纽扣','',150,0,null) 
+{ name: '印尼大种绿纽扣', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼大种绿纽扣','',100,0,null) 
+{ name: '印尼橙泡泡菇A级', price: '120', size: '大头' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼橙泡泡菇A级','大头',120,0,null) 
+{ name: '印尼紫泡泡菇', price: '100', size: '大头' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼紫泡泡菇','大头',100,0,null) 
+{ name: '印尼荧光绿泡泡菇', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼荧光绿泡泡菇','',120,0,null) 
+{ name: '印尼荧光绿毛菇', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼荧光绿毛菇','',120,0,null) 
+{ name: '印尼绿芯小耶花', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼绿芯小耶花','',100,0,null) 
+{ name: '印尼小蓝花', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼小蓝花','',100,0,null) 
+{ name: '印尼人工九尾狐', price: '150' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼人工九尾狐','',150,0,null) 
+{ name: '印尼红/紫鸡冠花', price: '130' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼红/紫鸡冠花','',130,0,null) 
+{ name: '印尼橙短须飞盘', price: '85' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼橙短须飞盘','',85,0,null) 
+{ name: '印尼荧光绿短须飞盘', price: '75' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼荧光绿短须飞盘','',75,0,null) 
+{ name: '印尼墨绿炮仗花', price: '140', size: '特大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼墨绿炮仗花','特大',140,0,null) 
+{ name: '印尼墨绿炮仗花', price: '110', size: '中大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼墨绿炮仗花','中大',110,0,null) 
+{ name: '荧光绿大手星花15头左右', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'荧光绿大手星花15头左右','',100,0,null) 
+{ name: '橙大手星花15头左右', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'橙大手星花15头左右','',100,0,null) 
+{ name: '印尼金属绿菠萝', price: '130' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼金属绿菠萝','',130,0,null) 
+{ name: '粉蓝吊', price: '140', size: 'M' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'粉蓝吊','M',140,0,null) 
+{ name: '粉蓝吊', price: '100', size: 'S' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'粉蓝吊','S',100,0,null) 
+{ name: '印度洋天狗14-15', price: '190' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印度洋天狗14-15','',190,0,null) 
+{ name: '印度洋天狗12左右', price: '150' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印度洋天狗12左右','',150,0,null) 
+{ name: '进口大帆', price: '130', size: 'XXL' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口大帆','XXL',130,0,null) 
+{ name: '清藻吊', price: '60' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'清藻吊','',60,0,null) 
+{ name: '进口波纹吊', price: '60' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口波纹吊','',60,0,null) 
+{ name: '印尼独角吊24-26CM', price: '430' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼独角吊24-26CM','',430,0,null) 
+{ name: '进口狐狸', price: '60', size: 'M' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口狐狸','M',60,0,null) 
+{ name: '二线狐狸', price: '40' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'二线狐狸','',40,0,null) 
+{ name: '进口天狗', price: '70', size: 'L' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口天狗','L',70,0,null) 
+{ name: '巴黎天使', price: '24' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'巴黎天使','',24,0,null) 
+{ name: '玫瑰', price: '18' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'玫瑰','',18,0,null) 
+{ name: '印尼白尾雀', price: '15' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼白尾雀','',15,0,null) 
+{ name: '电光雀', price: '12' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'电光雀','',12,0,null) 
+{ name: '蓝背天使', price: '10' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝背天使','',10,0,null) 
+{ name: '蓝点雀', price: '10' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝点雀','',10,0,null) 
+{ name: '特纹蓝么', price: '8' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'特纹蓝么','',8,0,null) 
+{ name: '黄肚蓝么', price: '15' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黄肚蓝么','',15,0,null) 
+{ name: '蓝么', price: '8' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝么','',8,0,null) 
+{ name: '青么', price: '8' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'青么','',8,0,null) 
+{ name: '黄么', price: '8' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黄么','',8,0,null) 
+{ name: '四间雀', price: '10' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'四间雀','',10,0,null) 
+{ name: '三点白', price: '8' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'三点白','',8,0,null) 
+{ name: '紫金红宝石', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫金红宝石','',70,0,null) 
+{ name: '金背金线宝石', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'金背金线宝石','',50,0,null) 
+===== null
+{ name: '菲律宾蓝眼海金鱼', price: '30' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'菲律宾蓝眼海金鱼','',30,0,null) 
+{ name: '紫罗兰海金鱼', price: '22' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫罗兰海金鱼','',22,0,null) 
+{ name: '荧光绿叠瓦', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'荧光绿叠瓦','',120,0,null) 
+{ name: '人工绿瓦片', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'人工绿瓦片','',120,0,null) 
+{ name: '超人瓦', price: '120' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'超人瓦','',120,0,null) 
+{ name: '印尼紫地毯', price: '290' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼紫地毯','',290,0,null) 
+{ name: '荧光绿地毯', price: '280' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'荧光绿地毯','',280,0,null) 
+{ name: '印尼绿地毯', price: '150' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'印尼绿地毯','',150,0,null) 
+{ name: '进口地毯', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口地毯','',70,0,null) 
+{ name: '紫肚红头绿公主海葵', price: '60' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫肚红头绿公主海葵','',60,0,null) 
+{ name: '荧光绿气泡海葵', price: '80', size: 'L' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'荧光绿气泡海葵','L',80,0,null) 
+{ name: '荧光绿气泡海葵', price: '60', size: 'M' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'荧光绿气泡海葵','M',60,0,null) 
+{ name: '绿海葵', price: '40' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'绿海葵','',40,0,null) 
+{ name: '紫点白海葵', price: '30' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'紫点白海葵','',30,0,null) 
+{ name: '越南绿火柴', price: '65' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'越南绿火柴','',65,0,null) 
+{ name: '进口榔头', price: '60', size: '中大' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口榔头','中大',60,0,null) 
+{ name: '越南尼罗河', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'越南尼罗河','',50,0,null) 
+{ name: '圆帽', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'圆帽','',50,0,null) 
+{ name: '越南幻彩茉莉花', price: '45' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'越南幻彩茉莉花','',45,0,null) 
+{ name: '越南荧光绿皮革', price: '60' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'越南荧光绿皮革','',60,0,null) 
+{ name: '进口绿象耳', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口绿象耳','',70,0,null) 
+{ name: '精品橙泡泡菇多头', price: '75' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'精品橙泡泡菇多头','',75,0,null) 
+{ name: '进口红炮仗花', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口红炮仗花','',50,0,null) 
+{ name: '红八字脑', price: '28' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红八字脑','',28,0,null) 
+{ name: '进口红色莲子脑', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口红色莲子脑','',50,0,null) 
+{ name: '进口大嘴巴', price: '22' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口大嘴巴','',22,0,null) 
+{ name: '进口绿草皮', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'进口绿草皮','',50,0,null) 
+{ name: '红火焰藻', price: '60', size: '把' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红火焰藻','把',60,0,null) 
+{ name: '红葡萄藻', price: '50', size: '把' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红葡萄藻','把',50,0,null) 
+{ name: '火红千层藻', price: '60', size: '把' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'火红千层藻','把',60,0,null) 
+{ name: '绿葡萄藻', price: '50', size: '把' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'绿葡萄藻','把',50,0,null) 
+{ name: '绿羽毛藻', price: '50', size: '把' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'绿羽毛藻','把',50,0,null) 
+{ name: '绿鹿角藻', price: '40', size: '把' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'绿鹿角藻','把',40,0,null) 
+{ name: '林哥虾虎（吃沙）', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'林哥虾虎（吃沙）','',35,0,null) 
+{ name: '红点花虾虎(吃沙)', price: '35' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红点花虾虎(吃沙)','',35,0,null) 
+{ name: '大黄线虾虎', price: '28' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'大黄线虾虎','',28,0,null) 
+{ name: '霓虹灯虾虎', price: '24' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'霓虹灯虾虎','',24,0,null) 
+{ name: '红蜜蜂古比', price: '20' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红蜜蜂古比','',20,0,null) 
+{ name: '熊猫古比', price: '16' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'熊猫古比','',16,0,null) 
+{ name: '绿古比', price: '12' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'绿古比','',12,0,null) 
+{ name: '五彩青蛙', price: '28' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'五彩青蛙','',28,0,null) 
+{ name: '圆点青蛙', price: '24' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'圆点青蛙','',24,0,null) 
+{ name: '花青蛙/麻雀', price: '24' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'花青蛙/麻雀','',24,0,null) 
+{ name: '小丑炮弹10-12', price: '260' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'小丑炮弹10-12','',260,0,null) 
+{ name: '蓝面炮弹', price: '100' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'蓝面炮弹','',100,0,null) 
+{ name: '玻璃炮弹', price: '70', size: 'L' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'玻璃炮弹','L',70,0,null) 
+{ name: '魔鬼炮弹', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'魔鬼炮弹','',50,0,null) 
+{ name: '红尾炮弹', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'红尾炮弹','',50,0,null) 
+{ name: '斜纹炮弹', price: '65', size: 'L' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'斜纹炮弹','L',65,0,null) 
+{ name: '斜纹炮弹', price: '50', size: 'M' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'斜纹炮弹','M',50,0,null) 
+{ name: '鸳鸯炮弹', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'鸳鸯炮弹','',50,0,null) 
+{ name: '斑马炮弹', price: '45' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'斑马炮弹','',45,0,null) 
+{ name: '珍珠魟35左右', price: '280' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'珍珠魟35左右','',280,0,null) 
+{ name: '黄金济公', price: '130' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'黄金济公','',130,0,null) 
+{ name: '立皇', price: '150' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'立皇','',150,0,null) 
+{ name: '长狮', price: '150', size: 'L' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'长狮','L',150,0,null) 
+{ name: '尖嘴红格', price: '70' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'尖嘴红格','',70,0,null) 
+{ name: '花园鳗', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'花园鳗','',50,0,null) 
+{ name: '狗头', price: '50' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'狗头','',50,0,null) 
+{ name: '燕子花旦', price: '45' }
+insert into bill_detail (bill_id,name,size,price,point,material_id) values (42,'燕子花旦','',45,0,null) 
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+===== null
+14:29:51 14.11.2017, [response,api] http://127.0.0.1:3000: [1;33mpost[0m /api/bill/upload {} [32m200[0m (933ms)
+14:29:56 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/users/getByType {"type":"lss"} [32m200[0m (12ms)
+14:29:56 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/users/getByType {"type":"pfs"} [32m200[0m (8ms)
+14:29:58 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":1,"size":10} [32m200[0m (13ms)
+14:30:04 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":4,"size":10} [32m200[0m (9ms)
+14:30:09 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":3,"size":10} [32m200[0m (8ms)
+14:30:17 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/detail {"id":31} [32m200[0m (15ms)
+14:30:17 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":3,"size":10} [32m200[0m (24ms)
+14:30:20 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":3,"size":10} [32m200[0m (12ms)
+14:30:29 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":4,"size":10} [32m200[0m (12ms)
+14:30:31 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":3,"size":10} [32m200[0m (18ms)
+14:30:33 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":4,"size":10} [32m200[0m (17ms)
+14:30:35 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/detail {"id":42} [32m200[0m (27ms)
+14:30:35 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":4,"size":10} [32m200[0m (42ms)
+14:30:56 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/get/detail {"id":362} [32m200[0m (15ms)
+14:30:56 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":4,"size":10} [32m200[0m (16ms)
+14:30:58 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/detail {"id":42} [32m200[0m (29ms)
+14:30:58 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":4,"size":10} [32m200[0m (29ms)
+14:31:02 14.11.2017, [response,api] http://127.0.0.1:3000: [1;32mget[0m /api/bill/list {"page":4,"size":10} [32m200[0m (19ms)

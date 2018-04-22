@@ -16,6 +16,7 @@ alter table user add column description varchar(2000);
 alter table user add column province varchar(20);
 alter table user add column pay_type varchar(20);
 alter table user add column contacts varchar(20);
+alter table user add column code varchar(20);
 
 
 create table material(

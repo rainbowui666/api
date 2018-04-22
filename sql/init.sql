@@ -153,3 +153,5 @@ create table citys(
  type int(11),
  primary key(mark)
 );
+
+

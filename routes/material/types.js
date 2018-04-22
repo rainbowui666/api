@@ -59,7 +59,7 @@ module.exports = {
             {"code":"zy","name":"章鱼","desc":"","pc":"qt"},
             {"code":"sm","name":"水母","desc":"","pc":"qt"},
             {"code":"hky","name":"海蛞蝓","desc":"","pc":"qt"},
-            {"code":"hky","name":"棘皮动物","desc":"","pc":"qt"},
+            {"code":"jpdw","name":"棘皮动物","desc":"","pc":"qt"},
             {"code":"qtqt","name":"其它","desc":"","pc":"qt"},
             {"code":"rtqt","name":"其它","desc":"","pc":"rt"},
             {"code":"rtbeilei","name":"贝类","desc":"","pc":"rt"},

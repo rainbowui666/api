@@ -8,7 +8,7 @@ module.exports = {
     handler(request, reply) {
         let where = request.query.name?` name LIKE '%${request.query.name}%' `:" 1=1 ";
         where = request.query.user_id?`${where} and user_id = ${request.query.user_id} `:`${where} and is_one_step=0 `;
-        where = `${where}  order by upload_date desc`;
+        where = `${where}  order by effort_date desc, upload_date desc`;
         
         const countSql = `select count(1) count from bill where ${where}`;
         request.app.db.query(countSql, (err, count_res) => {

@@ -2,7 +2,7 @@
 const fs = require("fs");
 const config = require('../../config.js');
 const Boom = require('boom');
-
+// const images = require("images");
 
 module.exports = {
     method: 'POST',
@@ -14,13 +14,14 @@ module.exports = {
          const category = upload.category;
          const id = upload.id;
          const img = upload["img"];
-         const small = upload["small"];
+        //  const small = upload["small"];
          const _name = img.hapi.filename;
          const tempName = _name.split(".");
          let timestamp = Date.parse(new Date());
          timestamp = timestamp / 1000;
          const name = timestamp+"-"+code+"."+tempName[1];
          const path = config["image"] + "/"+category+"/" + name;
+         const small_path = config["image"] + "/small/"+category+"/" + name;
          const file = fs.createWriteStream(path);
          file.on('error', function (err) {
              reply(Boom.notAcceptable('创建文件失败'));
@@ -30,6 +31,9 @@ module.exports = {
 
          img.on('end', function (err) {
             const returnPath = `/${category}/${name}`;
+            // images(path).size(150).save(small_path, {               
+            //         quality : 75                    
+            // });
             reply({'status':'ok','imgPath':returnPath});
          })
 

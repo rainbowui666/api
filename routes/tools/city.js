@@ -2,24 +2,24 @@ const Boom = require('boom');
 const Joi = require('joi');
 
 module.exports = {
-    path: '/api/tools/citys',
+    path: '/api/tools/city/code',
     method: 'GET',
     handler(request, reply) {
-        const select = `select mark,name,qq from citys where area='${request.query.area}'`;
+        const select = `select * from citys where mark='${request.query.code}'`;
         request.app.db.query(select, (err, res) => {
             if(err) {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                reply({'status':'ok',res});
+                reply(res[0]);
             }
         });
     },
     config: {
-        description: '获得所有城市列表',
+        description: '获得城市信息',
         validate: {
             query: {
-                area: Joi.string().required(),
+                code: Joi.string().required(),
             }
         },
     }

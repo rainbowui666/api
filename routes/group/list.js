@@ -60,7 +60,7 @@ module.exports = {
             {
                 method(request, reply) {
                     const accept = request.headers.accept;
-                    if(accept!='www'){
+                    if(accept&&accept.indexOf('json,')==-1&&accept!='www'){
                         const select = `select id from user where code='${accept}'`;
                         request.app.db.query(select, (err, res) => {
                             if(err) {

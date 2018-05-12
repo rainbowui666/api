@@ -12,33 +12,32 @@ module.exports = {
          const id = upload.id;
          const img = upload["img"];
 
-         const files = fs.readdirSync(config["user"]);
-         files.forEach(function (itm, index) {
-             const filedId = itm.split(".")[0];
-             if(filedId==id){
-                fs.unlinkSync(config["user"] + itm);
-             }
-         })
-
-         const _name = img.hapi.filename;
-         const tempName = _name.split(".");
-         let timestamp = Date.parse(new Date());
-         timestamp = timestamp / 1000;
-         const name = id+"."+tempName[1];
-         const path = config["user"] + name;
-         const file = fs.createWriteStream(path);
-         file.on('error', function (err) {
-             reply(Boom.notAcceptable('创建文件失败'));
+         fs.readFile(config["user"], function (err, files) {
+            files.forEach(function (itm, index) {
+                const filedId = itm.split(".")[0];
+                if(filedId==id){
+                   fs.unlinkSync(config["user"] + itm);
+                }
+            })
+   
+            const _name = img.hapi.filename;
+            const tempName = _name.split(".");
+            let timestamp = Date.parse(new Date());
+            timestamp = timestamp / 1000;
+            const name = id+"."+tempName[1];
+            const path = config["user"] + name;
+            const file = fs.createWriteStream(path);
+            file.on('error', function (err) {
+                reply(Boom.notAcceptable('创建文件失败'));
+            });
+   
+            img.pipe(file);
+   
+            img.on('end', function (err) {
+               const returnPath = `${name}`;
+               reply({'status':'ok','imgPath':returnPath});
+            })
          });
-
-         img.pipe(file);
-
-         img.on('end', function (err) {
-            const returnPath = `${name}`;
-            reply({'status':'ok','imgPath':returnPath});
-         })
-
-       
 
     },
     config: {

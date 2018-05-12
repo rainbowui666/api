@@ -16,17 +16,18 @@ module.exports = {
             } else {
                 if(res&&res[0]&&res[0].pay_type){
                     let flag = true;
-                    const files = fs.readdirSync(config["user"]+"pay/"+res[0].pay_type +"/");
-                    files.forEach(function (itm, index) {
-                        const filedId = itm.split(".")[0];
-                        if(filedId==request.query.id){
-                            flag = false;
-                            reply({'status':'ok','imgPath':itm,'type':res[0].pay_type});
+                    fs.readFile(config["user"]+"pay/"+res[0].pay_type +"/", function (err, files) {
+                        files.forEach(function (itm, index) {
+                            const filedId = itm.split(".")[0];
+                            if(filedId==request.query.id){
+                                flag = false;
+                                reply({'status':'ok','imgPath':itm,'type':res[0].pay_type});
+                            }
+                        })
+                        if(flag){
+                            reply({'status':'ok'});
                         }
-                    })
-                    if(flag){
-                        reply({'status':'ok'});
-                    }
+                    });
                 }else{
                     reply({'status':'ok'});
                 }

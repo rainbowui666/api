@@ -53,7 +53,7 @@ module.exports = {
                     const private = request.payload.private;
                     if(Number(private)==1){
                         const user = request.auth.credentials;
-                        if(user && user.type == 'lss' || user.type == 'pfs'|| user.type == 'tggly') {
+                        if(user && user.type != 'yy') {
                             reply(true);
                         } else {
                             reply(Boom.notAcceptable('权限不足'));
@@ -66,3 +66,4 @@ module.exports = {
         ]
     }
 };
+

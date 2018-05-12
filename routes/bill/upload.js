@@ -270,13 +270,15 @@ module.exports = {
                     const is_one_step = upload["is_one_step"];
                     if(Number(is_one_step)==1){
                         const user = request.auth.credentials;
-                        if(user && user.type == 'lss' || user.type == 'pfs' || user.type == 'tggly') {
+                        if(user && user.type != 'yy') {
                             reply(true);
                         } else {
                             reply(Boom.notAcceptable('权限不足'));
                         }
-                    }else{
+                    }else if(user &&  user.type == 'pfs' || user.type == 'tggly') {
                         reply(true);
+                    }else {
+                        reply(Boom.notAcceptable('权限不足'));
                     }
                 }
             }

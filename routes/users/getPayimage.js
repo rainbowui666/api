@@ -17,13 +17,15 @@ module.exports = {
                 if(res&&res[0]&&res[0].pay_type){
                     let flag = true;
                     fs.readFile(config["user"]+"pay/"+res[0].pay_type +"/", function (err, files) {
-                        files.forEach(function (itm, index) {
-                            const filedId = itm.split(".")[0];
-                            if(filedId==request.query.id){
-                                flag = false;
-                                reply({'status':'ok','imgPath':itm,'type':res[0].pay_type});
-                            }
-                        })
+                        if(files){
+                            files.forEach(function (itm, index) {
+                                const filedId = itm.split(".")[0];
+                                if(filedId==request.query.id){
+                                    flag = false;
+                                    reply({'status':'ok','imgPath':itm,'type':res[0].pay_type});
+                                }
+                            })
+                        }
                         if(flag){
                             reply({'status':'ok'});
                         }
@@ -33,8 +35,6 @@ module.exports = {
                 }
             }
         });
-
-
         
     },
     config: {

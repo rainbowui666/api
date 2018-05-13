@@ -38,7 +38,7 @@ module.exports = {
                     {"code":"xj","name":"新疆",'qq':''},
                     {"code":"yn","name":"云南",'qq':''},
                     {"code":"jx","name":"江西",'qq':''},
-                ]
+                ];
                 reply(citys);
         });
      

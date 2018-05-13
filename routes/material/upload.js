@@ -2,7 +2,7 @@
 const fs = require("fs");
 const config = require('../../config.js');
 const Boom = require('boom');
-// const images = require("images");
+const images = require("images");
 
 module.exports = {
     method: 'POST',
@@ -14,7 +14,7 @@ module.exports = {
          const category = upload.category;
          const id = upload.id;
          const img = upload["img"];
-        //  const small = upload["small"];
+         const small = upload["small"];
          const _name = img.hapi.filename;
          const tempName = _name.split(".");
          let timestamp = Date.parse(new Date());
@@ -31,9 +31,9 @@ module.exports = {
 
          img.on('end', function (err) {
             const returnPath = `/${category}/${name}`;
-            // images(path).size(150).save(small_path, {               
-            //         quality : 75                    
-            // });
+            images(path).size(150).save(small_path, {               
+                    quality : 75                    
+            });
             reply({'status':'ok','imgPath':returnPath});
          })
 

@@ -38,11 +38,14 @@ module.exports = {
                             try {
                                 fs.readFile(small_path, function (err, data) {
                                     if (err) {
-                                        return console.error(err);
+                                        reply(new Buffer(defaultImg, 'base64')).type('image/png');
+                                    }else if(data){
+                                            const decodeImg = new Buffer(data.toString("base64"), 'base64');
+                                            cache.put(request.query.id, decodeImg);
+                                            reply(decodeImg).type('image/png');
+                                        }else{
+                                            reply(new Buffer(defaultImg, 'base64')).type('image/png');
                                     }
-                                    const decodeImg = new Buffer(data.toString("base64"), 'base64');
-                                    cache.put(request.query.id, decodeImg);
-                                    reply(decodeImg).type('image/png');
                                  });
                             } catch (error) {
                                 reply(new Buffer(defaultImg, 'base64')).type('image/png');

@@ -13,13 +13,14 @@ module.exports = {
          const img = upload["img"];
 
          fs.readFile(config["user"], function (err, files) {
-            files.forEach(function (itm, index) {
-                const filedId = itm.split(".")[0];
-                if(filedId==id){
-                   fs.unlinkSync(config["user"] + itm);
-                }
-            })
-   
+             if(files){
+                files.forEach(function (itm, index) {
+                    const filedId = itm.split(".")[0];
+                    if(filedId==id){
+                       fs.unlinkSync(config["user"] + itm);
+                    }
+                })
+             }
             const _name = img.hapi.filename;
             const tempName = _name.split(".");
             let timestamp = Date.parse(new Date());

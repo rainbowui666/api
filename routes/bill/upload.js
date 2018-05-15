@@ -268,8 +268,8 @@ module.exports = {
                 method(request, reply) {
                     const upload = request.payload;
                     const is_one_step = upload["is_one_step"];
+                    const user = request.auth.credentials;
                     if(Number(is_one_step)==1){
-                        const user = request.auth.credentials;
                         if(user && user.type != 'yy') {
                             reply(true);
                         } else {

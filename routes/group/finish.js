@@ -33,11 +33,14 @@ module.exports = {
             {
                 method(request, reply) {
                     const select = `select user_id from group_bill where id=${request.payload.id}`;
+                    const user = request.auth.credentials;
                     request.app.db.query(select, (err, res) => {
                         if(err) {
                             request.log(['error'], err);
                             reply(Boom.serverUnavailable(config.errorMessage));
                         } else if(res && res[0].user_id == request.payload.user_id || 0 == request.payload.user_id) {
+                            reply(true);
+                        } else if(res && user.type == 'tggly') {
                             reply(true);
                         } else {
                             reply(Boom.notAcceptable('您没有权限更新这个单子'));

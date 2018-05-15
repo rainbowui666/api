@@ -7,7 +7,7 @@ module.exports = {
     path: '/api/users/update',
     method: 'POST',
     handler(request, reply) {
-        const insert = `update user set contacts='${request.payload.contacts}',province='${request.payload.province}', description='${request.payload.description}',address='${request.payload.address}',name='${request.payload.name}',city='${request.payload.city}',phone='${request.payload.phone}',type='${request.payload.type}',status='${request.payload.status}',point='${request.payload.point}' where id=${request.payload.id}`;
+        const insert = `update user set code='${request.payload.code}', contacts='${request.payload.contacts}',province='${request.payload.province}', description='${request.payload.description}',address='${request.payload.address}',name='${request.payload.name}',city='${request.payload.city}',phone='${request.payload.phone}',type='${request.payload.type}',status='${request.payload.status}',point='${request.payload.point}' where id=${request.payload.id}`;
         request.app.db.query(insert, (err, res) => {
             if(err) {
                 request.log(['error'], err);
@@ -30,6 +30,7 @@ module.exports = {
                 status: Joi.number().required(),
                 point: Joi.number().required(),
                 address: Joi.string().optional().default(" "),
+                code: Joi.string().optional().default(" "),
                 description: Joi.string().optional().default(" "),
                 contacts: Joi.string().optional().default(" "),
                 id: Joi.number().required()

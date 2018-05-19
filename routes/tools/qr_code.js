@@ -31,7 +31,8 @@ module.exports = {
         description: '获得私有单地址二维码',
         validate: {
             query: {
-                id: Joi.number().required()
+                id: Joi.number().required(),
+                random_id: Joi.number()
             }
         }
     }

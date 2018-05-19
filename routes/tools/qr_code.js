@@ -10,8 +10,9 @@ const compile = (code) => {
     c = escape(c.split('').join(' '));
     return c;
 };
+
 module.exports = {
-    path: '/api/group/get/private/qr',
+    path: '/api/tools/qrCode',
     method: 'GET',
     handler(request, reply) {
         const url = `http://www.coral123.com/?#/buy/${compile(request.query.id+'')}/page?private=${request.query.id}`;

@@ -30,7 +30,7 @@ module.exports = {
                 status: Joi.number().required(),
                 point: Joi.number().required(),
                 address: Joi.string().optional().default(" "),
-                code: Joi.string().optional().default(" "),
+                code: Joi.optional(),
                 description: Joi.string().optional().default(" "),
                 contacts: Joi.string().optional().default(" "),
                 id: Joi.number().required()

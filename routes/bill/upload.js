@@ -17,7 +17,7 @@ const insertToDb = (item, i, length, request, bill_id, reply) => {
     request.app.db.query(select, (err, res) => {
         if (err) {
             request.log(['error'], err);
-            reply(Boom.serverUnavailable(config.errorMessage));
+            reply(Boom.serverUnavailable(config.errorMessage)); 
         } else {
             // console.log("=======name========",res)
 
@@ -76,120 +76,6 @@ const insertBillDetail = (item, i, length, request, bill_id, reply, materialId) 
         }
     });
 }
-const readExcel = (path) => {
-    const buf = fs.readFileSync(path);
-    const wb = XLSX.read(buf, { type: 'buffer' });
-    const sheet = wb.Sheets[wb.SheetNames[0]];
-    const list = [];
-    const errorList=[];
-    
-    let flag = false;
-    
-    if(sheet['A'+1]&&"鱼名"==sheet['A'+1]["v"]){
-        flag = true;
-    }else{
-        flag = false;
-    }
-    
-    if(sheet['B'+1]&&"尺寸"==sheet['B'+1]["v"]){
-        flag = true;
-    }else{
-        flag = false;
-    }
-    
-    if(sheet['C'+1]&&"价格"==sheet['C'+1]["v"]){
-        flag =true;
-    }else{
-        flag = false;
-    }
-    
-    if(sheet['D'+1]&&"积分"==sheet['D'+1]["v"]){
-        flag = true;
-    }else{
-        flag = false;
-    }
-    
-    
-    if(flag){
-        for (let row = 2; ; row++) {
-            if (sheet['A' + row] == null) {
-                break;
-            }
-            const item = {};
-            for (let col = 65; col <= 70; col++) {
-                const c = String.fromCharCode(col);
-                const key = '' + c + row;
-                const td = {};
-                const value = sheet[key]?util.trim(sheet[key]['w']):null;
-
-                switch (c) {
-                    case 'A':
-                            if(_.isEmpty(value)){
-                                errorList.push(`第${row}行鱼名不能为空`);
-                            }else if(_.size(value)>30){
-                                errorList.push(`第${row}行叫${sheet['A' + row]['w']}的名字太长了`);
-                            }else{
-                                item['name'] = value;
-                            }
-                            break;
-                    case 'B':
-                            if(_.isEmpty(value)){
-                                item['size'] = "";
-                            }else if(_.size(value)>30){
-                                errorList.push(`第${row}行叫${sheet['A' + row]['w']}的尺寸太长了`);
-                            }else{
-                                item['size'] = value;
-                            }
-                            break;
-                    case 'C':
-                            if(_.isEmpty(value)){
-                                errorList.push(`第${row}行叫${sheet['A' + row]['w']}的价格不能为空`);
-                            }else if(isNaN(Number(value))){
-                                errorList.push(`第${row}行叫${sheet['A' + row]['w']}的价格不是数字`);
-                            }else{
-                                item['price'] = value;
-                            }
-                            break;
-                    case 'D':
-                            if(_.isEmpty(value)){
-                                item['point'] = "";
-                            }else if(isNaN(Number(value))){
-                                errorList.push(`第${row}行叫${sheet['A' + row]['w']}的积分不是数字`);
-                            }else if(Number(value)>100){
-                                errorList.push(`第${row}行叫${sheet['A' + row]['w']}的积分太多了`);
-                            }else{
-                                item['point'] = value;
-                            }
-                            break;
-                    case 'E':
-                            if(_.isEmpty(value)){
-                                item['numbers'] = "99";
-                            }else if(isNaN(Number(value))){
-                                errorList.push(`第${row}行叫${sheet['A' + row]['w']}的数量不是数字`);
-                            }else{
-                                item['numbers'] = value;
-                            }
-                            break;
-                    case 'F':
-                            if(_.isEmpty(value)){
-                                item['limits'] = "99";
-                            }else if(isNaN(Number(value))){
-                                errorList.push(`第${row}行叫${sheet['A' + row]['w']}的限购不是数字`);
-                            }else if(!_.isEmpty(item["numbers"])&&Number(value)>Number(item["numbers"])){
-                                errorList.push(`第${row}行叫${sheet['A' + row]['w']}的限购数大于总数`);
-                            }else{
-                                item['limits'] = value;
-                            }
-                            break;
-                    default:
-                        break;
-                }
-            }
-            list.push(item);
-        }
-    }
-    return {"flag":flag,"list":list,"error":errorList};
-}
 module.exports = {
     method: 'POST',
     path: '/api/bill/upload',
@@ -217,30 +103,143 @@ module.exports = {
         });
         bill.pipe(file);
         bill.on('end', function (err) {
-            const resault = readExcel(path);
-            const list = resault.list;
-            const length = _.size(list);
-            if(resault.flag){
-                if(_.size(resault.error)>0){
-                    reply(Boom.badRequest(resault.error.join("\n")));
+            // const resault = readExcel(path);
+            fs.readFile(path,null, function (err, buf) {
+
+                const wb = XLSX.read(buf, { type: 'buffer' });
+                const sheet = wb.Sheets[wb.SheetNames[0]];
+
+                const list = [];
+                const errorList=[];
+                
+                let flag = false;
+                if(sheet['A'+1]&&"鱼名"==sheet['A'+1]["v"]){
+                    flag = true;
                 }else{
-                    const insert = `insert into bill (name,contacts,phone,description,user_id,effort_date,supplier_id,is_one_step) values ('${bill_name}','${contacts}','${phone}','${description}',${user_id},${effort_date},${supplier_id},${is_one_step}) `;
-                    request.app.db.query(insert, (err, res) => {
-                        if (err) {
-                            request.log(['error'], err);
-                            reply(Boom.serverUnavailable(config.errorMessage));
-                        } else {
-        
-                            for (let i = 1; i <= length; i++) {
-                                insertToDb(list[i - 1], i, length, request, res.insertId, reply);
+                    flag = false;
+                }
+                
+                if(sheet['B'+1]&&"尺寸"==sheet['B'+1]["v"]){
+                    flag = true;
+                }else{
+                    flag = false;
+                }
+                
+                if(sheet['C'+1]&&"价格"==sheet['C'+1]["v"]){
+                    flag =true;
+                }else{
+                    flag = false;
+                }
+                
+                if(sheet['D'+1]&&"积分"==sheet['D'+1]["v"]){
+                    flag = true;
+                }else{
+                    flag = false;
+                }
+                
+                
+                if(flag){
+                    for (let row = 2; ; row++) {
+                        if (sheet['A' + row] == null) {
+                            break;
+                        }
+                        const item = {};
+                        for (let col = 65; col <= 70; col++) {
+                            const c = String.fromCharCode(col);
+                            const key = '' + c + row;
+                            const td = {};
+                            const value = sheet[key]?util.trim(sheet[key]['w']):null;
+            
+                            switch (c) {
+                                case 'A':
+                                        if(_.isEmpty(value)){
+                                            errorList.push(`第${row}行鱼名不能为空`);
+                                        }else if(_.size(value)>30){
+                                            errorList.push(`第${row}行叫${sheet['A' + row]['w']}的名字太长了`);
+                                        }else{
+                                            item['name'] = value;
+                                        }
+                                        break;
+                                case 'B':
+                                        if(_.isEmpty(value)){
+                                            item['size'] = "";
+                                        }else if(_.size(value)>30){
+                                            errorList.push(`第${row}行叫${sheet['A' + row]['w']}的尺寸太长了`);
+                                        }else{
+                                            item['size'] = value;
+                                        }
+                                        break;
+                                case 'C':
+                                        if(_.isEmpty(value)){
+                                            errorList.push(`第${row}行叫${sheet['A' + row]['w']}的价格不能为空`);
+                                        }else if(isNaN(Number(value))){
+                                            errorList.push(`第${row}行叫${sheet['A' + row]['w']}的价格不是数字`);
+                                        }else{
+                                            item['price'] = value;
+                                        }
+                                        break;
+                                case 'D':
+                                        if(_.isEmpty(value)){
+                                            item['point'] = "";
+                                        }else if(isNaN(Number(value))){
+                                            errorList.push(`第${row}行叫${sheet['A' + row]['w']}的积分不是数字`);
+                                        }else if(Number(value)>100){
+                                            errorList.push(`第${row}行叫${sheet['A' + row]['w']}的积分太多了`);
+                                        }else{
+                                            item['point'] = value;
+                                        }
+                                        break;
+                                case 'E':
+                                        if(_.isEmpty(value)){
+                                            item['numbers'] = "99";
+                                        }else if(isNaN(Number(value))){
+                                            errorList.push(`第${row}行叫${sheet['A' + row]['w']}的数量不是数字`);
+                                        }else{
+                                            item['numbers'] = value;
+                                        }
+                                        break;
+                                case 'F':
+                                        if(_.isEmpty(value)){
+                                            item['limits'] = "99";
+                                        }else if(isNaN(Number(value))){
+                                            errorList.push(`第${row}行叫${sheet['A' + row]['w']}的限购不是数字`);
+                                        }else if(!_.isEmpty(item["numbers"])&&Number(value)>Number(item["numbers"])){
+                                            errorList.push(`第${row}行叫${sheet['A' + row]['w']}的限购数大于总数`);
+                                        }else{
+                                            item['limits'] = value;
+                                        }
+                                        break;
+                                default:
+                                    break;
                             }
                         }
-                    });
+                        list.push(item);
+                    }
                 }
-            }else{
-                reply(Boom.notAcceptable('请使用下载的模版上传单子'));
-            }
+                const resault =  {"flag":flag,"list":list,"error":errorList};
+                const resaultlist = resault.list;
+                const length = _.size(resaultlist);
+                if(resault.flag){
+                    if(_.size(resault.error)>0){
+                        reply(Boom.badRequest(resault.error.join("\n")));
+                    }else{
+                        const insert = `insert into bill (name,contacts,phone,description,user_id,effort_date,supplier_id,is_one_step) values ('${bill_name}','${contacts}','${phone}','${description}',${user_id},${effort_date},${supplier_id},${is_one_step}) `;
+                        request.app.db.query(insert, (err, res) => {
+                            if (err) {
+                                request.log(['error'], err);
+                                reply(Boom.serverUnavailable(config.errorMessage));
+                            } else {
             
+                                for (let i = 1; i <= length; i++) {
+                                    insertToDb(resaultlist[i - 1], i, length, request, res.insertId, reply);
+                                }
+                            }
+                        });
+                    }
+                }else{
+                    reply(Boom.notAcceptable('请使用下载的模版上传单子'));
+                }
+             });
         })
     },
     config: {

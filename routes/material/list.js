@@ -22,7 +22,7 @@ module.exports = {
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
                 let from  = (request.query.page-1)*request.query.size;
-                const select = `select id,category,type,code,name,ename,sname,tag,level,price,description,compatibility from material where ${where} order by id desc limit ${from},${request.query.size}`;
+                const select = `select m.*,(select id from focus where material_id=m.id and user_id=${request.query.user_id} ) focus_id from material m where ${where} order by id desc limit ${from},${request.query.size}`;
                 request.app.db.query(select, (err, res) => {
                     if(err) {
                         request.log(['error'], err);
@@ -44,6 +44,7 @@ module.exports = {
                 size: Joi.number().required(),
                 name: Joi.string(),
                 type: Joi.string(),
+                user_id: Joi.optional().default(0)
             }
         },
     }

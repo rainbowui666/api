@@ -61,8 +61,7 @@ const insertBillDetail = (item, i, length, request, bill_id, reply, materialId) 
     const size = !_.isEmpty(item['size'])?item["size"]:"";
     const numbers = !_.isEmpty(item['numbers'])?item["numbers"]:"99";
     const limits = !_.isEmpty(item['limits'])?item["limits"]:"99";
-
-    const insert = `insert into bill_detail (bill_id,name,size,price,point,material_id,numbers,limits) values (${bill_id},'${item['name']}','${size}',${item['price']},${item['point']?item['point']:0},${materialId},${numbers},${limits}) `;
+    const insert = `insert into bill_detail (bill_id,name,size,price,point,material_id,numbers,limits,recommend) values (${bill_id},'${item['name']}','${size}',${item['price']},${item['point']?item['point']:0},${materialId},${numbers},${limits},'${item['recommend']}') `;
     // console.log("=======insert sql========",insert)
     
     request.app.db.query(insert, (err, res) => {
@@ -136,6 +135,8 @@ module.exports = {
                 }else{
                     flag = false;
                 }
+
+               
                 
                 
                 if(flag){
@@ -144,7 +145,7 @@ module.exports = {
                             break;
                         }
                         const item = {};
-                        for (let col = 65; col <= 70; col++) {
+                        for (let col = 65; col <= 71; col++) {
                             const c = String.fromCharCode(col);
                             const key = '' + c + row;
                             const td = {};
@@ -207,6 +208,13 @@ module.exports = {
                                             errorList.push(`第${row}行叫${sheet['A' + row]['w']}的限购数大于总数`);
                                         }else{
                                             item['limits'] = value;
+                                        }
+                                        break;
+                                case 'G':
+                                        if(_.isEmpty(value)){
+                                            item['recommend'] = "";
+                                        }else{
+                                            item['recommend'] = value;
                                         }
                                         break;
                                 default:

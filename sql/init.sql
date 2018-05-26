@@ -53,6 +53,8 @@ alter table bill_detail change `name` `name` varchar(200) character set utf8 not
 alter table bill_detail change `size` `size` varchar(20) character set utf8 not null ;
 alter table bill_detail add column numbers int;
 alter table bill_detail add column limits int;
+alter table bill_detail add column recommend varchar(20);
+
 
 alter table bill_detail character set utf8;
 
@@ -155,4 +157,12 @@ create table citys(
  primary key(mark)
 );
 
+
+create table focus(
+    id int not null auto_increment,
+    user_id int not null,
+    material_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    primary key(id)
+);
 

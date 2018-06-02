@@ -2,6 +2,7 @@
 const fs = require("fs");
 const config = require('../../config.js');
 const Boom = require('boom');
+const cache = require("memory-cache");
 
 module.exports = {
     method: 'POST',
@@ -36,6 +37,7 @@ module.exports = {
    
             img.on('end', function (err) {
                const returnPath = `${name}`;
+               cache.del("user"+id);
                reply({'status':'ok','imgPath':returnPath});
             })
          });

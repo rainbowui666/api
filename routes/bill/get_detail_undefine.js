@@ -14,7 +14,7 @@ module.exports = {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                const select = `select d.* from bill_detail d where ${where} and  d.material_id=0 and  d.bill_id=${request.query.id}`;
+                const select = `select d.* from bill_detail d where ${where} and  d.material_id=0 and  d.bill_id=${request.query.id} order by d.recommend desc`;
                 request.app.db.query(select, (err, res) => {
                     if(err) {
                         request.log(['error'], err);

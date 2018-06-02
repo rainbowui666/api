@@ -40,7 +40,8 @@ module.exports = {
         description: '根据ID获得用户头像',
         validate: {
             query: {
-                id: Joi.number().required()
+                id: Joi.number().required(),
+                r: Joi.optional()
             }
         }
     }

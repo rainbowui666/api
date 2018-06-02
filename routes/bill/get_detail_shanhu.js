@@ -4,7 +4,7 @@ const config = require('../../config.js');
 const _ = require("lodash");
 
 module.exports = {
-    path: '/api/bill/detail/category',
+    path: '/api/bill/detail/shanhu',
     method: 'GET',
     handler(request, reply) {
         let where = request.query.name?`d.name LIKE '%${request.query.name}%'`:"1=1 ";
@@ -14,7 +14,7 @@ module.exports = {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                const select = `select d.* from bill_detail d,material m where  m.id = d.material_id  and ${where} and m.category='${request.query.category}'  and  d.bill_id=${request.query.id} order by d.recommend desc`;
+                const select = `select d.* from bill_detail d,material m where  m.id = d.material_id  and ${where} and m.category in ('yg','rt') and  d.bill_id=${request.query.id} order by d.recommend desc`;
                 request.app.db.query(select, (err, res) => {
                     if(err) {
                         request.log(['error'], err);
@@ -42,8 +42,7 @@ module.exports = {
         validate: {
             query: {
                 id: Joi.number().required(),
-                name: Joi.string(),
-                category:Joi.string().required(),
+                name: Joi.string()
             }
         }
     }

@@ -12,11 +12,11 @@ module.exports = {
          const upload = request.payload;
          const id = upload.id;
          const img = upload["img"];
-
-         fs.readFile(config["user"], function (err, files) {
+         fs.readdir(config["user"], function (err, files) {
              if(files){
                 files.forEach(function (itm, index) {
                     const filedId = itm.split(".")[0];
+
                     if(filedId==id){
                        fs.unlinkSync(config["user"] + itm);
                     }

@@ -2,6 +2,7 @@
 const fs = require("fs");
 const config = require('../../config.js');
 const Boom = require('boom');
+const cache = require("memory-cache");
 
 module.exports = {
     method: 'POST',
@@ -12,14 +13,14 @@ module.exports = {
          const id = upload.id;
          const img = upload["img"];
          const pay_type = upload["pay_type"];
-         fs.readFile(config["user"]+"pay/"+pay_type +"/", function (err, files) {
+         fs.readdir(config["user"]+"pay/"+pay_type +"/", function (err, files) {
             files.forEach(function (itm, index) {
                 const filedId = itm.split(".")[0];
                 if(filedId==id){
                    fs.unlinkSync(config["user"]+"pay/"+pay_type +"/" + itm);
                 }
             })
-            
+
             const _name = img.hapi.filename;
             const tempName = _name.split(".");
             let timestamp = Date.parse(new Date());
@@ -40,8 +41,9 @@ module.exports = {
                        request.log(['error'], err);
                        reply(Boom.serverUnavailable(config.errorMessage));
                    } else {
-                       const returnPath = `${name}`;
-                       reply({'status':'ok','imgPath':returnPath});
+                    cache.del("pay"+id);
+                    const returnPath = `${name}`;
+                    reply({'status':'ok','imgPath':returnPath});
                    }
                });
                

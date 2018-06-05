@@ -15,7 +15,7 @@ module.exports = {
     path: '/api/tools/qrCode',
     method: 'GET',
     handler(request, reply) {
-        const url = `http://mobile.coral123.com/?#/buy/${compile(request.query.id+'')}/page?private=${request.query.id}`;
+        const url = `http://www.coral123.com/?#/buy/${compile(request.query.id+'')}/page?private=${request.query.id}`;
         // const qr_svg = qr.image(url, { type: 'png' });
         // const path = config["user"]+"private/"+request.query.id+".png";
         // qr_svg.pipe(require('fs').createWriteStream(path));

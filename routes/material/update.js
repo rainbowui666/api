@@ -32,7 +32,9 @@ module.exports = {
                 price: Joi.number().required(),
                 compatibility: Joi.string().required(),
                 description: Joi.string().required(),
-                id: Joi.number().required()
+                id: Joi.number().required(),
+                focus_id:Joi.optional(),
+                img_number:Joi.optional()
             }
         }
     }

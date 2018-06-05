@@ -1,11 +1,16 @@
 const Boom = require('boom');
+const cache = require("memory-cache");
 
 module.exports = {
     path: '/api/tools/provinces',
     method: 'GET',
     handler(request, reply) {
-        const select = `select 1 from dual`;
-        request.app.db.query(select, (err, res) => {
+        const chinas = cache.get("provinces");
+        if(chinas){
+            reply(chinas);
+        }else{
+                const select = `select 1 from dual`;
+                request.app.db.query(select, (err, res) => {
              
                 const citys = [
                     {"code":"sh","name":"上海",'qq':''},
@@ -39,8 +44,11 @@ module.exports = {
                     {"code":"yn","name":"云南",'qq':''},
                     {"code":"jx","name":"江西",'qq':''},
                 ];
+                cache.put("provinces",citys);
                 reply(citys);
         });
+        }
+        
      
     },
     config: {

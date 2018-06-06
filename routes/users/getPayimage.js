@@ -10,7 +10,7 @@ module.exports = {
     handler(request, reply) {
         const decodeImg = cache.get("pay"+request.query.id);
         if(decodeImg){
-            reply(decodeImg).type('image/png');
+            reply(decodeImg).type('text/xml');
         }else{
 
             const select = `select pay_type from user where id=${request.query.id}`;
@@ -39,16 +39,16 @@ module.exports = {
                             fs.readFile(path, function (err, data) {
                                 const decodeImg = new Buffer(data.toString("base64"), 'base64');
                                 cache.put("pay"+request.query.id, decodeImg);
-                                reply(decodeImg).type('image/png');
+                                reply(decodeImg).type('text/xml');
                             }); 
                         }else {
                             cache.put("pay"+request.query.id, defPayImg);
-                            reply(defPayImg).type('image/png');
+                            reply(defPayImg).type('text/xml');
                         }
                     });
                 }else{
                     cache.put("pay"+request.query.id, defPayImg);
-                    reply(defPayImg).type('image/png');
+                    reply(defPayImg).type('text/xml');
                 }
             }
 

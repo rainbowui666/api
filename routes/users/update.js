@@ -28,12 +28,12 @@ module.exports = {
                 phone: Joi.string().required().max(20),
                 type: Joi.string().required().max(20),
                 status: Joi.number().required(),
-                point: Joi.number().required(),
-                address: Joi.string().optional().default(" "),
+                point: Joi.required(),
+                address: Joi.optional().default(" "),
                 code: Joi.optional(),
                 focus_no: Joi.optional(),
-                description: Joi.string().optional().default(" "),
-                contacts: Joi.string().optional().default(" "),
+                description: Joi.optional().default(" "),
+                contacts: Joi.optional().default(" "),
                 id: Joi.number().required()
             }
         },

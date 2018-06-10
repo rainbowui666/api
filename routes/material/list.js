@@ -15,6 +15,7 @@ module.exports = {
         }
         let where = request.query.name?` name LIKE '%${request.query.name}%' or tag LIKE '%${request.query.name}%' or ename LIKE '%${request.query.name}%' or sname LIKE '%${request.query.name}%' `:" 1=1 ";
         where = request.query.type?`${where} and type in (${types}'')`:`${where} `;
+        where = request.query.category?`${where} and category='${request.query.category}'`:`${where} `;
         const countSql = `select count(1) count from material where ${where}`;
         request.app.db.query(countSql, (err, count_res) => {
             if(err) {
@@ -42,8 +43,9 @@ module.exports = {
             query: {
                 page: Joi.number().required(),
                 size: Joi.number().required(),
-                name: Joi.string(),
-                type: Joi.string(),
+                name: Joi.optional(),
+                type: Joi.optional(),
+                category: Joi.optional(),
                 user_id: Joi.optional().default(0)
             }
         },

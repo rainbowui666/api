@@ -173,7 +173,7 @@ create table focus(
 
 create table black_list(
     id int not null auto_increment,
-    name int not null,
+    name varchar(100) not null,
     type int not null,
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     primary key(id)

@@ -4,7 +4,7 @@ const config = require('../../config.js');
 const util = require('../../lib/util.js');
 
 module.exports = {
-    path: '/api/cart/update',
+    path: '/api/cart/pay/update',
     method: 'POST',
     handler(request, reply) {
         const update = `update cart set is_pay=1 where id=${request.payload.id}`;

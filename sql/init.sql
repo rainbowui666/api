@@ -171,3 +171,14 @@ create table focus(
     primary key(id)
 );
 
+create table black_list(
+    id int not null auto_increment,
+    name int not null,
+    type int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    primary key(id)
+);
+INSERT INTO black_list (name,type) VALUE('海龟',1);
+INSERT INTO black_list (name,type) VALUE('玳瑁',1);
+INSERT INTO black_list (name,type) VALUE('鹦鹉螺',1);
+INSERT INTO black_list (name,type) VALUE('硨磲',1);

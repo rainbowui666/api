@@ -5,7 +5,9 @@ const Boom = require('boom');
 const XLSX = require('xlsx');
 const util = require("../../lib/util");
 const _ = require("lodash");
-const moment = require('moment')
+const moment = require('moment');
+const cache = require("memory-cache");
+
 const insertToDb = (item, i, length, request, bill_id, reply) => {
     const fish_name = item['name'].match(/[\u4e00-\u9fa5]/g);
     let name = fish_name?fish_name.join(""):item['name'];
@@ -150,6 +152,14 @@ module.exports = {
                             const key = '' + c + row;
                             const td = {};
                             const value = sheet[key]?util.trim(sheet[key]['w']):null;
+                            const black = cache.get("black1");
+                            if(black){
+                                _.each(black,(item)=>{
+                                    if(!_.isEmpty(value)&&value.indexOf(item.name)>=0){
+                                        continue;
+                                    }
+                                });
+                            }
             
                             switch (c) {
                                 case 'A':

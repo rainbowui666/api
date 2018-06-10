@@ -132,6 +132,9 @@ alter table cart add column phone varchar(11);
 alter table cart add column description varchar(2000);
 alter table cart add column status int not null default 0;
 alter table cart add column sum int not null default 0;
+alter table cart add column is_pay int default 0;
+alter table cart add column lost_back int  default 0;
+alter table cart add column damage_back int  default 0;
 
 alter table cart change `phone` `phone` varchar(11) character set utf8 not null ;
 alter table cart change `description` `description` varchar(2000) character set utf8;
@@ -144,6 +147,8 @@ create table cart_detail(
     bill_detail_num int not null DEFAULT 1,
     primary key(id)
 );
+alter table cart_detail add column is_lost int default 0;
+alter table cart_detail add column is_damage int default 0;
 
 
 create table citys(
@@ -166,3 +171,14 @@ create table focus(
     primary key(id)
 );
 
+create table black_list(
+    id int not null auto_increment,
+    name int not null,
+    type int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    primary key(id)
+);
+INSERT INTO black_list (name,type) VALUE('海龟',1);
+INSERT INTO black_list (name,type) VALUE('玳瑁',1);
+INSERT INTO black_list (name,type) VALUE('鹦鹉螺',1);
+INSERT INTO black_list (name,type) VALUE('硨磲',1);

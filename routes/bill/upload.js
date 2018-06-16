@@ -168,7 +168,7 @@ module.exports = {
                                         }else if(_.size(value)>30){
                                             errorList.push(`第${row}行叫${sheet['A' + row]['w']}的名字太长了`);
                                         }else{
-                                            item['name'] = value;
+                                            item['name'] = _.trim(value);
                                         }
                                         break;
                                 case 'B':
@@ -177,7 +177,7 @@ module.exports = {
                                         }else if(_.size(value)>30){
                                             errorList.push(`第${row}行叫${sheet['A' + row]['w']}的尺寸太长了`);
                                         }else{
-                                            item['size'] = value;
+                                            item['size'] = _.trim(value);
                                         }
                                         break;
                                 case 'C':
@@ -186,7 +186,7 @@ module.exports = {
                                         }else if(isNaN(Number(value))){
                                             errorList.push(`第${row}行叫${sheet['A' + row]['w']}的价格不是数字`);
                                         }else{
-                                            item['price'] = value;
+                                            item['price'] = _.trim(value);
                                         }
                                         break;
                                 case 'D':
@@ -197,7 +197,7 @@ module.exports = {
                                         }else if(Number(value)>100){
                                             errorList.push(`第${row}行叫${sheet['A' + row]['w']}的积分太多了`);
                                         }else{
-                                            item['point'] = value;
+                                            item['point'] = _.trim(value);
                                         }
                                         break;
                                 case 'E':
@@ -206,7 +206,7 @@ module.exports = {
                                         }else if(isNaN(Number(value))){
                                             errorList.push(`第${row}行叫${sheet['A' + row]['w']}的数量不是数字`);
                                         }else{
-                                            item['numbers'] = value;
+                                            item['numbers'] = _.trim(value);
                                         }
                                         break;
                                 case 'F':
@@ -217,14 +217,14 @@ module.exports = {
                                         }else if(!_.isEmpty(item["numbers"])&&Number(value)>Number(item["numbers"])){
                                             errorList.push(`第${row}行叫${sheet['A' + row]['w']}的限购数大于总数`);
                                         }else{
-                                            item['limits'] = value;
+                                            item['limits'] = _.trim(value);
                                         }
                                         break;
                                 case 'G':
                                         if(_.isEmpty(value)){
                                             item['recommend'] = "";
                                         }else{
-                                            item['recommend'] = value;
+                                            item['recommend'] = _.trim(value);
                                         }
                                         break;
                                 default:

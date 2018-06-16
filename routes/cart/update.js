@@ -10,9 +10,9 @@ module.exports = {
     handler(request, reply) {
         let update = null;
         if(_.isEmpty(request.payload.phone)){
-            update = `update cart set sum=${request.payload.sum}, description='${request.payload.description}', status='${request.payload.status}' where id=${request.payload.id}`;
+            update = `update cart set sum=${request.payload.sum}, description='${request.payload.description}', status='${request.payload.status}' , freight='${request.payload.freight}'  where id=${request.payload.id}`;
         }else{
-            update = `update cart set sum=${request.payload.sum}, phone='${request.payload.phone}', description='${request.payload.description}', status='${request.payload.status}' where id=${request.payload.id}`;
+            update = `update cart set sum=${request.payload.sum}, phone='${request.payload.phone}', description='${request.payload.description}', status='${request.payload.status}' , freight='${request.payload.freight}'  where id=${request.payload.id}`;
         }
         request.app.db.query(update, (err, res) => {
             if(err) {
@@ -31,7 +31,9 @@ module.exports = {
                 id: Joi.number().required(),
                 status: Joi.number().required(),
                 sum: Joi.number().required(),
+                freight: Joi.optional(),
                 phone: Joi.optional(),
+                description: Joi.optional().default("")
             }
         }
     }

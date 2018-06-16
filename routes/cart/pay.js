@@ -7,7 +7,7 @@ module.exports = {
     path: '/api/cart/pay/update',
     method: 'POST',
     handler(request, reply) {
-        const update = `update cart set is_pay=1 where id=${request.payload.id}`;
+        const update = `update cart set is_pay=${request.payload.status} where id=${request.payload.id}`;
         request.app.db.query(update, (err, res) => {
             if(err) {
                 request.log(['error'], err);
@@ -22,7 +22,8 @@ module.exports = {
         description: '已支付购物车',
         validate: {
             payload: {
-                id: Joi.number().required()
+                id: Joi.number().required(),
+                status: Joi.number().required(),
             }
         }
     }

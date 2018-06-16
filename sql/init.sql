@@ -96,10 +96,12 @@ create table group_bill(
     user_id int not null,
     primary key(id)
 );
-alter table group_bill add column pickup_date TIMESTAMP;
+alter table group_bill add column pickup_date timestamp default now();
 alter table group_bill add column status int not null DEFAULT 1;
 alter table group_bill add column city varchar(10);
 alter table group_bill add column province varchar(20);
+alter table group_bill add column current_step int not null DEFAULT 0;
+
 
 alter table group_bill change `name` `name` varchar(100) character set utf8 not null ;
 alter table group_bill change `contacts` `contacts` varchar(100) character set utf8 not null ;
@@ -133,11 +135,18 @@ alter table cart add column description varchar(2000);
 alter table cart add column status int not null default 0;
 alter table cart add column sum int not null default 0;
 alter table cart add column is_pay int default 0;
-alter table cart add column lost_back int  default 0;
-alter table cart add column damage_back int  default 0;
+alter table cart add column freight double(7,2) not null default 0.00;
+alter table cart add column lost_back double(7,2)  default 0.00;
+alter table cart add column damage_back double(7,2)  default 0.00;
+
+alter table cart drop column freight;
+alter table cart drop column lost_back;
+alter table cart drop column damage_back;
+
 
 alter table cart change `phone` `phone` varchar(11) character set utf8 not null ;
 alter table cart change `description` `description` varchar(2000) character set utf8;
+
 
 
 create table cart_detail(
@@ -149,6 +158,10 @@ create table cart_detail(
 );
 alter table cart_detail add column is_lost int default 0;
 alter table cart_detail add column is_damage int default 0;
+
+alter table cart_detail add column org_bill_detail_num int default 0;
+alter table cart_detail add column lost_num int default 0;
+alter table cart_detail add column damage_num int default 0;
 
 
 create table citys(

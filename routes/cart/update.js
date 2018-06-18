@@ -31,7 +31,7 @@ module.exports = {
                 id: Joi.number().required(),
                 status: Joi.number().required(),
                 sum: Joi.number().required(),
-                freight: Joi.optional(),
+                freight: Joi.optional().default(0.00),
                 phone: Joi.optional(),
                 description: Joi.optional().default("")
             }

@@ -25,9 +25,12 @@
     "hapi-authorization": "^3.0.3",
     "hapi-plugin-mysql": "^4.0.0",
     "hapi-plus-routes": "^1.2.1",
+    "hapi-require-https": "^3.0.0",
     "hapi-router": "^3.5.0",
     "hapi-swagger": "^7.2.0",
     "http-auth": "^3.2.3",
+    "https": "^1.0.0",
+    "image-to-base64": "^1.3.5",
     "images": "^3.0.1",
     "inert": "^4.0.2",
     "joi": "^10.1.0",
@@ -41,9 +44,12 @@
     "nes": "^6.3.1",
     "node-xlsx": "^0.11.0",
     "path": "^0.12.7",
+    "qcloudsms_js": "^0.1.0",
+    "qr-image": "^3.2.0",
     "rotating-file-stream": "^1.0.5",
     "vision": "^4.1.0",
-    "xlsx": "^0.11.5"
+    "xlsx": "^0.11.5",
+    "sharp": "^0.20.3"
   },
   "devDependencies": {
     "eslint": "^3.8.0",

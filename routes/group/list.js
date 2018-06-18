@@ -37,23 +37,25 @@ module.exports = {
                                 request.log(['error'], err);
                                 reply(Boom.serverUnavailable(config.errorMessage));
                             } else {
-                                    const ids = [" ("];
-                                    _.each(res,(item)=>{
-                                        if(item.status==0){
-                                            ids.push(item.id+",");
-                                        }
-                                    });
-                                    ids.push("0) ");
-                                    const update = `update group_bill set status=0 where id in ${ids.join("")}`;
-                                    console.log(update)
-                                    request.app.db.query(update, (err, updateres) => {
-                                        if(err) {
-                                            request.log(['error'], err);
-                                            reply(Boom.serverUnavailable(config.errorMessage));
-                                        } else {
-                                            reply({count_res,res});
-                                        }
-                                    });
+                                reply({count_res,res});
+
+                                    // const ids = [" ("];
+                                    // _.each(res,(item)=>{
+                                    //     if(item.status==0){
+                                    //         ids.push(item.id+",");
+                                    //     }
+                                    // });
+                                    // ids.push("0) ");
+                                    // const update = `update group_bill set status=0 where id in ${ids.join("")}`;
+                                    // console.log(update)
+                                    // request.app.db.query(update, (err, updateres) => {
+                                    //     if(err) {
+                                    //         request.log(['error'], err);
+                                    //         reply(Boom.serverUnavailable(config.errorMessage));
+                                    //     } else {
+                                    //         reply({count_res,res});
+                                    //     }
+                                    // });
                             }
                         });
                     }

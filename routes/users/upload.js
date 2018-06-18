@@ -3,6 +3,7 @@ const fs = require("fs");
 const config = require('../../config.js');
 const Boom = require('boom');
 const cache = require("memory-cache");
+const images = require("images");
 
 module.exports = {
     method: 'POST',
@@ -28,16 +29,19 @@ module.exports = {
             timestamp = timestamp / 1000;
             const name = id+"."+tempName[1];
             const path = config["user"] + name;
-            const file = fs.createWriteStream(path);
+            const temp_path = config["user"]+"temp/" + name;
+
+            const file = fs.createWriteStream(temp_path);
             file.on('error', function (err) {
                 reply(Boom.notAcceptable('创建文件失败'));
             });
-   
             img.pipe(file);
-   
             img.on('end', function (err) {
                const returnPath = `${name}`;
                cache.del("user"+id);
+               images(temp_path).size(150).save(path, {               
+                       quality : 75                    
+               });
                reply({'status':'ok','imgPath':returnPath});
             })
          });

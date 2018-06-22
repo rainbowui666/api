@@ -11,7 +11,7 @@ module.exports = {
         if(request.payload.pickup_date==0){
             request.payload.pickup_date = null;
         }
-        const insert = `insert into group_bill (name,contacts,phone,end_date,pickup_address,pickup_date,pay_type,pay_count,pay_name,pay_description,freight,description,isflash,flash_desc,bill_id,user_id,city,province,private) VALUES('${request.payload.name}','${request.payload.contacts}','${request.payload.phone}',${request.payload.end_date},'${request.payload.pickup_address}',${request.payload.pickup_date},'${request.payload.pay_type}','${request.payload.pay_count}','${request.payload.pay_name}','${request.payload.pay_description}',${request.payload.freight},'${request.payload.description}',${request.payload.is_flash},'${request.payload.flash_desc}',${request.payload.bill_id},${request.payload.user_id},'${request.payload.city}','${request.payload.province}',${request.payload.private})`;
+        const insert = `insert into group_bill (name,contacts,phone,end_date,pickup_address,pickup_date,pay_type,pay_count,pay_name,pay_description,freight,description,isflash,flash_desc,bill_id,user_id,city,province,private,top_freight) VALUES('${request.payload.name}','${request.payload.contacts}','${request.payload.phone}',${request.payload.end_date},'${request.payload.pickup_address}',${request.payload.pickup_date},'${request.payload.pay_type}','${request.payload.pay_count}','${request.payload.pay_name}','${request.payload.pay_description}',${request.payload.freight},'${request.payload.description}',${request.payload.is_flash},'${request.payload.flash_desc}',${request.payload.bill_id},${request.payload.user_id},'${request.payload.city}','${request.payload.province}',${request.payload.private},${request.payload.top_freight})`;
         request.app.db.query(insert, (err, res) => {
             if(err) {
                 request.log(['error'], err);
@@ -40,6 +40,7 @@ module.exports = {
                 pay_name: Joi.string().optional().default(" ").max(50),
                 pay_description: Joi.string().optional().default(" ").max(500),
                 freight: Joi.number().optional().default(0.0),
+                top_freight: Joi.number().optional().default(0),
                 is_flash: Joi.number().optional().default(0),
                 private: Joi.number().optional().default(0),
                 flash_desc: Joi.string().optional().default(" ").max(500),

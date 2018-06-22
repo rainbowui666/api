@@ -101,6 +101,7 @@ alter table group_bill add column status int not null DEFAULT 1;
 alter table group_bill add column city varchar(10);
 alter table group_bill add column province varchar(20);
 alter table group_bill add column current_step int not null DEFAULT 0;
+alter table group_bill add column top_freight int  DEFAULT 0;
 
 
 alter table group_bill change `name` `name` varchar(100) character set utf8 not null ;

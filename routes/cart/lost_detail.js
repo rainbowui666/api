@@ -29,15 +29,18 @@ module.exports = {
                                 request.log(['error'], err);
                                 reply(Boom.serverUnavailable(config.errorMessage));
                             } else {
-                                const select3 = `select g.freight from cart c,group_bill g where c.group_bill_id=g.id and c.id=${request.payload.cart_id}`;
+                                const select3 = `select g.freight,g.top_freight from cart c,group_bill g where c.group_bill_id=g.id and c.id=${request.payload.cart_id}`;
                                 request.app.db.query(select3, (err, res3) => {
                                     if(err) {
                                         request.log(['error'], err);
                                         reply(Boom.serverUnavailable(config.errorMessage));
                                     } else {
-                                        let update2 = `update cart set lost_back=lost_back-${(res2[0].sum*(1+res3[0].freight))}  where id=${request.payload.cart_id}`;
+                                        const temp_freight = res2[0].sum*(1+res3[0].freight);
+                                        const back_freight = temp_freight>res3[0].top_freight?res3[0].top_freight:temp_freight;
+
+                                        let update2 = `update cart set lost_back=lost_back-${back_freight},freight=freight-${back_freight}  where id=${request.payload.cart_id}`;
                                         if(lost_num>0){
-                                            update2 =  `update cart set lost_back=lost_back+${(res2[0].sum*(1+res3[0].freight))}  where id=${request.payload.cart_id}`;
+                                            update2 =  `update cart set lost_back=lost_back+${back_freight},freight=freight+${back_freight}  where id=${request.payload.cart_id}`;
                                         }
                                         request.app.db.query(update2, (err, res) => {
                                             if(err) {

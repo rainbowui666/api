@@ -14,10 +14,6 @@ module.exports = {
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
                 const lost_num =  lostres[0].bill_detail_num -request.payload.lost_num; 
-                console.log(lostres[0].bill_detail_num) 
-                console.log(request.payload.lost_num) 
-                console.log(lost_num) 
-                console.log("===================")
                 let update = `update cart_detail set lost_num=lost_num-1 where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id} `;
                 if(lost_num>0){
                     update =  `update cart_detail set lost_num=lost_num+1 where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id} `;

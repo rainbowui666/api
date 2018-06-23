@@ -14,10 +14,6 @@ module.exports = {
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
                 const damage_num =  damageRes[0].bill_detail_num - request.payload.damage_num;
-                console.log(damageRes[0].bill_detail_num) 
-                console.log(request.payload.damage_num) 
-                console.log(damage_num) 
-                console.log("=======damage_num============")
                 let update = `update cart_detail set damage_num=damage_num-1 where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id} `;
                 if(damage_num>0){
                     update = `update cart_detail set damage_num=damage_num+1 where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id} `;

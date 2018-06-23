@@ -13,7 +13,11 @@ module.exports = {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                const lost_num =  lostres[0].bill_detail_num -request.payload.lost_num;  
+                const lost_num =  lostres[0].bill_detail_num -request.payload.lost_num; 
+                console.log(lostres[0].bill_detail_num) 
+                console.log(request.payload.lost_num) 
+                console.log(lost_num) 
+                console.log("===================")
                 let update = `update cart_detail set lost_num=lost_num-1 where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id} `;
                 if(lost_num>0){
                     update =  `update cart_detail set lost_num=lost_num+1 where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id} `;
@@ -35,12 +39,16 @@ module.exports = {
                                         request.log(['error'], err);
                                         reply(Boom.serverUnavailable(config.errorMessage));
                                     } else {
-                                        const temp_freight = res2[0].sum*(1+res3[0].freight);
-                                        const back_freight = temp_freight>res3[0].top_freight?res3[0].top_freight:temp_freight;
-
-                                        let update2 = `update cart set lost_back=lost_back-${back_freight},freight=freight-${back_freight}  where id=${request.payload.cart_id}`;
+                                        const temp_freight = res2[0].sum*res3[0].freight;
+                                        let back_freight = null;
+                                        if(Number(res3[0].top_freight)==0){
+                                            back_freight = temp_freight;
+                                        }else{
+                                            back_freight = temp_freight>res3[0].top_freight?res3[0].top_freight:temp_freight;
+                                        }
+                                        let update2 = `update cart set lost_back=lost_back-${res2[0].sum+back_freight},freight=freight+${back_freight}  where id=${request.payload.cart_id}`;
                                         if(lost_num>0){
-                                            update2 =  `update cart set lost_back=lost_back+${back_freight},freight=freight+${back_freight}  where id=${request.payload.cart_id}`;
+                                            update2 =  `update cart set lost_back=lost_back+${res2[0].sum+back_freight},freight=freight-${back_freight}  where id=${request.payload.cart_id}`;
                                         }
                                         request.app.db.query(update2, (err, res) => {
                                             if(err) {

@@ -152,14 +152,14 @@ module.exports = {
                             const key = '' + c + row;
                             const td = {};
                             const value = sheet[key]?util.trim(sheet[key]['w']):null;
-                            const black = cache.get("black1");
-                            if(black){
-                                _.each(black,(item)=>{
-                                    if(!_.isEmpty(value)&&value.indexOf(item.name)>=0){
-                                        continue;
-                                    }
-                                });
-                            }
+                            // const black = cache.get("black1");
+                            // if(black){
+                            //     _.each(black,(item)=>{
+                            //         if(!_.isEmpty(value)&&value.indexOf(item.name)>=0){
+                            //             continue;
+                            //         }
+                            //     });
+                            // }
             
                             switch (c) {
                                 case 'A':

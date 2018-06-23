@@ -17,6 +17,16 @@ alter table user add column province varchar(20);
 alter table user add column pay_type varchar(20);
 alter table user add column contacts varchar(20);
 alter table user add column code varchar(20);
+alter table user add column nickname varchar(100);
+alter table user add column sex int;
+alter table user add column province_name varchar(100);
+alter table user add column city_name varchar(100);
+alter table user add column country varchar(100);
+alter table user add column headimgurl varchar(2000);
+alter table user add column privilege varchar(2000);
+alter table user add column unionid varchar(1000);
+
+
 
 
 create table material(

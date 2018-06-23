@@ -13,7 +13,11 @@ module.exports = {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                const damage_num =  damageRes[0].bill_detail_num -request.payload.damage_num;
+                const damage_num =  damageRes[0].bill_detail_num - request.payload.damage_num;
+                console.log(damageRes[0].bill_detail_num) 
+                console.log(request.payload.damage_num) 
+                console.log(damage_num) 
+                console.log("=======damage_num============")
                 let update = `update cart_detail set damage_num=damage_num-1 where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id} `;
                 if(damage_num>0){
                     update = `update cart_detail set damage_num=damage_num+1 where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id} `;
@@ -30,9 +34,9 @@ module.exports = {
                                 request.log(['error'], err);
                                 reply(Boom.serverUnavailable(config.errorMessage));
                             } else {
-                                let update2 = `update cart set damage_back=damage_back-${res2[0].sum*damage_num} where id=${request.payload.cart_id}`;
+                                let update2 = `update cart set damage_back=damage_back-${res2[0].sum} where id=${request.payload.cart_id}`;
                                 if(damage_num>0){
-                                    update2 = `update cart set damage_back=damage_back+${res2[0].sum*damage_num} where id=${request.payload.cart_id}`;
+                                    update2 = `update cart set damage_back=damage_back+${res2[0].sum} where id=${request.payload.cart_id}`;
                                 }
                                 request.app.db.query(update2, (err, res) => {
                                             if(err) {

@@ -39,22 +39,10 @@ module.exports = {
             } else {
                 const user = res[0];
                 if(user&&user.id > 0) {
-                    if(user.status==0){
+                    if(Number(user.status)==0){
                         reply(Boom.notAcceptable('该用户已经失效请联系管理员'));
                     }else{
-                        if(request.payload.phone&&"00000000000"!=request.payload.phone){
-                            const insert = `update user set phone='${request.payload.phone}' where id=${user.id}`;
-                            request.app.db.query(insert, (err, res) => {
-                                if(err) {
-                                    request.log(['error'], err);
-                                    reply(Boom.serverUnavailable(config.errorMessage));
-                                } else {
-                                    login(user,request,reply);
-                                }
-                            });
-                        }else{
-                            login(user,request,reply);
-                        }
+                        login(user,request,reply);
                     }
                     
                 } else {

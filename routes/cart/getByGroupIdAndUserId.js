@@ -6,7 +6,7 @@ module.exports = {
     path: '/api/cart/get/groupIdAndUserId',
     method: 'GET',
     handler(request, reply) {
-        const select = `select c.*,(select name from user where id=c.user_id) user_name from cart c where  group_bill_id=${request.query.group_bill_id} and c.user_id=${request.query.user_id}`;
+        const select = `select c.*,(select IFNULL(nickname,name) from user where id=c.user_id) user_name from cart c where  group_bill_id=${request.query.group_bill_id} and c.user_id=${request.query.user_id}`;
         request.app.db.query(select, (err, res) => {
             if(err) {
                 request.log(['error'], err);

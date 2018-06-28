@@ -51,7 +51,18 @@ module.exports = {
                                                 request.log(['error'], err);
                                                 reply(Boom.serverUnavailable(config.errorMessage));
                                             } else {
-                                                reply({'status':'ok'});
+                                                let update3 = `update cart_detail set lost_back_freight=lost_back_freight-${back_freight} where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id} `;
+                                                if(lost_num>0){
+                                                    update3 =  `update cart_detail set lost_back_freight=lost_back_freight+${back_freight} where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id}`;
+                                                }
+                                                request.app.db.query(update3, (err, res) => {
+                                                    if(err) {
+                                                        request.log(['error'], err);
+                                                        reply(Boom.serverUnavailable(config.errorMessage));
+                                                    } else {
+                                                        reply({'status':'ok'});
+                                                    }
+                                                });
                                             }
                                         });
                                     }

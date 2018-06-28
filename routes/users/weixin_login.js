@@ -1,12 +1,39 @@
 const Joi = require('joi');
 const Boom = require('boom');
-const JWT = require('jsonwebtoken');
+const _ = require('lodash');
 const config = require('../../config.js');
 const util = require('../../lib/util.js');
 const https = require('https');
 const qs = require('querystring');  
+const JWT = require('jsonwebtoken');
 
+const TOKEN_TTL = '43200m';
+const md5 = require('md5');
 
+const login = function(user,request,reply){
+    if(Number(user.status)==0){
+        reply(Boom.notAcceptable('该用户已经失效请联系管理员'));
+    }else{
+        const options = {
+            expiresIn: TOKEN_TTL
+        };
+        const session = {
+            id: user.id,
+            username: user.name,
+            type :user.type
+        };
+        const token = JWT.sign(session, config.authKey, options);
+        const key = util.buildKey(request)+'token';
+        global.globalCahce.set(key, token);
+        const res = {
+            token,
+            "status": "ok",
+            "id":user.id
+        };
+        reply(res);
+    }
+   
+}
 module.exports = {
     path: '/api/users/login/weixin',
     method: 'GET',
@@ -28,13 +55,14 @@ module.exports = {
             json: true,				
             rejectUnauthorized: true,  
         }
-        
-
-            
         const req = https.request(options, function (res) {  
             res.setEncoding('utf8');  
             res.on('data', function (chunk) { 
+                console.log("==token=="+chunk)
+
                 const chenkObj =JSON.parse(chunk);
+                console.log("==token=2="+chenkObj.access_token)
+
                 const userDate = {  
                     access_token: chenkObj.access_token,  
                     openid: chenkObj.openid,
@@ -54,11 +82,56 @@ module.exports = {
                 var userReq = https.request(userOptions, function (userRes) {  
                     userRes.setEncoding('utf8');  
                     userRes.on('data', function (userChunk) {  
-                        //===user==== {"openid":"ohGtg1o1F-fgzmbXElW1fbFNvdDg","nickname":"张海斌, Tony","sex":1,"language":"zh_CN","city":"宝山","province":"上海","country":"中国","headimgurl":"http:\/\/thirdwx.qlogo.cn\/mmopen\/vi_32\/DYAIOgq83eqdiadVl5GHwqyN5hAQZW7Rc8Zp6Ug0ichuCNovU6wBfzJWHCpKibGt0vfBlfw9uHk86RWibelRR0FRIg\/132","privilege":[]}
+                        console.log("==user=="+userChunk)
+                        const userObject = JSON.parse(userChunk);
+                        console.log("==user=="+userObject)
+                        if(userObject.openid){
+                            const selectUser = `select id,name,status,type from user where  openid=${userObject.openid}`;
+                        request.app.db.query(selectUser, (err, res) => {
+                            if(err) {
+                                request.log(['error'], err);
+                                reply(Boom.serverUnavailable(config.errorMessage));
+                            } else {
+                                if(_.isEmpty(res)){
+                                    const insert = `select mark from citys where name='${userObject.city}'`;
+                                    request.app.db.query(insert, (err, city) => {
+                                        if(err) {
+                                            request.log(['error'], err);
+                                            reply(Boom.serverUnavailable(config.errorMessage));
+                                        } else {
+                                            const province = _.find(util.provinces(),(item)=>{
+                                                return item.name==userObject.province;
+                                            });
+                                            const insert = `insert into user (name,password,city,phone,type,province,sex,headimgurl,openid,country,province_name,city_name) VALUES('${userObject.nickname}','${md5(userObject.openid)}','${city[0].mark?city[0].mark:"shc"}','18888888888','yy','${province?province:"sh"}',${userObject.sex},'${userObject.headimgurl}','${userObject.openid}','${userObject.country}','${userObject.province}','${userObject.city}')`;
+                                            request.app.db.query(insert, (err, insertRes) => {
+                                                if(err) {
+                                                    request.log(['error'], err);
+                                                    reply(Boom.serverUnavailable(config.errorMessage));
+                                                } else {
+                                                    const user = {
+                                                        id:insertRes.insertId,
+                                                        name:userObject.nickname,
+                                                        status:1,
+                                                        type:'yy'
+                                                    }
+                                                    login(user,request,reply);
+                                                }
+                                            });
+                                        }
+                                    });
+                                  
+                                }else{
+                                    login(res[0],request,reply);
+                                }
+                            }
+                        });
+                        }else{
+                            reply(Boom.notAcceptable('微信登录失败'));
+                        }
                         
                     });   
                 });   
-        
+
                 userReq.on('error', function (e) {  
                     console.log('problem with user request: ' + e.message);  
                 });  
@@ -85,5 +158,4 @@ module.exports = {
         }
     }
 };
-
 

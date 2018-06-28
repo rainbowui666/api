@@ -24,9 +24,10 @@ alter table user add column city_name varchar(100);
 alter table user add column country varchar(100);
 alter table user add column headimgurl varchar(2000);
 alter table user add column privilege varchar(2000);
-alter table user add column unionid varchar(1000);
-
-
+alter table user add column openid varchar(1000);
+alter table user add column insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+alter table user modify column city varchar(50) null;
+alter table user modify column type varchar(20) DEFAULT 'yy';
 
 
 create table material(
@@ -150,9 +151,6 @@ alter table cart add column freight double(7,2) not null default 0.00;
 alter table cart add column lost_back double(7,2)  default 0.00;
 alter table cart add column damage_back double(7,2)  default 0.00;
 
-alter table cart drop column freight;
-alter table cart drop column lost_back;
-alter table cart drop column damage_back;
 
 
 alter table cart change `phone` `phone` varchar(11) character set utf8 not null ;
@@ -173,7 +171,7 @@ alter table cart_detail add column is_damage int default 0;
 alter table cart_detail add column org_bill_detail_num int default 0;
 alter table cart_detail add column lost_num int default 0;
 alter table cart_detail add column damage_num int default 0;
-
+alter table cart_detail add column lost_back_freight int default 0;
 
 create table citys(
  mark varchar(15) not null,

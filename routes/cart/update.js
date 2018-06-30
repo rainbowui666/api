@@ -8,30 +8,46 @@ module.exports = {
     path: '/api/cart/update',
     method: 'POST',
     handler(request, reply) {
-        let update = null;
-        if(_.isEmpty(request.payload.phone)){
-            if(Number(request.payload.freight)==0){
-                update = `update cart set sum=${request.payload.sum}, description='${request.payload.description}', status='${request.payload.status}'  where id=${request.payload.id}`;
-            }else{
-                update = `update cart set sum=${request.payload.sum}, description='${request.payload.description}', status='${request.payload.status}' , freight='${request.payload.freight}'  where id=${request.payload.id}`;
-            }
-        }else{
-            if(Number(request.payload.freight)==0){
-                update = `update cart set sum=${request.payload.sum}, phone='${request.payload.phone}', description='${request.payload.description}', status='${request.payload.status}'  where id=${request.payload.id}`;
-            }else{
-                update = `update cart set sum=${request.payload.sum}, phone='${request.payload.phone}', description='${request.payload.description}', status='${request.payload.status}' , freight='${request.payload.freight}'  where id=${request.payload.id}`;
-            }
-        }
-
-
-        request.app.db.query(update, (err, res) => {
+        const select  = `select * from cart where id=${request.payload.id}`;
+        request.app.db.query(select, (err, cart) => {
             if(err) {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                reply({'status':'ok','id':res.insertId});
+
+                if(cart[0].is_pay==1){
+                    cart[0].is_pay=2;
+                }
+
+                let update = `update cart set is_pay=${cart[0].is_pay},  sum=${request.payload.sum}, phone='${request.payload.phone?request.payload.phone:cart[0].phone}', description='${request.payload.description?request.payload.description:cart[0].description}', status='${request.payload.status}' , freight='${request.payload.freight?request.payload.freight:cart[0].freight}'  where id=${request.payload.id}`;
+
+                // if(_.isEmpty(request.payload.phone)){
+                //     if(Number(request.payload.freight)==0){
+                //         update = `update cart set sum=${request.payload.sum}, description='${request.payload.description}', status='${request.payload.status}'  where id=${request.payload.id}`;
+                //     }else{
+                //         update = `update cart set sum=${request.payload.sum}, description='${request.payload.description}', status='${request.payload.status}' , freight='${request.payload.freight}'  where id=${request.payload.id}`;
+                //     }
+                // }else{
+                //     if(Number(request.payload.freight)==0){
+                //         update = `update cart set sum=${request.payload.sum}, phone='${request.payload.phone}', description='${request.payload.description}', status='${request.payload.status}'  where id=${request.payload.id}`;
+                //     }else{
+                //         update = `update cart set sum=${request.payload.sum}, phone='${request.payload.phone}', description='${request.payload.description}', status='${request.payload.status}' , freight='${request.payload.freight}'  where id=${request.payload.id}`;
+                //     }
+                // }
+        
+        
+                request.app.db.query(update, (err, res) => {
+                    if(err) {
+                        request.log(['error'], err);
+                        reply(Boom.serverUnavailable(config.errorMessage));
+                    } else {
+                        reply({'status':'ok','id':res.insertId});
+                    }
+                });
+
             }
         });
+      
     },
     config: {
         auth: 'jwt',
@@ -41,9 +57,9 @@ module.exports = {
                 id: Joi.number().required(),
                 status: Joi.number().required(),
                 sum: Joi.number().required(),
-                freight: Joi.optional().default(0),
+                freight: Joi.optional(),
                 phone: Joi.optional(),
-                description: Joi.optional().default("")
+                description: Joi.optional()
             }
         }
     }

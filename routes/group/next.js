@@ -66,7 +66,7 @@ module.exports = {
             },
             {
                 method(request, reply) {
-                    const select = `select count(is_pay) count from cart where status=1 and is_pay=0 and group_bill_id=${request.payload.id}`;
+                    const select = `select count(is_pay) count from cart where status=1 and is_pay=0 and sum<>0 and group_bill_id=${request.payload.id}`;
                     request.app.db.query(select, (err, res) => {
                         if(err) {
                             request.log(['error'], err);

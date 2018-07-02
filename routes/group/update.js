@@ -40,7 +40,9 @@ module.exports = {
                 flash_desc: Joi.string().optional().default(" ").max(500),
                 user_id: Joi.number().required(),
                 status: Joi.number().required(),
-                id: Joi.number().required()
+                id: Joi.number().required(),
+                top_freight:Joi.optional(),
+                current_step:Joi.optional()
             }
         },
         pre: [

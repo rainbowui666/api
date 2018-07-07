@@ -42,9 +42,9 @@ module.exports = {
                                         }else{
                                             back_freight = temp_freight>res3[0].top_freight?res3[0].top_freight:temp_freight;
                                         }
-                                        let update2 = `update cart set lost_back=lost_back-${res2[0].sum+back_freight},freight=freight+${back_freight}  where id=${request.payload.cart_id}`;
+                                        let update2 = `update cart set lost_back=lost_back-${res2[0].sum+back_freight},freight=freight-${back_freight}  where id=${request.payload.cart_id}`;
                                         if(lost_num>0){
-                                            update2 =  `update cart set lost_back=lost_back+${res2[0].sum+back_freight},freight=freight-${back_freight}  where id=${request.payload.cart_id}`;
+                                            update2 =  `update cart set lost_back=lost_back+${res2[0].sum+back_freight},freight=freight+${back_freight}  where id=${request.payload.cart_id}`;
                                         }
                                         request.app.db.query(update2, (err, res) => {
                                             if(err) {
@@ -55,6 +55,7 @@ module.exports = {
                                                 if(lost_num>0){
                                                     update3 =  `update cart_detail set lost_back_freight=lost_back_freight+${back_freight} where cart_id=${request.payload.cart_id} and  bill_detail_id=${request.payload.bill_detail_id}`;
                                                 }
+
                                                 request.app.db.query(update3, (err, res) => {
                                                     if(err) {
                                                         request.log(['error'], err);

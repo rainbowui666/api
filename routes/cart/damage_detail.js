@@ -30,18 +30,37 @@ module.exports = {
                                 request.log(['error'], err);
                                 reply(Boom.serverUnavailable(config.errorMessage));
                             } else {
-                                let update2 = `update cart set damage_back=damage_back-${res2[0].sum} where id=${request.payload.cart_id}`;
-                                if(damage_num>0){
-                                    update2 = `update cart set damage_back=damage_back+${res2[0].sum} where id=${request.payload.cart_id}`;
-                                }
-                                request.app.db.query(update2, (err, res) => {
-                                            if(err) {
-                                                request.log(['error'], err);
-                                                reply(Boom.serverUnavailable(config.errorMessage));
-                                            } else {
-                                                reply({'status':'ok'});
-                                            }
+
+                                const select3 = `select g.freight,g.top_freight from cart c,group_bill g where c.group_bill_id=g.id and c.id=${request.payload.cart_id}`;
+                                request.app.db.query(select3, (err, res3) => {
+                                    if(err) {
+                                        request.log(['error'], err);
+                                        reply(Boom.serverUnavailable(config.errorMessage));
+                                    } else {
+                                        const temp_freight = res2[0].sum*res3[0].freight;
+                                        let back_freight = null;
+                                        if(Number(res3[0].top_freight)==0){
+                                            back_freight = temp_freight;
+                                        }else{
+                                            back_freight = temp_freight>res3[0].top_freight?res3[0].top_freight:temp_freight;
+                                        }
+                                        let update2 = `update cart set damage_back=damage_back-${res2[0].sum} where id=${request.payload.cart_id}`;
+                                        if(damage_num>0){
+                                            update2 = `update cart set damage_back=damage_back+${res2[0].sum} where id=${request.payload.cart_id}`;
+                                        }
+
+                                        request.app.db.query(update2, (err, res) => {
+                                                    if(err) {
+                                                        request.log(['error'], err);
+                                                        reply(Boom.serverUnavailable(config.errorMessage));
+                                                    } else {
+                                                        reply({'status':'ok'});
+                                                    }
+                                        });
+                                      
+                                    }
                                 });
+
                             }
                         });
                         

@@ -7,15 +7,26 @@ module.exports = {
     path: '/api/cart/add',
     method: 'POST',
     handler(request, reply) {
-        const select = `insert into cart (group_bill_id,user_id,phone,description,status) values (${request.payload.group_bill_id},${request.payload.user_id},'${request.payload.phone}','${request.payload.description}',${request.payload.status})`;
-        request.app.db.query(select, (err, res) => {
+        const userSelect  = `select phone from user where id=${request.payload.user_id}`;
+        request.app.db.query(userSelect, (err, userRes) => {
             if(err) {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                reply({'status':'ok','id':res.insertId});
+
+                const select = `insert into cart (group_bill_id,user_id,phone,status) values (${request.payload.group_bill_id},${request.payload.user_id},'${userRes[0].phone}',${request.payload.status})`;
+                request.app.db.query(select, (err, res) => {
+                    if(err) {
+                        request.log(['error'], err);
+                        reply(Boom.serverUnavailable(config.errorMessage));
+                    } else {
+                        reply({'status':'ok','id':res.insertId});
+                    }
+                });
+                
             }
         });
+      
     },
     config: {
         auth: 'jwt',
@@ -24,9 +35,7 @@ module.exports = {
             payload: {
                 group_bill_id: Joi.number().required(),
                 user_id: Joi.number().required(),
-                status: Joi.number().required(),
-                phone: Joi.string().optional().default(" "),
-                description: Joi.string().optional().default(" ")
+                status: Joi.number().required()
             }
         },
         pre: [

@@ -5,7 +5,7 @@ module.exports = {
     path: '/api/tools/citys',
     method: 'GET',
     handler(request, reply) {
-        const select = `select mark,name,qq from citys where area='${request.query.area}'`;
+        const select = `select mark,name,qq from citys where area='${request.query.area}' order by sort`;
         request.app.db.query(select, (err, res) => {
             if(err) {
                 request.log(['error'], err);

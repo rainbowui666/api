@@ -204,3 +204,15 @@ INSERT INTO black_list (name,type) VALUE('海龟',1);
 INSERT INTO black_list (name,type) VALUE('玳瑁',1);
 INSERT INTO black_list (name,type) VALUE('鹦鹉螺',1);
 INSERT INTO black_list (name,type) VALUE('硨磲',1);
+
+
+insert into citys (mark,name,area,fristLetter,sort,type) values('jj','九江','jx','J',2,2); 
+insert into citys (mark,name,area,fristLetter,sort,type) values('jdz','景德镇','jx','J',3,2); 
+insert into citys (mark,name,area,fristLetter,sort,type) values('px','萍乡','jx','P',4,2); 
+insert into citys (mark,name,area,fristLetter,sort,type) values('xy','新余','jx','X',5,2); 
+insert into citys (mark,name,area,fristLetter,sort,type) values('yt','鹰潭','jx','Y',6,2); 
+insert into citys (mark,name,area,fristLetter,sort,type) values('sr','上饶','jx','S',9,2); 
+insert into citys (mark,name,area,fristLetter,sort,type) values('ja','吉安','jx','J',10,2); 
+insert into citys (mark,name,area,fristLetter,sort,type) values('fuz','抚州','jx','F',11,2); 
+insert into citys (mark,name,area,fristLetter,sort,type) values('ganzhou','赣州','jx','G',7,2); 
+insert into citys (mark,name,area,fristLetter,sort,type) values('yichun','宜春','jx','Y',8,2);

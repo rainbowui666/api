@@ -20,22 +20,6 @@ module.exports = {
                 }
 
                 let update = `update cart set is_pay=${cart[0].is_pay},  sum=${request.payload.sum}, phone='${request.payload.phone?request.payload.phone:cart[0].phone}', description='${request.payload.description?request.payload.description:cart[0].description}', status='${request.payload.status}' , freight='${request.payload.freight?request.payload.freight:cart[0].freight}'  where id=${request.payload.id}`;
-
-                // if(_.isEmpty(request.payload.phone)){
-                //     if(Number(request.payload.freight)==0){
-                //         update = `update cart set sum=${request.payload.sum}, description='${request.payload.description}', status='${request.payload.status}'  where id=${request.payload.id}`;
-                //     }else{
-                //         update = `update cart set sum=${request.payload.sum}, description='${request.payload.description}', status='${request.payload.status}' , freight='${request.payload.freight}'  where id=${request.payload.id}`;
-                //     }
-                // }else{
-                //     if(Number(request.payload.freight)==0){
-                //         update = `update cart set sum=${request.payload.sum}, phone='${request.payload.phone}', description='${request.payload.description}', status='${request.payload.status}'  where id=${request.payload.id}`;
-                //     }else{
-                //         update = `update cart set sum=${request.payload.sum}, phone='${request.payload.phone}', description='${request.payload.description}', status='${request.payload.status}' , freight='${request.payload.freight}'  where id=${request.payload.id}`;
-                //     }
-                // }
-        
-        
                 request.app.db.query(update, (err, res) => {
                     if(err) {
                         request.log(['error'], err);
@@ -57,8 +41,8 @@ module.exports = {
                 id: Joi.number().required(),
                 status: Joi.number().required(),
                 sum: Joi.number().required(),
-                freight: Joi.optional(),
-                phone: Joi.optional(),
+                freight: Joi.number().required(),
+                phone: Joi.number().required(),
                 description: Joi.optional()
             }
         }

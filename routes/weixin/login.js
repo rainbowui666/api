@@ -87,44 +87,44 @@ module.exports = {
                         console.log("==user=="+userObject)
                         if(userObject.openid){
                             const selectUser = `select id,name,status,type from user where  openid=${userObject.openid}`;
-                        request.app.db.query(selectUser, (err, res) => {
-                            if(err) {
-                                request.log(['error'], err);
-                                reply(Boom.serverUnavailable(config.errorMessage));
-                            } else {
-                                if(_.isEmpty(res)){
-                                    const insert = `select mark from citys where name='${userObject.city}'`;
-                                    request.app.db.query(insert, (err, city) => {
-                                        if(err) {
-                                            request.log(['error'], err);
-                                            reply(Boom.serverUnavailable(config.errorMessage));
-                                        } else {
-                                            const province = _.find(util.provinces(),(item)=>{
-                                                return item.name==userObject.province;
-                                            });
-                                            const insert = `insert into user (name,password,city,phone,type,province,sex,headimgurl,openid,country,province_name,city_name) VALUES('${userObject.nickname}','${md5(userObject.openid)}','${city[0].mark?city[0].mark:"shc"}','18888888888','yy','${province?province:"sh"}',${userObject.sex},'${userObject.headimgurl}','${userObject.openid}','${userObject.country}','${userObject.province}','${userObject.city}')`;
-                                            request.app.db.query(insert, (err, insertRes) => {
+                                request.app.db.query(selectUser, (err, res) => {
+                                    if(err) {
+                                        request.log(['error'], err);
+                                        reply(Boom.serverUnavailable(config.errorMessage));
+                                    } else {
+                                        if(_.isEmpty(res)){
+                                            const insert = `select mark from citys where name='${userObject.city}'`;
+                                            request.app.db.query(insert, (err, city) => {
                                                 if(err) {
                                                     request.log(['error'], err);
                                                     reply(Boom.serverUnavailable(config.errorMessage));
                                                 } else {
-                                                    const user = {
-                                                        id:insertRes.insertId,
-                                                        name:userObject.nickname,
-                                                        status:1,
-                                                        type:'yy'
-                                                    }
-                                                    login(user,request,reply);
+                                                    const province = _.find(util.provinces(),(item)=>{
+                                                        return item.name==userObject.province;
+                                                    });
+                                                    const insert = `insert into user (name,password,city,phone,type,province,sex,headimgurl,openid,country,province_name,city_name) VALUES('${userObject.nickname}','${md5(userObject.openid)}','${city[0].mark?city[0].mark:"shc"}','18888888888','yy','${province?province:"sh"}',${userObject.sex},'${userObject.headimgurl}','${userObject.openid}','${userObject.country}','${userObject.province}','${userObject.city}')`;
+                                                    request.app.db.query(insert, (err, insertRes) => {
+                                                        if(err) {
+                                                            request.log(['error'], err);
+                                                            reply(Boom.serverUnavailable(config.errorMessage));
+                                                        } else {
+                                                            const user = {
+                                                                id:insertRes.insertId,
+                                                                name:userObject.nickname,
+                                                                status:1,
+                                                                type:'yy'
+                                                            }
+                                                            login(user,request,reply);
+                                                        }
+                                                    });
                                                 }
                                             });
+                                        
+                                        }else{
+                                            login(res[0],request,reply);
                                         }
-                                    });
-                                  
-                                }else{
-                                    login(res[0],request,reply);
-                                }
-                            }
-                        });
+                                    }
+                                });
                         }else{
                             reply(Boom.notAcceptable('微信登录失败'));
                         }

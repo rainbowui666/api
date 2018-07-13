@@ -90,7 +90,7 @@ module.exports = {
                             request.log(['error'], err);
                             reply(Boom.serverUnavailable(config.errorMessage));
                         } else if(res && Number(res[0].status) == 0) {
-                            reply(Boom.notAcceptable('团购已经结束'));
+                            reply(Boom.notAcceptable('团购已经结束不能操作购物车'));
                         } else {
                             reply(true);
                         }

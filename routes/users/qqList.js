@@ -60,7 +60,7 @@ module.exports = {
             {"id":"lishuanding","name":"yufan","desc":"北京yufan",'province':'bj','type':'wx'},
             {"id":"silentryx","name":"金属","desc":"北京钢铁",'province':'bj','type':'wx'},
             {"id":"wxid_qc0b89a4a1se21","name":"绿豆冰","desc":"北京糖果",'province':'bj','type':'wx'},
-            {"id":"zxc369360","name":"阿帅","desc":"郑州阿帅",'province':'hn','type':'wx'},
+            {"id":"zxc369369","name":"阿帅","desc":"郑州阿帅",'province':'hn','type':'wx'},
             {"id":"d8899888","name":"哎呀我的腰","desc":"郑州小白",'province':'hn','type':'wx'},
             {"id":"coral_shenlan","name":"月光","desc":"新乡月光",'province':'hn','type':'wx'},
             {"id":"chenkai19841015","name":"凯凯","desc":"南京凯凯",'province':'js','type':'wx'},

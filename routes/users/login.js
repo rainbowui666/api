@@ -22,6 +22,7 @@ const login = function(user,request,reply){
     const res = {
         token,
         "status": "ok",
+        "province":user.province,
         "id":user.id
     };
     reply(res);

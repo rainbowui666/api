@@ -94,13 +94,18 @@ module.exports = {
             },
             {
                 method(request, reply) {
-                    const select = `select status count from group_bill where id=${request.payload.group_bill_id}`;
+                    const user = request.auth.credentials;
+                    const select = `select status,user_id  from group_bill where id=${request.payload.group_bill_id}`;
                     request.app.db.query(select, (err, res) => {
                         if(err) {
                             request.log(['error'], err);
                             reply(Boom.serverUnavailable(config.errorMessage));
                         } else if(res && Number(res[0].status) == 0) {
-                            reply(Boom.notAcceptable('团购已经结束不能操作购物车'));
+                            if(user.id==res[0].user_id){
+                                reply(true);
+                            }else{
+                                reply(Boom.notAcceptable('团购已经结束不能操作购物车'));
+                            }  
                         } else {
                             reply(true);
                         }

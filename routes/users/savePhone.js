@@ -1,30 +1,30 @@
 const Joi = require('joi');
 const Boom = require('boom');
-const JWT = require('jsonwebtoken');
 const config = require('../../config.js');
-const _  = require('lodash');
+
 module.exports = {
-    path: '/api/users/logout',
+    path: '/api/users/save/phone',
     method: 'POST',
     handler(request, reply) {
-        const select = `select id from user where id=${request.payload.id}`;
-        request.app.db.query(select, (err, res) => {
+
+        const insert = `update user set phone='${request.payload.phone}' where id=${request.payload.id}`;
+        request.app.db.query(insert, (err, res) => {
             if(err) {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-               if(_.isEmpty(res[0])){
-                    reply(Boom.notAcceptable('该用户不存在'));
-               }else{
-                    reply(config.ok);
-               }
+                reply(config.ok);
             }
         });
+
+      
     },
     config: {
-        description: '登出',
+        auth: 'jwt',
+        description: '根据ID更新用户',
         validate: {
             payload: {
+                phone: Joi.string().required().max(11),
                 id: Joi.number().required()
             }
         }

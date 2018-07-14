@@ -28,6 +28,7 @@ const login = function(user,request,reply){
         const res = {
             token,
             "status": "ok",
+            "province":user.province,
             "id":user.id
         };
         reply(res);
@@ -58,10 +59,10 @@ module.exports = {
         const req = https.request(options, function (res) {  
             res.setEncoding('utf8');  
             res.on('data', function (chunk) { 
-                console.log("==token=="+chunk)
+                // console.log("==token=="+chunk)
 
                 const chenkObj =JSON.parse(chunk);
-                console.log("==token=2="+chenkObj.access_token)
+                // console.log("==token=2="+chenkObj.access_token)
 
                 const userDate = {  
                     access_token: chenkObj.access_token,  
@@ -82,11 +83,11 @@ module.exports = {
                 var userReq = https.request(userOptions, function (userRes) {  
                     userRes.setEncoding('utf8');  
                     userRes.on('data', function (userChunk) {  
-                        console.log("==user=="+userChunk)
+                        // console.log("==user=="+userChunk)
                         const userObject = JSON.parse(userChunk);
-                        console.log("==user=="+userObject)
+                        // console.log("==user=="+userObject)
                         if(userObject.openid){
-                            const selectUser = `select id,name,status,type from user where  openid=${userObject.openid}`;
+                            const selectUser = `select id,name,status,type,province from user where  openid='${userObject.openid}'`;
                                 request.app.db.query(selectUser, (err, res) => {
                                     if(err) {
                                         request.log(['error'], err);
@@ -102,7 +103,13 @@ module.exports = {
                                                     const province = _.find(util.provinces(),(item)=>{
                                                         return item.name==userObject.province;
                                                     });
-                                                    const insert = `insert into user (name,password,city,phone,type,province,sex,headimgurl,openid,country,province_name,city_name) VALUES('${userObject.nickname}','${md5(userObject.openid)}','${city[0].mark?city[0].mark:"shc"}','18888888888','yy','${province?province:"sh"}',${userObject.sex},'${userObject.headimgurl}','${userObject.openid}','${userObject.country}','${userObject.province}','${userObject.city}')`;
+                                                    if(_.isEmpty(city[0])&&userObject.province=='上海'){
+                                                        city[0]={mark:'shc'}
+                                                    }
+                                                    if(_.isEmpty(city[0])&&userObject.province=='北京'){
+                                                        city[0]={mark:'bjc'}
+                                                    }
+                                                    const insert = `insert into user (name,password,city,phone,type,province,sex,headimgurl,openid,country,province_name,city_name) VALUES('${userObject.nickname}','${md5(userObject.openid)}','${city[0]?city[0].mark:"shc"}','18888888888','yy','${province?province.code:"sh"}',${userObject.sex},'${userObject.headimgurl}','${userObject.openid}','${userObject.country}','${userObject.province}','${userObject.city}')`;
                                                     request.app.db.query(insert, (err, insertRes) => {
                                                         if(err) {
                                                             request.log(['error'], err);
@@ -111,6 +118,7 @@ module.exports = {
                                                             const user = {
                                                                 id:insertRes.insertId,
                                                                 name:userObject.nickname,
+                                                                province:province?province.code:"sh",
                                                                 status:1,
                                                                 type:'yy'
                                                             }

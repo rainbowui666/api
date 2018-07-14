@@ -39,10 +39,10 @@ module.exports = {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                const returnData = [["姓名","联系电话","合计","备注","品名","规格","单价","数量","合计（不含运费)"]];
+                const returnData = [["序号","姓名","联系电话","合计","备注","品名","规格","单价","数量","合计（不含运费)"]];
                 const totleReturnData = [["品名","规格","单价","数量","合计（不含运费)"]];
                 const totleReturnDataWithfreight = [["品名","规格","单价","数量","生物总价","生物运费","缺货退费","报损退费","合计（含运费)"]]
-                const returnDataWithfreight = [["姓名","联系电话","备注","品名","规格","单价","实际数量","缺货数量","报损数量","缺货退款（含运费)","报损退款","应退款（含运费)","应收款（含运费)"]];
+                const returnDataWithfreight = [["序号","姓名","联系电话","备注","品名","规格","单价","实际数量","缺货数量","报损数量","缺货退款（含运费)","报损退款","应退款（含运费)","应收款（含运费)"]];
 
                 const totlLlist = `select bd.name,bd.size,bd.price,sum(bill_detail_num) bill_detail_num,sum((bd.price*cd.bill_detail_num)) sum,sum(c.freight) sum_freight,sum(c.lost_back) sum_lost_back,sum(c.damage_back) sum_damage_back from cart c,cart_detail cd,bill_detail bd where c.id=cd.cart_id  and cd.bill_detail_id=bd.id and c.group_bill_id=${request.payload.id} group by name,size,price`;
                 const list = `select IFNULL(u.nickname,u.name) userName,c.phone,c.description,bd.name,bd.size,bd.price,cd.bill_detail_num,(bd.price*cd.bill_detail_num) sum,c.freight,cd.lost_back_freight,cd.lost_num,cd.damage_num from cart c,cart_detail cd,bill_detail bd,user u where c.id=cd.cart_id and c.user_id=u.id and cd.bill_detail_id=bd.id and c.group_bill_id=${request.payload.id} order by c.id asc`;
@@ -112,6 +112,7 @@ module.exports = {
                                         tempMap.set(item.userName,list);
                                     }
                                 });
+                                let secquence = 1;
                                 tempMap.forEach(function (itemList, key, map) {
                                     const _count = count(itemList);
                                     _.each(itemList,(item,index)=>{
@@ -119,14 +120,18 @@ module.exports = {
                                         const  _itemListWithfreight = [];
 
                                         if(index==0){
+                                            _itemList.push(secquence);
                                             _itemList.push(item.userName);
                                             _itemList.push(item.phone);
                                             _itemList.push(_count);
                                             _itemList.push(item.description);
+                                            _itemListWithfreight.push(secquence);
                                             _itemListWithfreight.push(item.userName);
                                             _itemListWithfreight.push(item.phone);
                                             _itemListWithfreight.push(item.description);
+                                            secquence++;
                                         }else{
+                                            _itemList.push("");
                                             _itemList.push("");
                                             _itemList.push("");
                                             _itemList.push("");
@@ -168,8 +173,8 @@ module.exports = {
                                 const name  = "coral123-"+gres[0].id+".xlsx";
                                 const path = config.bill+"/"+name;
                                 
-                                var buffer = xlsx.build([{name: "总单(不含运费)", data: totleReturnData},{name: "明细(不含运费)", data: returnData},{name: "总单(含运费)", data: totleReturnDataWithfreight},{name: "明细(含运费)", data: returnDataWithfreight}]);
-                                //var buffer = xlsx.build([{name: "总单", data: totleReturnData},{name: "明细", data: returnData}],{'!merges': rangeList});
+                                // var buffer = xlsx.build([{name: "总单(不含运费)", data: totleReturnData},{name: "明细(不含运费)", data: returnData},{name: "总单(含运费)", data: totleReturnDataWithfreight},{name: "明细(含运费)", data: returnDataWithfreight}]);
+                                var buffer = xlsx.build([{name: "总单", data: totleReturnData},{name: "明细", data: returnData}],{'!merges': rangeList});
                                 var ws = fs.createWriteStream(path);
                                 ws.write(buffer, 'utf8', function (err, buffer) {
                                     reply({"status":"ok","name":name});

@@ -20,8 +20,8 @@ module.exports = {
          let timestamp = Date.parse(new Date());
          timestamp = timestamp / 1000;
          const name = timestamp+"-"+code+"."+tempName[1];
-         const path = config["image"] + "/"+category+"/" + name;
-         const small_path = config["image"] + "/small/"+category+"/" + name;
+         const path =  config.material  + "/"+category+"/" + name;
+         const small_path =  config.material  + "/small/"+category+"/" + name;
          const file = fs.createWriteStream(path);
          file.on('error', function (err) {
              reply(Boom.notAcceptable('创建文件失败'));
@@ -47,6 +47,18 @@ module.exports = {
             parse: true,
             allow: 'multipart/form-data'
         },
-        description: '添加生物资料图片'
+        description: '添加生物资料图片',
+        pre: [
+            {
+                method(request, reply) {
+                    const user = request.auth.credentials;
+                    if(user && user.type == 'bkgly') {
+                        reply(true);
+                    } else {
+                        reply(Boom.notAcceptable('权限不足'));
+                    }
+                }
+            }
+        ]
     }
 };

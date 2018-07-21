@@ -36,6 +36,18 @@ module.exports = {
                 focus_id:Joi.optional(),
                 img_number:Joi.optional()
             }
-        }
+        },
+        pre: [
+            {
+                method(request, reply) {
+                    const user = request.auth.credentials;
+                    if(user && user.type == 'bkgly') {
+                        reply(true);
+                    } else {
+                        reply(Boom.notAcceptable('权限不足'));
+                    }
+                }
+            }
+        ]
     }
 };

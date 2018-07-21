@@ -16,13 +16,6 @@ module.exports = {
     method: 'GET',
     handler(request, reply) {
         const url = `https://group.huanjiaohu.com/?#/buy/${compile(request.query.id+'')}/page?private=${request.query.id}`;
-        // const qr_svg = qr.image(url, { type: 'png' });
-        // const path = config["user"]+"private/"+request.query.id+".png";
-        // qr_svg.pipe(require('fs').createWriteStream(path));
-
-        // // const svg_string = qr.imageSync(url, { type: 'svg' });
-        // reply({'status':'ok'});
-
         const svg_string = qr.imageSync(url, { type: 'svg' });
         reply(svg_string).type('image/svg+xml');
 

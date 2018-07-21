@@ -193,6 +193,8 @@ create table focus(
     primary key(id)
 );
 
+alter table focus add column notice_id int;
+
 create table black_list(
     id int not null auto_increment,
     name varchar(100) not null,

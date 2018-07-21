@@ -54,6 +54,18 @@ module.exports = {
             parse: true,
             allow: 'multipart/form-data'
         },
-        description: '添加生物资料图片'
+        description: '添加生物资料图片',
+        pre: [
+            {
+                method(request, reply) {
+                    const user = request.auth.credentials;
+                    if(user && user.id == request.payload.id || user.type == 'yhgly') {
+                        reply(true);
+                    } else {
+                        reply(Boom.notAcceptable('权限不足'));
+                    }
+                }
+            }
+        ]
     }
 };

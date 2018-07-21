@@ -14,7 +14,7 @@ module.exports = {
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
                 if(res&&res[0]&&res[0].category){
-                    const filePath = config.image + "/"+res[0].category+"/";
+                    const filePath = config.material + "/"+res[0].category+"/";
                     const results = [];
                     fs.readdir(filePath,function(err,files){
                         if(err){

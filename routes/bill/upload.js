@@ -37,7 +37,7 @@ const insertToDb = (item, i, length, request, bill_id, reply) => {
                         if (_.isEmpty(_res)) {
                             insertBillDetail(item, i, length, request, bill_id, reply, null);
                         } else {
-                            let matchId = null;
+                            let matchId = _res[0].id;
                             _.each(_res, (re) => {
                                 const id = re["id"];
                                 const tags = re["tag"];

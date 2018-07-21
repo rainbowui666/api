@@ -74,6 +74,16 @@ module.exports = {
                         }
                     });
                 }
+            },
+            {
+                method(request, reply) {
+                    const user = request.auth.credentials;
+                    if(user && user.type == 'bkgly') {
+                        reply(true);
+                    } else {
+                        reply(Boom.notAcceptable('权限不足'));
+                    }
+                }
             }
         ]
     }

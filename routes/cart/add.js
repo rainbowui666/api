@@ -53,6 +53,16 @@ module.exports = {
                         }
                     });
                 }
+            },
+            {
+                method(request, reply) {
+                    const user = request.auth.credentials;
+                    if(user && user.id == request.payload.user_id || user.type == 'tggly') {
+                        reply(true);
+                    } else {
+                        reply(Boom.notAcceptable('权限不足'));
+                    }
+                }
             }
         ]
     }

@@ -13,7 +13,7 @@ module.exports = {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                const filePath = config.image  + "/"+res[0].category+"/";
+                const filePath = config.material  + "/"+res[0].category+"/";
                 fs.readdir(filePath,function(err,files){
                     if(err){
                         console.log(err);
@@ -51,6 +51,18 @@ module.exports = {
             query: {
                 id: Joi.number().required()
             }
-        }
+        },
+        pre: [
+            {
+                method(request, reply) {
+                    const user = request.auth.credentials;
+                    if(user && user.type == 'bkgly') {
+                        reply(true);
+                    } else {
+                        reply(Boom.notAcceptable('权限不足'));
+                    }
+                }
+            }
+        ]
     }
 };

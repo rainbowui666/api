@@ -19,7 +19,7 @@ module.exports = {
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
                 if(res&&res[0]&&res[0].category){
-                    const filePath = config.image + "/"+res[0].category+"/";
+                    const filePath = config.material + "/"+res[0].category+"/";
                     const results = [];
                     fs.readdir(filePath,function(err,files){
                         if(err){
@@ -30,10 +30,9 @@ module.exports = {
                         files.forEach(function(filename){
                             const temp = filename.substring(0,filename.indexOf(".")).split("-");
                             if(res[0].code == temp[1]){
-                                small_path = config["image"] + "/small"+`/${res[0].category}/${filename}`;
+                                small_path = config.material + "/small"+`/${res[0].category}/${filename}`;
                             }
                         });
-
                         if(small_path){
                             try {
                                 fs.readFile(small_path, function (err, data) {

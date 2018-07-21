@@ -13,7 +13,7 @@ module.exports = {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                const filePath = config.image + "/"+res[0].category+"/"+request.query.imgName;
+                const filePath = config.material + "/"+res[0].category+"/"+request.query.imgName;
                 fs.unlinkSync(filePath);
                 reply(config.ok);
             }
@@ -27,6 +27,18 @@ module.exports = {
                 id: Joi.number().required(),
                 imgName: Joi.string().required()
             }
-        }
+        },
+        pre: [
+            {
+                method(request, reply) {
+                    const user = request.auth.credentials;
+                    if(user && user.type == 'bkgly') {
+                        reply(true);
+                    } else {
+                        reply(Boom.notAcceptable('权限不足'));
+                    }
+                }
+            }
+        ]
     }
 };

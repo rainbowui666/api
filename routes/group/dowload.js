@@ -45,7 +45,7 @@ module.exports = {
                 const returnDataWithfreight = [["序号","姓名","联系电话","备注","品名","规格","单价","实际数量","缺货数量","报损数量","缺货退款（含运费)","报损退款","应退款（含运费)","应收款（含运费)"]];
 
                 const totlLlist = `select bd.name,bd.size,bd.price,sum(bill_detail_num) bill_detail_num,sum((bd.price*cd.bill_detail_num)) sum,sum(c.freight) sum_freight,sum(c.lost_back) sum_lost_back,sum(c.damage_back) sum_damage_back from cart c,cart_detail cd,bill_detail bd where c.id=cd.cart_id  and cd.bill_detail_id=bd.id and c.group_bill_id=${request.payload.id} group by name,size,price`;
-                const list = `select IFNULL(u.nickname,u.name) userName,c.phone,c.description,bd.name,bd.size,bd.price,cd.bill_detail_num,(bd.price*cd.bill_detail_num) sum,c.freight,cd.lost_back_freight,cd.lost_num,cd.damage_num from cart c,cart_detail cd,bill_detail bd,user u where c.id=cd.cart_id and c.user_id=u.id and cd.bill_detail_id=bd.id and c.group_bill_id=${request.payload.id} order by c.id asc`;
+                const list = `select IFNULL(u.nickname,u.name) userName,c.phone,if(c.description='null','',c.description) description,bd.name,bd.size,bd.price,cd.bill_detail_num,(bd.price*cd.bill_detail_num) sum,c.freight,cd.lost_back_freight,cd.lost_num,cd.damage_num from cart c,cart_detail cd,bill_detail bd,user u where c.id=cd.cart_id and c.user_id=u.id and cd.bill_detail_id=bd.id and c.group_bill_id=${request.payload.id} order by c.id asc`;
                 request.app.db.query(list, (err, res) => {
                     if (err) {
                         request.log(['error'], err);

@@ -11,7 +11,7 @@ module.exports = {
             if(err) {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
-            } else if(res && res[0].count ==1) {
+            } else if(res && res[0].count >=1) {
                 reply({"status":'ok',"checked":false});
             }else{
                 reply({"status":'ok',"checked":true});

@@ -115,6 +115,7 @@ alter table group_bill add column current_step int not null DEFAULT 0;
 alter table group_bill add column top_freight int  DEFAULT 0;
 
 
+
 alter table group_bill change `name` `name` varchar(100) character set utf8 not null ;
 alter table group_bill change `contacts` `contacts` varchar(100) character set utf8 not null ;
 alter table group_bill change `pickup_address` `pickup_address` varchar(200) character set utf8 not null ;

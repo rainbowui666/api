@@ -56,7 +56,7 @@ module.exports = {
                 sum: Joi.number().required(),
                 freight: Joi.number().required(),
                 phone: Joi.optional(),
-                description: Joi.optional()
+                description: Joi.optional().default(""),
             }
         },
         pre: [

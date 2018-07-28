@@ -146,6 +146,7 @@ alter table cart add column phone varchar(11);
 alter table cart add column description varchar(2000);
 alter table cart add column status int not null default 0;
 alter table cart add column sum int not null default 0;
+alter table cart add column is_comfirm int default 0;
 alter table cart add column is_pay int default 0;
 alter table cart add column freight double(7,2) not null default 0.00;
 alter table cart add column lost_back double(7,2)  default 0.00;

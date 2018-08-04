@@ -6,7 +6,7 @@ module.exports = {
     path: '/api/users/get',
     method: 'GET',
     handler(request, reply) {
-        const select = `select *,(select name from citys c where c.mark=u.city) cityName,(select count(1) from focus f  where f.user_id=${request.query.id}) focus_no from user u where id=${request.query.id}`;
+        const select = `select *,(select name from citys c where c.mark=u.city) cityName,(select count(1) from focus f  where f.material_id is not null and f.user_id=${request.query.id}) focus_no from user u where id=${request.query.id}`;
         request.app.db.query(select, (err, res) => {
             if(err) {
                 request.log(['error'], err);

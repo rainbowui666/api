@@ -20,7 +20,7 @@ module.exports = {
                 }
                 let where = request.query.name?` g.name LIKE '%${request.query.name}%'`:" 1=1 ";
                 where = request.query.user_id?`${where} and g.user_id = ${request.query.user_id} `:`${where} and ${user_type == 'tggly'?' 1=1 ':' private=0 '}`;
-                where = request.query.city?`${where} and g.city = '${request.query.city}' `:`${where}`;
+                where = request.query.city?`${where} and g.city = '${request.query.city}' `:`${where} `;
                 where = request.query.province?`${where} and g.province = '${request.query.province}' `:`${where} `;
                 where = supplier_id?`${where} and b.supplier_id = '${supplier_id}' `:`${where} `;
                 const countSql = `select count(1) count from group_bill g,user u,bill b where b.id=g.bill_id and g.user_id=u.id and  ${where} `;
@@ -45,15 +45,20 @@ module.exports = {
                                                 }
                                             });
                                             ids.push("0) ");
-                                            const update = `update group_bill set status=0 where id in ${ids.join("")}`;
-                                            request.app.db.query(update, (err, updateres) => {
-                                                if(err) {
-                                                    request.log(['error'], err);
-                                                    reply(Boom.serverUnavailable(config.errorMessage));
-                                                } else {
-                                                    reply({count_res,res});
-                                                }
-                                            });
+                                            if(_.size(ids)>2){
+                                                const update = `update group_bill set status=0 where id in ${ids.join("")}`;
+                                                request.app.db.query(update, (err, updateres) => {
+                                                    if(err) {
+                                                        request.log(['error'], err);
+                                                        reply(Boom.serverUnavailable(config.errorMessage));
+                                                    } else {
+                                                        reply({count_res,res});
+                                                    }
+                                                });
+                                            }else{
+                                                reply({count_res,res});
+                                            }
+                                           
                                     }else{
                                         reply({count_res,res});
                                     }
@@ -72,7 +77,7 @@ module.exports = {
                 size: Joi.number().required(),
                 name: Joi.string(),
                 city: Joi.string(),
-                province: Joi.string(),
+                province: Joi.string().default("china"),
                 user_id: Joi.number(),
                 gl_id: Joi.number(),
             }

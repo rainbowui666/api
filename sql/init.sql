@@ -47,7 +47,7 @@ create table material(
     primary key(id)
 );
 alter table material change `name` `name` varchar(100) character set utf8 not null ;
-alter table material change `tag` `tag` varchar(100) character set utf8 not null ;
+alter table material change `tag` `tag` varchar(500) character set utf8 not null ;
 alter table material add column classification int;
 
 

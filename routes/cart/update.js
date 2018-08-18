@@ -36,7 +36,19 @@ module.exports = {
                                 request.log(['error'], err);
                                 reply(Boom.serverUnavailable(config.errorMessage));
                             } else {
-                                reply({'status':'ok','id':res.insertId});
+                                if(!_.isEmpty(request.payload.address)){
+                                    let user_update = `update user set contacts='${request.payload.contacts}',address='${request.payload.address}',province='${request.payload.province}',city='${request.payload.city}' where id=${cart[0].user_id}`;
+                                    request.app.db.query(user_update, (err, user_res) => {
+                                        if(err) {
+                                            request.log(['error'], err);
+                                            reply(Boom.serverUnavailable(config.errorMessage));
+                                        } else {
+                                            reply({'status':'ok','id':res.insertId});
+                                        }
+                                    });
+                                }else{
+                                    reply({'status':'ok','id':res.insertId});
+                                }
                             }
                         });
                     }
@@ -56,6 +68,10 @@ module.exports = {
                 sum: Joi.number().required(),
                 freight: Joi.number().required(),
                 phone: Joi.optional(),
+                address: Joi.optional(),
+                province: Joi.optional(),
+                city: Joi.optional(),
+                contacts: Joi.optional(),
                 description: Joi.optional().default(""),
             }
         },

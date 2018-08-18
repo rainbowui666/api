@@ -39,13 +39,13 @@ module.exports = {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                const returnData = [["序号","姓名","联系电话","合计","备注","品名","规格","单价","数量","合计（不含运费)"]];
-                const totleReturnData = [["品名","规格","单价","数量","合计（不含运费)"]];
-                const totleReturnDataWithfreight = [["品名","规格","单价","数量","生物总价","生物运费","缺货退费","报损退费","合计（含运费)"]]
-                const returnDataWithfreight = [["序号","姓名","联系电话","备注","品名","规格","单价","实际数量","缺货数量","报损数量","缺货退款（含运费)","报损退款","应退款（含运费)","应收款（含运费)"]];
+                const returnData = [["序号","昵称","联系电话","联系人","联系地址","合计","备注","品名","规格","单价","数量","共计（不含运费)"]];
+                const totleReturnData = [["品名","规格","单价","数量","共计（不含运费)"]];
+                const totleReturnDataWithfreight = [["品名","规格","单价","数量","生物总价","生物运费","缺货退费","报损退费","共计（含运费)"]]
+                const returnDataWithfreight = [["序号","昵称","联系电话","联系人","联系地址","备注","品名","规格","单价","实际数量","缺货数量","报损数量","缺货退款（含运费)","报损退款","应退款（含运费)","应收款（含运费)"]];
 
                 const totlLlist = `select bd.name,bd.size,bd.price,sum(bill_detail_num) bill_detail_num,sum((bd.price*cd.bill_detail_num)) sum,sum(c.freight) sum_freight,sum(c.lost_back) sum_lost_back,sum(c.damage_back) sum_damage_back from cart c,cart_detail cd,bill_detail bd where c.is_confirm=1 and c.id=cd.cart_id  and cd.bill_detail_id=bd.id and c.group_bill_id=${request.payload.id} group by name,size,price`;
-                const list = `select IFNULL(u.nickname,u.name) userName,u.phone,if(c.description='null','',c.description) description,bd.name,bd.size,bd.price,cd.bill_detail_num,(bd.price*cd.bill_detail_num) sum,c.freight,cd.lost_back_freight,cd.lost_num,cd.damage_num from cart c,cart_detail cd,bill_detail bd,user u where c.is_confirm=1 and c.id=cd.cart_id and c.user_id=u.id and cd.bill_detail_id=bd.id and c.group_bill_id=${request.payload.id} order by c.id asc`;
+                const list = `select IFNULL(u.nickname,u.name) userName,u.phone,u.contacts,(select name from citys where mark=u.province) province,(select name from citys where mark=u.city) city,if(u.address='null','',u.address) address,if(c.description='null','',c.description) description,bd.name,bd.size,bd.price,cd.bill_detail_num,(bd.price*cd.bill_detail_num) sum,c.freight,cd.lost_back_freight,cd.lost_num,cd.damage_num from cart c,cart_detail cd,bill_detail bd,user u where c.is_confirm=1 and c.id=cd.cart_id and c.user_id=u.id and cd.bill_detail_id=bd.id and c.group_bill_id=${request.payload.id} order by c.id asc`;
                 request.app.db.query(list, (err, res) => {
                     if (err) {
                         request.log(['error'], err);
@@ -123,11 +123,15 @@ module.exports = {
                                             _itemList.push(secquence);
                                             _itemList.push(item.userName);
                                             _itemList.push(item.phone);
+                                            _itemList.push(item.contacts);
+                                            _itemList.push(item.province+(item.city?item.city:'')+(item.address?item.address:''));
                                             _itemList.push(_count);
                                             _itemList.push(item.description);
                                             _itemListWithfreight.push(secquence);
                                             _itemListWithfreight.push(item.userName);
                                             _itemListWithfreight.push(item.phone);
+                                            _itemListWithfreight.push(item.contacts);
+                                            _itemListWithfreight.push(item.province+(item.city?item.city:'')+(item.address?item.address:''));
                                             _itemListWithfreight.push(item.description);
                                             secquence++;
                                         }else{
@@ -136,6 +140,10 @@ module.exports = {
                                             _itemList.push("");
                                             _itemList.push("");
                                             _itemList.push("");
+                                            _itemList.push("");
+                                            _itemList.push("");
+                                            _itemListWithfreight.push("");
+                                            _itemListWithfreight.push("");
                                             _itemListWithfreight.push("");
                                             _itemListWithfreight.push("");
                                             _itemListWithfreight.push("");

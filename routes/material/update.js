@@ -26,7 +26,7 @@ module.exports = {
                 name: Joi.string().required().min(2).max(20),
                 ename: Joi.string().optional().allow(''),
                 sname: Joi.string().optional().allow(''),
-                tag: Joi.string().min(2).max(100),
+                tag: Joi.string().min(2).max(500),
                 code: Joi.string().required().min(2).max(20),
                 level: Joi.string().required().max(20),
                 price: Joi.number().required(),

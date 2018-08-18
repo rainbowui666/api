@@ -32,7 +32,7 @@ module.exports = {
                 end_date: Joi.number().required(),
                 city: Joi.string().default("china"),
                 description: Joi.string().optional().default(" "),
-                province: Joi.optional().default("china"),
+                province: Joi.string().default("china"),
                 pickup_address: Joi.string().optional().default(" "),
                 pickup_date: Joi.number().optional().default(0),
                 pay_type: Joi.string().optional().default(" "),

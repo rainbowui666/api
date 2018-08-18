@@ -7,7 +7,7 @@ module.exports = {
     path: '/api/material/random/image',
     method: 'GET',
     handler(request, reply) {
-        const select = `select id,category,code  from material  order by rand() LIMIT 1`;
+        const select = `select id,category,code  from material where classification=${request.query.classification}  order by rand() LIMIT 1`;
         request.app.db.query(select, (err, res) => {
             if(err) {
                 request.log(['error'], err);
@@ -39,5 +39,10 @@ module.exports = {
     },
     config: {
         description: ' 随机获得生物资料图片',
+        validate: {
+            query: {
+                classification: Joi.number().default(0),
+            }
+        },
     }
 };

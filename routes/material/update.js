@@ -34,7 +34,8 @@ module.exports = {
                 description: Joi.string().required(),
                 id: Joi.number().required(),
                 focus_id:Joi.optional(),
-                img_number:Joi.optional()
+                img_number:Joi.optional(),
+                classification:Joi.optional()
             }
         },
         pre: [

@@ -8,7 +8,11 @@ module.exports = {
     method: 'POST',
     handler(request, reply) {
         const tag = request.payload.tag?request.payload.tag.replace(/，/ig,','):"";
-        const insert = `insert into material (category,type,code,name,ename,sname,tag,level,price,description,compatibility) VALUES('${request.payload.category}','${request.payload.type}','${request.payload.code}','${request.payload.name}','${request.payload.ename}','${request.payload.sname}','${tag}','${request.payload.level}','${request.payload.price}','${request.payload.description}','${request.payload.compatibility}')`;
+        let classification = 0;
+        if(request.payload.category=='hc'||request.payload.category=='sb'){
+            classification =1;
+        }
+        const insert = `insert into material (category,type,code,name,ename,sname,tag,level,price,description,compatibility,classification) VALUES('${request.payload.category}','${request.payload.type}','${request.payload.code}','${request.payload.name}','${request.payload.ename}','${request.payload.sname}','${tag}','${request.payload.level}','${request.payload.price}','${request.payload.description}','${request.payload.compatibility}',${classification})`;
         request.app.db.query(insert, (err, res) => {
             if(err) {
                 request.log(['error'], err);

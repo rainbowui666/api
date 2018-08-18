@@ -48,6 +48,9 @@ create table material(
 );
 alter table material change `name` `name` varchar(100) character set utf8 not null ;
 alter table material change `tag` `tag` varchar(100) character set utf8 not null ;
+alter table material add column classification int;
+
+
 alter table material character set utf8;
 
 create table bill_detail(

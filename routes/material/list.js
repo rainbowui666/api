@@ -16,14 +16,14 @@ module.exports = {
         let where = request.query.name?` name LIKE '%${request.query.name}%' or tag LIKE '%${request.query.name}%' or ename LIKE '%${request.query.name}%' or sname LIKE '%${request.query.name}%' `:" 1=1 ";
         where = request.query.type?`${where} and type in (${types}'')`:`${where} `;
         where = request.query.category?`${where} and category='${request.query.category}'`:`${where} `;
-        const countSql = `select count(1) count from material where ${where}`;
+        const countSql = `select count(1) count from material where classification=${request.query.classification} and ${where}`;
         request.app.db.query(countSql, (err, count_res) => {
             if(err) {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
                 let from  = (request.query.page-1)*request.query.size;
-                const select = `select m.*,(select id from focus where material_id=m.id and user_id=${request.query.user_id} ) focus_id from material m where ${where} order by id desc limit ${from},${request.query.size}`;
+                const select = `select m.*,(select id from focus where material_id=m.id and user_id=${request.query.user_id} ) focus_id from material m where classification=${request.query.classification} and ${where} order by id desc limit ${from},${request.query.size}`;
                 request.app.db.query(select, (err, res) => {
                     if(err) {
                         request.log(['error'], err);
@@ -46,6 +46,7 @@ module.exports = {
                 name: Joi.optional(),
                 type: Joi.optional(),
                 category: Joi.optional(),
+                classification: Joi.number().default(0),
                 user_id: Joi.optional().default(0)
             }
         },

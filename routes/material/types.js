@@ -85,7 +85,16 @@ module.exports = {
             {"code":"rtqt","name":"其它","desc":"","pc":"rt"},
             {"code":"rtwapiansh","name":"瓦片珊瑚","desc":"","pc":"yg"},
             {"code":"rtlujiaosh","name":"鹿角珊瑚","desc":"","pc":"yg"},
-            {"code":"ygqt","name":"其它","desc":"","pc":"yg"}
+            {"code":"ygqt","name":"其它","desc":"","pc":"yg"},
+            {"code":"dj","name":"灯具","desc":"","pc":"sb"},
+            {"code":"sb","name":"水泵","desc":"","pc":"sb"},
+            {"code":"df","name":"蛋分","desc":"","pc":"sb"},
+            {"code":"hxt","name":"活性炭","desc":"","pc":"hc"},
+            {"code":"mfs","name":"麦饭石","desc":"","pc":"hc"},
+            {"code":"ys","name":"鱼食","desc":"","pc":"hc"},
+            {"code":"yan","name":"盐","desc":"","pc":"hc"},
+            {"code":"tjj","name":"添加剂","desc":"","pc":"hc"},
+            {"code":"csj","name":"测试剂","desc":"","pc":"hc"}
         ];
 
         if("all"==request.query.pc){

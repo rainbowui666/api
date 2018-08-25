@@ -1,3 +1,13 @@
+
+select id,code,type from material where type in (select type from material where category='hy' group by type HAVING count(1) > 10) 
+
+select type from material where category='hy' and price>0 group by type HAVING count(1) > 10 order by rand() limit 4
+
+select m.type from (select id,code,name,type from material where price>0 and category='hy' and  id in (select distinct material_id from bill_detail where id in ( select distinct bill_detail_id from cart_detail))) as m group by m.type having count(1) > 10 order by rand() limit 4
+
+select id,code,type,name from material where category='hy' and price>0 and type in ('dd','dxsx','xiaoc','hyqt','a') 
+
+
 create database jyhs;
 use jyhs;
 create table user(
@@ -223,3 +233,4 @@ insert into citys (mark,name,area,fristLetter,sort,type) values('ja','吉安','j
 insert into citys (mark,name,area,fristLetter,sort,type) values('fuz','抚州','jx','F',11,2); 
 insert into citys (mark,name,area,fristLetter,sort,type) values('ganzhou','赣州','jx','G',7,2); 
 insert into citys (mark,name,area,fristLetter,sort,type) values('yichun','宜春','jx','Y',8,2);
+

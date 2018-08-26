@@ -41,18 +41,17 @@ module.exports = {
     method: 'GET',
     handler(request, reply) {
         const queryDate = {  
-            appid: 'wx9f635f06da7360d7',  
-            secret: 'f233bf61590a9ba1b310e9fc0542ca1e',
-            js_code:request.query.code,
+            appid: 'wx6689f1d6479c5425',  
+            secret: '43f4cbef1445051cbbd4edb6c23b0fa2',
+            code:request.query.code,
             grant_type:'authorization_code'
         };
 
         const content = qs.stringify(queryDate);  
-
         const options = {
             hostname: "api.weixin.qq.com",
             port: 443,				
-            path: '/sns/jscode2session?'+content,				
+            path: '/sns/oauth2/access_token?'+content,				
             method: "GET",		
             json: true,				
             rejectUnauthorized: true,  
@@ -72,12 +71,10 @@ module.exports = {
                                 request.log(['error'], err);
                                 reply(Boom.serverUnavailable(config.errorMessage));
                             } else {
-                                // console.log("==user2=="+res)
                                 if(!_.isEmpty(res)){
                                     login(res[0],request,reply);
                                 }else{
-                                    reply({"status": "ok"});
-                                    // login({id:1,name:"11",status:1,type:'yy'},request,reply);
+                                    reply(Boom.notAcceptable('对不起没有查到用户信息'));
                                 }
                             }
                         });
@@ -100,6 +97,7 @@ module.exports = {
         validate: {
             query: {
                 code: Joi.string().required(),
+                type:Joi.string().required()
             }
         }
     }

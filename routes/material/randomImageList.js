@@ -26,7 +26,7 @@ module.exports = {
         };
         const type = [" ("];
         _.each(typeRandom,(item)=>{
-            type.push("'"+item.type+"',");
+            type.push("'"+item+"',");
         });
         type.push("'a') ");
         const mapselect = `select id,code,type,name from material where category='hy' and price>0 and type in ${type.join("")}`;

@@ -208,6 +208,7 @@ create table focus(
     primary key(id)
 );
 
+
 alter table focus add column notice_id int;
 
 create table black_list(
@@ -234,3 +235,12 @@ insert into citys (mark,name,area,fristLetter,sort,type) values('fuz','抚州','
 insert into citys (mark,name,area,fristLetter,sort,type) values('ganzhou','赣州','jx','G',7,2); 
 insert into citys (mark,name,area,fristLetter,sort,type) values('yichun','宜春','jx','Y',8,2);
 
+create table game(
+    id int not null auto_increment,
+    user_id int not null,
+    level int,
+    title varchar(100),
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    time int,
+    primary key(id)
+);

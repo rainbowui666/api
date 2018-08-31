@@ -17,12 +17,25 @@ module.exports = {
             pathList.push(obj)
         });
 
-        const typeList = ['dd','dxsx','dy','hjy','hyqt','lty','nqd','pd','qd','xiaoc','xxsx','zhy'];
+        const easyList = ['dd','dxsx','dy','hjy','lty','nqd','pd','qd','xiaoc','xxsx','zhy','qw'];
+        const middleList = ['awtl','hl','hz','qw','sby','sl','tzd','wei','ying','by','gt','jly'];
+        const hardList = ['hyqt','hm','sy'];
+
         const typeRandom = [];
-        for (let i = 0; i < 4; i++) {
-            const ran = Math.floor(Math.random() * (typeList.length - i));
-            typeRandom.push(typeList[ran]);
-            typeList[ran] = typeList[typeList.length - i - 1];
+        for (let i = 0; i < 2; i++) {
+            const ran = Math.floor(Math.random() * (easyList.length - i));
+            typeRandom.push(easyList[ran]);
+            easyList[ran] = easyList[easyList.length - i - 1];
+        };
+        for (let i = 0; i < 1; i++) {
+            const ran = Math.floor(Math.random() * (middleList.length - i));
+            typeRandom.push(middleList[ran]);
+            middleList[ran] = middleList[middleList.length - i - 1];
+        };
+        for (let i = 0; i < 1; i++) {
+            const ran = Math.floor(Math.random() * (hardList.length - i));
+            typeRandom.push(hardList[ran]);
+            hardList[ran] = hardList[hardList.length - i - 1];
         };
         const type = [" ("];
         _.each(typeRandom,(item)=>{
@@ -56,12 +69,18 @@ module.exports = {
                     _.each(group,(gp)=>{
                         const returnObj = {};
                         const path = _.find(pathList,(_path)=>{
-                            return _path.code == gp.code;
+                            if(gp){
+                                return _path.code == gp.code;
+                            }
                         });
                         if(path){
                             returnObj.key=gp.id;
                             returnObj.name=gp.name;
                             returnObj.pic=path.pic;
+                        }else{
+                            returnObj.key=330;
+                            returnObj.name='夏威夷红圣诞龙';
+                            returnObj.pic='/small/hy/1513179762-XWYHSDL.png';
                         }
                         if(_.isEmpty(returnMap[`${index+1}`])){
                             returnMap[`${index+1}`]=[returnObj];

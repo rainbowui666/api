@@ -43,6 +43,8 @@ module.exports = {
                                 });
                             }
                         });
+                    }else{
+                        reply({'status':'ok'});
                     }
                 }
             }

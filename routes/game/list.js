@@ -12,7 +12,7 @@ module.exports = {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
-                reply(res.concat(res).concat(res).concat(res).concat(res))
+                reply(res)
             }
         });
         

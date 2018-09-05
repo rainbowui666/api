@@ -30,7 +30,7 @@ module.exports = {
         const ran = Math.floor(Math.random() * (easyList.length));
         const typeRandom = easyList[ran];
     
-        const mapselect = `select id,code,type,name from material where category='hy' and price>0 and  type='${typeRandom}' order by rand() limit 30`;
+        const mapselect = `select id,code,type,name,tag from material where category='hy' and price>0 and  type='${typeRandom}' order by rand() limit 30`;
         request.app.db.query(mapselect, (err, mapres) => {
             if(err) {
                 request.log(['error'], err);
@@ -41,12 +41,16 @@ module.exports = {
                let count = 1;
                _.each(mapres,(mapre)=>{
                 const returnObj = {};
+                const names = mapre['tag']?mapre['tag'].split(','):[];
+                names.push(mapre.name);
+                const ranName = Math.floor(Math.random() * (names.length));
+                const name = names[ranName];
                 const path = _.find(pathList,(_path)=>{
                     return _path.code == mapre.code;
                 });
                 if(path){
                     returnObj.key=mapre.id;
-                    returnObj.name=mapre.name;
+                    returnObj.name=name;
                     returnObj.pic=path.pic;
                 }else{
                     returnObj.key=330;

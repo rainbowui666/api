@@ -23,11 +23,14 @@ module.exports = {
         }
         
 
-        const easyList = ['dd','dxsx','dy','hjy','lty','nqd','qd','zhy','gt','hl','hm','hyqt','jly','sl','sy','tzd','wei','zhou'];
+        // const easyList = ['dd','dxsx','dy','hyqt','zhy','lty','hjy','nqd','qd','gt','hl','hm','jly','sl','sy','tzd','wei','zhou'];
+        const easyList = ['dd','dxsx','dy','hyqt','xxsx','zhy','lty'];
+
+    
         const ran = Math.floor(Math.random() * (easyList.length));
         const typeRandom = easyList[ran];
     
-        const mapselect = `select id,code,type,name from material where category='hy' and  type='${typeRandom}' order by rand() limit 30`;
+        const mapselect = `select id,code,type,name from material where category='hy' and price>0 and  type='${typeRandom}' order by rand() limit 30`;
         request.app.db.query(mapselect, (err, mapres) => {
             if(err) {
                 request.log(['error'], err);

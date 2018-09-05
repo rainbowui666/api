@@ -74,7 +74,7 @@ module.exports = {
                                 if(!_.isEmpty(res)){
                                     login(res[0],request,reply);
                                 }else{
-                                    reply(Boom.notAcceptable('对不起没有查到用户信息'));
+                                    reply(Boom.notAcceptable('该用户没有微信注册'));
                                 }
                             }
                         });
@@ -96,8 +96,7 @@ module.exports = {
         description: '微信根据code获得openid',
         validate: {
             query: {
-                code: Joi.string().required(),
-                type:Joi.string().required()
+                code: Joi.string().required()
             }
         }
     }

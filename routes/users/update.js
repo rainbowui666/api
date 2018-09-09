@@ -43,7 +43,10 @@ module.exports = {
                 focus_no: Joi.optional(),
                 description: Joi.optional().default(" "),
                 contacts: Joi.optional().default(" "),
-                id: Joi.number().required()
+                id: Joi.number().required(),
+                unionid: Joi.optional(),
+                tag: Joi.optional(),
+
             }
         },
         pre: [

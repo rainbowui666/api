@@ -28,7 +28,9 @@ const login = function(user,request,reply){
             token,
             "status": "ok",
             "province":user.province,
-            "id":user.id
+            "id":user.id,
+            "username": user.name,
+            "type" :user.type
         };
         reply(res);
     }
@@ -58,7 +60,7 @@ module.exports = {
         const req = https.request(options, function (res) {  
             res.setEncoding('utf8');  
             res.on('data', function (chunk) { 
-                // console.log("==token=="+chunk)
+                console.log("==token=="+chunk)
 
                 const chenkObj =JSON.parse(chunk);
                 // console.log("==token=2="+chenkObj.access_token)
@@ -84,7 +86,7 @@ module.exports = {
                     userRes.on('data', function (userChunk) {  
                         // console.log("==user=="+userChunk)
                         const userObject = JSON.parse(userChunk);
-                        // console.log("==user=="+userObject)
+                        // console.log("==user=="+JSON.stringify(userObject))
                         if(userObject.openid){
                             const selectUser = `select id,name,status,type,province from user where  openid='${userObject.openid}'`;
                                 request.app.db.query(selectUser, (err, res) => {
@@ -108,7 +110,7 @@ module.exports = {
                                                     if(_.isEmpty(city[0])&&userObject.province=='北京'){
                                                         city[0]={mark:'bjc'}
                                                     }
-                                                    const insert = `insert into user (name,password,city,phone,type,province,sex,headimgurl,openid,country,province_name,city_name) VALUES('${userObject.nickname}','0ff8ecf84a686258caeb350dbc8040d6','${city[0]?city[0].mark:"shc"}','18888888888','yy','${province?province.code:"sh"}',${userObject.sex},'${userObject.headimgurl}','${userObject.openid}','${userObject.country}','${userObject.province}','${userObject.city}')`;
+                                                    const insert = `insert into user (name,password,city,phone,type,province,sex,headimgurl,openid,country,province_name,city_name,unionid) VALUES('${userObject.nickname}','0ff8ecf84a686258caeb350dbc8040d6','${city[0]?city[0].mark:"shc"}','18888888888','yy','${province?province.code:"sh"}',${userObject.sex},'${userObject.headimgurl}','${userObject.openid}','${userObject.country}','${userObject.province}','${userObject.unionid}','${userObject.openid}')`;
                                                     request.app.db.query(insert, (err, insertRes) => {
                                                         if(err) {
                                                             request.log(['error'], err);
@@ -128,7 +130,15 @@ module.exports = {
                                             });
                                         
                                         }else{
-                                            login(res[0],request,reply);
+                                            const update = `update user set unionid='${userObject.unionid}' where id=${res[0].id}`;
+                                            request.app.db.query(update, (err, updateRes) => {
+                                                if(err) {
+                                                    request.log(['error'], err);
+                                                    reply(Boom.serverUnavailable(config.errorMessage));
+                                                } else {
+                                                    login(res[0],request,reply);
+                                                }
+                                            });
                                         }
                                     }
                                 });

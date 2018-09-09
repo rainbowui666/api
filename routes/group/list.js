@@ -3,6 +3,7 @@ const Boom = require('boom');
 const config = require('../../config.js');
 let supplier_id = null;
 const _ = require("lodash");
+const util = require('../../lib/util.js');
 
 module.exports = {
     path: '/api/group/list',
@@ -32,20 +33,25 @@ module.exports = {
                     } else {
                         where = `${where}  order by status desc,g.id desc `;
                         let from  = (request.query.page-1)*request.query.size;
-                        const select = `select g.current_step,g.private,g.id,g.name,(select name from citys where mark=g.city) city,g.contacts,g.phone,date_format(g.end_date, '%Y-%m-%d %H:%i:%s') end_date ,(select name from user where id=(select supplier_id from bill bb where bb.id=g.bill_id )) supplierName,(select type from user where id=g.user_id) userType,g.pickup_address,date_format(g.pickup_date , '%Y-%m-%d %H:%i:%s') pickup_date,g.pay_type,g.pay_count,g.pay_name,g.pay_description,g.freight,g.description,g.isflash is_flash,g.flash_desc,g.bill_id,g.user_id, if(g.status>0,if(TIMESTAMPDIFF(MINUTE,now(),g.end_date) > 0,1,0),g.status) status, ifnull((select sum(d.bill_detail_num*b.price) sum from cart c,cart_detail d,bill_detail b where c.id=d.cart_id and d.bill_detail_id=b.id and c.group_bill_id=g.id and c.status=1 and c.is_confirm=1),0) sum from group_bill g,user u,bill b where b.id=g.bill_id and g.user_id=u.id and  ${where} limit ${from},${request.query.size}`;
+                        const select = `select g.activity_code,g.current_step,g.private,g.id,g.name,(select name from citys where mark=g.city) city,g.contacts,g.phone,date_format(g.end_date, '%Y-%m-%d %H:%i:%s') end_date ,(select name from user where id=(select supplier_id from bill bb where bb.id=g.bill_id )) supplierName,(select type from user where id=g.user_id) userType,g.pickup_address,date_format(g.pickup_date , '%Y-%m-%d %H:%i:%s') pickup_date,g.pay_type,g.pay_count,g.pay_name,g.pay_description,g.freight,g.description,g.isflash is_flash,g.flash_desc,g.bill_id,g.user_id, if(g.status>0,if(TIMESTAMPDIFF(MINUTE,now(),g.end_date) > 0,1,0),g.status) status, ifnull((select sum(d.bill_detail_num*b.price) sum from cart c,cart_detail d,bill_detail b where c.id=d.cart_id and d.bill_detail_id=b.id and c.group_bill_id=g.id and c.status=1 and c.is_confirm=1),0) sum from group_bill g,user u,bill b where b.id=g.bill_id and g.user_id=u.id and  ${where} limit ${from},${request.query.size}`;
                         request.app.db.query(select, (err, res) => {
                             if(err) {
                                 request.log(['error'], err);
                                 reply(Boom.serverUnavailable(config.errorMessage));
                             } else {
+                                    //自动失效状态更新
+                                    const ids = [" ("];
+                                    _.each(res,(item)=>{
+                                        if(item.status==0){
+                                            ids.push(item.id+",");
+                                        }
+                                        const activity_name = _.find(util.activity(),(ac)=>{
+                                            return ac.code==item.activity_code;
+                                        });
+                                        item['activity_name'] = activity_name?activity_name.name:"";
+                                    });
+                                    ids.push("0) ");
                                     if(request.query.user_id){
-                                            const ids = [" ("];
-                                            _.each(res,(item)=>{
-                                                if(item.status==0){
-                                                    ids.push(item.id+",");
-                                                }
-                                            });
-                                            ids.push("0) ");
                                             if(_.size(ids)>2){
                                                 const update = `update group_bill set status=0 where id in ${ids.join("")}`;
                                                 request.app.db.query(update, (err, updateres) => {

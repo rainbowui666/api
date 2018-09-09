@@ -25,12 +25,13 @@ const login = function(user,request,reply){
         const token = JWT.sign(session, config.authKey, options);
         const key = util.buildKey(request)+'token';
         global.globalCahce.set(key, token);
-        console.log(user)
         const res = {
             token,
             "status": "ok",
             "province":user.province,
-            "id":user.id
+            "id":user.id,
+            "username": user.name,
+            "type" :user.type
         };
         reply(res);
     }
@@ -59,13 +60,10 @@ module.exports = {
         const req = https.request(options, function (res) {  
             res.setEncoding('utf8');  
             res.on('data', function (userChunk) { 
-                // console.log("==token=="+userChunk)
-
-                // {"session_key":"LaQD09QY9+8XqY3tXnTaeA==","openid":"oeSe94uLH-KrxqGfMIao6l-x1b9U","unionid":"ohbZ81rojJDLl6nZVjzIldmw5bMk"}
-                const userObject = JSON.parse(userChunk);
-                // console.log("==user=="+userChunk)
-                if(userObject.openid){
-                        const selectUser = `select id,name,status,type,province from user where  openid='${userObject.openid}'`;
+                  const userObject = JSON.parse(userChunk);
+                
+                if(!_.isEmpty(userObject.unionid)){
+                        const selectUser = `select id,name,status,type,province from user where  unionid='${userObject.unionid}'`;
                         request.app.db.query(selectUser, (err, res) => {
                             if(err) {
                                 request.log(['error'], err);

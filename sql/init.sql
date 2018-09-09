@@ -35,9 +35,11 @@ alter table user add column country varchar(100);
 alter table user add column headimgurl varchar(2000);
 alter table user add column privilege varchar(2000);
 alter table user add column openid varchar(1000);
+alter table user add column unionid varchar(1000);
 alter table user add column insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 alter table user modify column city varchar(50) null;
 alter table user modify column type varchar(20) DEFAULT 'yy';
+alter table user add column tag varchar(20);
 
 
 create table material(
@@ -126,6 +128,7 @@ alter table group_bill add column city varchar(10);
 alter table group_bill add column province varchar(20);
 alter table group_bill add column current_step int not null DEFAULT 0;
 alter table group_bill add column top_freight int  DEFAULT 0;
+alter table group_bill add column activity_code varchar(10);
 
 
 

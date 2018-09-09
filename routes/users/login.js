@@ -23,7 +23,9 @@ const login = function(user,request,reply){
         token,
         "status": "ok",
         "province":user.province,
-        "id":user.id
+        "id":user.id,
+        "username": user.name,
+        "type" :user.type
     };
     reply(res);
 }

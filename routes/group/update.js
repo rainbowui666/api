@@ -7,7 +7,7 @@ module.exports = {
     path: '/api/group/update',
     method: 'POST',
     handler(request, reply) {
-        const update = `update group_bill set private='${request.payload.private}',status='${request.payload.status}',province='${request.payload.province}',city='${request.payload.city}', flash_desc='${request.payload.flash_desc}', isflash='${request.payload.is_flash}',  description='${request.payload.description}', freight=${request.payload.freight}, pay_description='${request.payload.pay_description}',pay_name='${request.payload.pay_name}',pay_count='${request.payload.pay_count}',pay_type='${request.payload.pay_type}', contacts='${request.payload.contacts}',phone='${request.payload.phone}',end_date=${request.payload.end_date},pickup_date=${request.payload.pickup_date}, pickup_address='${request.payload.pickup_address}' where id=${request.payload.id}`;
+        const update = `update group_bill set activity_code='${request.payload.activity_code}',private='${request.payload.private}',status='${request.payload.status}',province='${request.payload.province}',city='${request.payload.city}', flash_desc='${request.payload.flash_desc}', isflash='${request.payload.is_flash}',  description='${request.payload.description}', freight=${request.payload.freight}, pay_description='${request.payload.pay_description}',pay_name='${request.payload.pay_name}',pay_count='${request.payload.pay_count}',pay_type='${request.payload.pay_type}', contacts='${request.payload.contacts}',phone='${request.payload.phone}',end_date=${request.payload.end_date},pickup_date=${request.payload.pickup_date}, pickup_address='${request.payload.pickup_address}' where id=${request.payload.id}`;
         request.app.db.query(update, (err, res) => {
             if(err) {
                 request.log(['error'], err);
@@ -42,7 +42,8 @@ module.exports = {
                 status: Joi.number().required(),
                 id: Joi.number().required(),
                 top_freight:Joi.optional(),
-                current_step:Joi.optional()
+                current_step:Joi.optional(),
+                activity_code: Joi.string().optional().default("default"),
             }
         },
         pre: [

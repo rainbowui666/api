@@ -247,3 +247,14 @@ create table game(
     time int,
     primary key(id)
 );
+
+
+create table share(
+    id int not null auto_increment,
+    user_id int not null,
+    param varchar(500),
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    encryptedData varchar(2000),
+    iv varchar(100),
+    primary key(id)
+);

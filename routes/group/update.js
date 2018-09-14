@@ -43,7 +43,9 @@ module.exports = {
                 id: Joi.number().required(),
                 top_freight:Joi.optional(),
                 current_step:Joi.optional(),
-                activity_code: Joi.string().optional().default("default"),
+                activity_name:Joi.optional(),
+                sum:Joi.optional(),
+                activity_code:Joi.optional().default("default"),
             }
         },
         pre: [

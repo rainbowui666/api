@@ -6,14 +6,14 @@ module.exports = {
     path: '/api/cart/list/detail',
     method: 'GET',
     handler(request, reply) {
-        const countSql = `select count(1) count from cart_detail where cart_id=${request.query.cart_id}`;
+        const countSql = `select count(1) count from cart_detail c,bill_detail b LEFT JOIN material m on (b.material_id=m.id) where c.bill_detail_id=b.id  and c.cart_id=${request.query.cart_id}`;
         request.app.db.query(countSql, (err, count_res) => {
             if(err) {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
                 let from  = (request.query.page-1)*request.query.size;
-                const select = `select * from cart_detail where cart_id=${request.query.cart_id} order by id limit ${from},${request.query.size}`;
+                const select = `select * from cart_detail c,bill_detail b LEFT JOIN material m on (b.material_id=m.id) where c.bill_detail_id=b.id  and c.cart_id=${request.query.cart_id} order by c.id limit ${from},${request.query.size}`;
                 request.app.db.query(select, (err, res) => {
                     if(err) {
                         request.log(['error'], err);
@@ -36,3 +36,5 @@ module.exports = {
         },
     }
 };
+
+

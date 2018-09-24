@@ -110,6 +110,7 @@ module.exports = {
                                                     if(_.isEmpty(city[0])&&userObject.province=='北京'){
                                                         city[0]={mark:'bjc'}
                                                     }
+                                                    //密码Coral666
                                                     const insert = `insert into user (name,password,city,phone,type,province,sex,headimgurl,openid,country,province_name,city_name,unionid) VALUES('${userObject.nickname}','0ff8ecf84a686258caeb350dbc8040d6','${city[0]?city[0].mark:"shc"}','18888888888','yy','${province?province.code:"sh"}',${userObject.sex},'${userObject.headimgurl}','${userObject.openid}','${userObject.country}','${userObject.province}','${userObject.unionid}','${userObject.openid}')`;
                                                     request.app.db.query(insert, (err, insertRes) => {
                                                         if(err) {

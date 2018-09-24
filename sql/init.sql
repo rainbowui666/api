@@ -1,13 +1,4 @@
 
-select id,code,type from material where type in (select type from material where category='hy' group by type HAVING count(1) > 10) 
-
-select type from material where category='hy' and price>0 group by type HAVING count(1) > 10 order by rand() limit 4
-
-select m.type from (select id,code,name,type from material where price>0 and category='hy' and  id in (select distinct material_id from bill_detail where id in ( select distinct bill_detail_id from cart_detail))) as m group by m.type having count(1) > 10 order by rand() limit 4
-
-select id,code,type,name from material where category='hy' and price>0 and type in ('dd','dxsx','xiaoc','hyqt','a') 
-
-
 create database jyhs;
 use jyhs;
 create table user(
@@ -258,3 +249,41 @@ create table share(
     iv varchar(100),
     primary key(id)
 );
+
+
+CREATE TABLE `provinces` (
+  `code` varchar(15) NOT NULL,
+  `name` varchar(60) NOT NULL,
+  PRIMARY KEY (`code`)
+) 
+
+INSERT INTO `provinces` VALUES ('ah', '安徽');
+INSERT INTO `provinces` VALUES ('bj', '北京');
+INSERT INTO `provinces` VALUES ('cq', '重庆');
+INSERT INTO `provinces` VALUES ('fj', '福建');
+INSERT INTO `provinces` VALUES ('gd', '广东');
+INSERT INTO `provinces` VALUES ('gs', '甘肃');
+INSERT INTO `provinces` VALUES ('gx', '广西');
+INSERT INTO `provinces` VALUES ('gz', '贵州');
+INSERT INTO `provinces` VALUES ('hb', '湖北');
+INSERT INTO `provinces` VALUES ('he', '河北');
+INSERT INTO `provinces` VALUES ('hl', '黑龙江');
+INSERT INTO `provinces` VALUES ('hn', '河南');
+INSERT INTO `provinces` VALUES ('hu', '湖南');
+INSERT INTO `provinces` VALUES ('jl', '吉林');
+INSERT INTO `provinces` VALUES ('js', '江苏');
+INSERT INTO `provinces` VALUES ('jx', '江西');
+INSERT INTO `provinces` VALUES ('ln', '辽宁');
+INSERT INTO `provinces` VALUES ('nm', '内蒙古');
+INSERT INTO `provinces` VALUES ('nx', '宁夏');
+INSERT INTO `provinces` VALUES ('qh', '青海');
+INSERT INTO `provinces` VALUES ('sa', '陕西');
+INSERT INTO `provinces` VALUES ('sc', '四川');
+INSERT INTO `provinces` VALUES ('sd', '山东');
+INSERT INTO `provinces` VALUES ('sh', '上海');
+INSERT INTO `provinces` VALUES ('sx', '山西');
+INSERT INTO `provinces` VALUES ('tj', '天津');
+INSERT INTO `provinces` VALUES ('xj', '新疆');
+INSERT INTO `provinces` VALUES ('xz', '西藏');
+INSERT INTO `provinces` VALUES ('yn', '云南');
+INSERT INTO `provinces` VALUES ('zj', '浙江');

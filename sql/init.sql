@@ -255,7 +255,7 @@ CREATE TABLE `provinces` (
   `code` varchar(15) NOT NULL,
   `name` varchar(60) NOT NULL,
   PRIMARY KEY (`code`)
-) 
+);
 
 INSERT INTO `provinces` VALUES ('ah', '安徽');
 INSERT INTO `provinces` VALUES ('bj', '北京');

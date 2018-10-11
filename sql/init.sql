@@ -287,3 +287,8 @@ INSERT INTO `provinces` VALUES ('xj', '新疆');
 INSERT INTO `provinces` VALUES ('xz', '西藏');
 INSERT INTO `provinces` VALUES ('yn', '云南');
 INSERT INTO `provinces` VALUES ('zj', '浙江');
+
+update citys set name='上海' where mark='shc';
+update citys set name='北京' where mark='bjc';
+update citys set name='天津' where mark='tjc';
+update citys set name='重庆' where mark='cqc';

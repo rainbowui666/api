@@ -26,9 +26,9 @@ module.exports = {
         description: '添加开团信息',
         validate: {
             payload: {
-                name: Joi.string().required().min(2).max(100),
-                contacts: Joi.string().required().min(2).max(100),
-                phone: Joi.string().required().min(2).max(20),
+                name: Joi.string().required().max(100),
+                contacts: Joi.string().required().max(100),
+                phone: Joi.string().required().max(20),
                 end_date: Joi.number().required(),
                 city: Joi.string().default("china"),
                 description: Joi.string().optional().default(" "),

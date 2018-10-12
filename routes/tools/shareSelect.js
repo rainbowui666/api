@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const config = require('../../config.js');
+const _ = require('lodash');
 
 module.exports = {
     path: '/api/tools/share/select',
@@ -11,6 +12,14 @@ module.exports = {
             if(err) {
                 reply(Boom.serverUnavailable(config.errorMessage));
             } else {
+                _.each(res, (re) => {
+                    const deleteSql = `delete from share where id=${re.id}`;
+                    request.app.db.query(deleteSql, (err, res) => {
+                        if(err) {
+                            reply(Boom.serverUnavailable(config.errorMessage));
+                        }
+                    });
+                });
                 reply(res);
             }
         });

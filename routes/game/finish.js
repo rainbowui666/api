@@ -1,18 +1,17 @@
 const Boom = require('boom');
 const Joi = require('joi');
-const _ = require("lodash");
+const _ = require('lodash');
 
 module.exports = {
     path: '/api/game/finish',
     method: 'GET',
     handler(request, reply) {
-        const select = `select id,level,title,user_id,time from game where user_id='${request.query.user_id}'`;
+        const select = `select id,level,title,user_id,time from game where  YEARWEEK(date_format(g.insert_date,\'%Y-%m-%d\') - INTERVAL 1 DAY) = YEARWEEK(now() - INTERVAL 1 DAY) and user_id='${request.query.user_id}'`;
         request.app.db.query(select, (err, res) => {
             if(err) {
                 request.log(['error'], err);
                 reply(Boom.serverUnavailable(config.errorMessage));
-            } else {
-                if(_.isEmpty(res)){
+            } else if(_.isEmpty(res)){
                     const insert = `insert into game(user_id,level,title,time) values(${request.query.user_id},'${request.query.level}','${request.query.title}',${request.query.time})`;
                     request.app.db.query(insert, (err, insertres) => {
                         if(err) {
@@ -47,9 +46,7 @@ module.exports = {
                         reply({'status':'ok'});
                     }
                 }
-            }
         });
-        
     },
     config: {
         description: '游戏结束',
@@ -58,9 +55,9 @@ module.exports = {
                 level: Joi.number().required(),
                 title: Joi.string(),
                 user_id: Joi.number().required(),
-                time: Joi.number(),
+                time: Joi.number()
             }
-        },
+        }
     }
 };
 

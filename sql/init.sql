@@ -159,7 +159,7 @@ alter table cart add column is_pay int default 0;
 alter table cart add column freight double(7,2) not null default 0.00;
 alter table cart add column lost_back double(7,2)  default 0.00;
 alter table cart add column damage_back double(7,2)  default 0.00;
-
+alter table cart add column nonceStr varchar(100);
 
 
 alter table cart change `phone` `phone` varchar(11) character set utf8 not null ;
@@ -292,3 +292,29 @@ update citys set name='上海' where mark='shc';
 update citys set name='北京' where mark='bjc';
 update citys set name='天津' where mark='tjc';
 update citys set name='重庆' where mark='cqc';
+
+create table pay(
+    id int not null auto_increment,
+    cart_id int not null,
+    user_id int not null,
+    appid varchar(100),
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    attach varchar(100),
+    bank_type varchar(100),
+    cash_fee varchar(100),
+    fee_type varchar(100),
+    is_subscribe varchar(100),
+    mch_id varchar(100),
+    nonce_str varchar(100),
+    openid varchar(100),
+    out_trade_no varchar(100),
+    result_code varchar(100),
+    sign varchar(100),
+    time_end varchar(100),
+    total_fee varchar(100),
+    trade_type varchar(100),
+    transaction_id varchar(100),
+    primary key(id)
+);
+
+

@@ -9,7 +9,7 @@ module.exports = class extends Base {
     const size = this.post('size') || 10;
     const name = this.post('name') || '';
     const province = this.post('province');
-    const list = await this.model('group').getGroupList({name, page, size, province});
+    const list = await this.model('group').getGroupList(name, page, size, province);
     return this.json(list);
   }
   async getAction() {

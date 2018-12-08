@@ -4,12 +4,19 @@ const _ = require('lodash');
 const xlsx = require('node-xlsx');
 const fs = require('fs');
 module.exports = class extends Base {
-  async listAction() {
+  async userListAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const name = this.post('name') || '';
     const userId = this.getLoginUserId();
-    const list = await this.model('group').getUserGroupList({name, page, size, userId});
+    const list = await this.model('group').getGroupList(name, page, size, userId);
+    return this.json(list);
+  }
+  async listAction() {
+    const page = this.post('page') || 1;
+    const size = this.post('size') || 10;
+    const name = this.post('name') || '';
+    const list = await this.model('group').getGroupList(name, page, size);
     return this.json(list);
   }
   async reopenAction() {
@@ -134,13 +141,13 @@ module.exports = class extends Base {
     }
   }
   async downloadAction() {
-    const group = await this.model('group_bill').where({'id': this.post('groupId')}).find();
+    const group = await this.model('group_bill').where({'id': this.get('groupId')}).find();
     const returnData = [['序号', '昵称', '联系电话', '备注', '合计', '品名', '规格', '单价', '数量', '共计（不含运费)']];
     const totleReturnData = [['品名', '规格', '单价', '数量', '共计（不含运费)']];
     const totleReturnDataWithfreight = [['品名', '规格', '单价', '数量', '生物总价', '生物运费', '缺货退费', '报损退费', '共计（含运费)']];
     const returnDataWithfreight = [['序号', '昵称', '联系电话', '备注', '合计', '品名', '规格', '单价', '实际数量', '缺货数量', '报损数量', '缺货退款（含运费)', '报损退款', '应退款（含运费)', '应收款（含运费)']];
-    const detailGroups = await this.model('group').detailGroup(this.post('groupId'));
-    const summaryGroups = await this.model('group').summaryGroup(this.post('groupId'));
+    const detailGroups = await this.model('group').detailGroup(this.get('groupId'));
+    const summaryGroups = await this.model('group').summaryGroup(this.get('groupId'));
     let totleSum = 0;
     let totleSumWithfreight = 0;
     _.each(summaryGroups, (summaryGroup) => {
@@ -173,6 +180,7 @@ module.exports = class extends Base {
     _itemList.push('共计');
     _itemList.push(totleSum);
     totleReturnData.push(_itemList);
+   
 
     const _itemListWithfreight = [];
     _itemListWithfreight.push('');
@@ -257,12 +265,14 @@ module.exports = class extends Base {
     });
     const name = 'coral123-' + group.id + '.xlsx';
     const path = this.config('image.bill') + '/' + name;
-
     var buffer = xlsx.build([{name: '总单(不含运费)', data: totleReturnData}, {name: '明细(不含运费)', data: returnData}, {name: '总单(含运费)', data: totleReturnDataWithfreight}, {name: '明细(含运费)', data: returnDataWithfreight}]);
     // const buffer = xlsx.build([{name: '总单', data: totleReturnData}, {name: '明细', data: returnData}], {'!merges': rangeList});
-    const ws = fs.createWriteStream(path);
-    await ws.write(buffer, 'utf8');
-    this.json({'name': name});
+    // const ws = fs.createWriteStream(path);
+    // await ws.write(buffer, 'utf8');
+    // this.json({'name': name});
+    this.type = 'application/vnd.ms-excel';
+    this.ctx.attachment(name);
+    this.body = buffer;
   }
 
   count(itemList) {

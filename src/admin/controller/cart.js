@@ -114,10 +114,14 @@ module.exports = class extends Base {
         this.fail('团购已经结束不能操作购物车');
       } else {
         await this.model('cart_detail').where({bill_detail_id: billDetailId, cart_id: cartId}).delete();
-        await this.model('cart').where({id: cartId}).update({
+        const cart = {
           sum: this.post('sum'),
           freight: this.post('freight')
-        });
+        }
+        if(Number(this.post('sum'))===0){
+          cart['is_confirm'] = 0
+        }
+        await this.model('cart').where({id: cartId}).update(cart);
         this.success(true);
       }
     }
@@ -382,38 +386,30 @@ module.exports = class extends Base {
     return this.json(cart);
   }
   async createOrderAction() {
-    // const user = this.getLoginUser();
-    // if (think.isEmpty(user.openid)) {
-    //   this.fail('请使用微信账号登录');
-    // } else {
+    const user = this.getLoginUser();
+    if (think.isEmpty(user.openid)) {
+      this.fail('请使用微信账号登录');
+    } else {
     const cartId = this.post('cartId');
     const cart = await this.model('cart').where({id: cartId}).find();
     const wexinService = this.service('weixin', 'api');
     const payInfo = {};
     payInfo.orderNo = `Coral-${cart.group_bill_id}-${cartId}` + Math.floor(Math.random() * 10 + 1);
-    // payInfo.totalFee = Number(cart.sum) + Number(cart.freight) - Number(cart.lost_back) - Number(cart.damage_back);
-    payInfo.totalFee = 1;
+    payInfo.totalFee = Number(cart.sum) + Number(cart.freight) - Number(cart.lost_back) - Number(cart.damage_back);
+    payInfo.totalFee = payInfo.totalFee * 100;
     payInfo.openid = 'ohGtg1o1F-fgzmbXElW1fbFNvdDg';
     payInfo.ip = '111.231.136.250';
     payInfo.body = '礁岩海水支付';
     payInfo.cartId = cartId;
-    // payInfo.userId = user.id;
-    payInfo.userId = 5157;
+    payInfo.userId = user.id;
     const payRequest = await wexinService.createUnifiedOrder(payInfo);
     if (payRequest.error) {
       this.fail(payRequest.error);
     } else {
       await this.model('cart').where({id: cartId}).update({ 'nonceStr': payRequest.nonceStr });
-      console.log(payRequest);
-      // { appId: 'wx6edb9c7695fb8375',
-      // 0|jyhs  |   timeStamp: '1543716865',
-      // 0|jyhs  |   nonceStr: '8bzfjte12k3',
-      // 0|jyhs  |   package: 'prepay_id=wx02101425667089d5ea6d5b8f0036848458',
-      // 0|jyhs  |   signType: 'MD5',
-      // 0|jyhs  |   paySign: '92eaf9529af1168bd1909297c66b110f' }
       this.json(payRequest);
     }
-    // }
+    }
   }
   async listDetailAction() {
     const page = this.post('page') || 1;

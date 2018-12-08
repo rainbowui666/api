@@ -38,7 +38,8 @@ module.exports = class extends think.Model {
     const detailGroup = `select IFNULL(u.nickname,u.name) userName,u.phone,u.contacts,(select name from citys where mark=u.province) province,(select name from citys where mark=u.city) city,if(u.address='null','',u.address) address,if(c.description='null','',c.description) description,bd.name,bd.size,bd.price,cd.bill_detail_num,(bd.price*cd.bill_detail_num) sum,cd.freight,cd.lost_back_freight,cd.lost_num,cd.damage_num from cart c,cart_detail cd,bill_detail bd,user u where c.is_confirm=1 and c.sum!=0 and c.id=cd.cart_id and c.user_id=u.id and cd.bill_detail_id=bd.id and c.group_bill_id=${id} order by c.id asc`;
     return this.query(detailGroup);
   }
-  async getUserGroupList({name, page, size, userId}) {
+
+  async getGroupList(name, page, size, userId) {
     const model = this.model('group_bill').alias('gb');
     const whereMap = {};
     if (!think.isEmpty(name)) {
@@ -71,20 +72,22 @@ module.exports = class extends think.Model {
         join: 'inner',
         as: 'u',
         on: ['b.supplier_id', 'u.id']
-      }).where(whereMap).order(['gb.id DESC', 'gb.end_date DESC']).page(page, size).countSelect();
+      }).where(whereMap).order(['gb.status DESC', 'gb.id DESC', 'gb.end_date DESC']).page(page, size).countSelect();
     for (const item of list.data) {
       if (item['status'] !== 0) {
         if (moment(item['end_date']).isAfter(moment())) {
           item['status'] = 1;
         } else {
           item['status'] = 0;
+          await this.model('group_bill').where({'id': item['id']}).update({'status': 0});
         }
       }
-      const sumObj = await this.model('cart').field(['sum(sum+freight-lost_back-damage_back) sum']).where({'group_bill_id': item['id'], 'is_confirm': 1}).find();
+      const sumObj = await this.model('cart').field(['sum(sum) sum']).where({'group_bill_id': item['id'], 'is_confirm': 1}).find();
       item['sum'] = sumObj.sum || 0;
     }
     return list;
   }
+  
   async getGroup(id) {
     const model = this.model('group_bill').alias('gb');
     const group = await model.field(['gb.*', 'c.name city', 'p.name province', 'u.name supplier_name'])

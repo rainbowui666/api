@@ -1,4 +1,13 @@
 module.exports = class extends think.Logic {
+  userListAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      name: {string: true, trim: true},
+      page: {int: true, trim: true},
+      province: {string: true, trim: true},
+      size: {int: true, trim: true}
+    };
+  }
   listAction() {
     this.allowMethods = 'post';
     this.rules = {
@@ -47,7 +56,6 @@ module.exports = class extends think.Logic {
     };
   }
   downloadAction() {
-    this.allowMethods = 'post';
     this.rules = {
       groupId: {int: true, required: true, trim: true}
     };

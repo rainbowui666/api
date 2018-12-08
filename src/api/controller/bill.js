@@ -96,9 +96,9 @@ module.exports = class extends Base {
     const order = this.post('priceOrder');
     let list = null;
     if (think.isEmpty(order)) {
-      list = await model.where(whereMap).page(page, size).countSelect();
+      list = await model.where(whereMap).order(['d.recommend desc']).page(page, size).countSelect();
     } else {
-      list = await model.where(whereMap).order('price ' + order).page(page, size).countSelect();
+      list = await model.where(whereMap).order(['d.price ' + order]).page(page, size).countSelect();
     }
     this.json(list);
   }
@@ -112,14 +112,14 @@ module.exports = class extends Base {
       as: 'm',
       on: ['d.material_id', 'm.id']
     });
-    const list = await model.where({'m.type': this.post('type'), 'd.bill_id': this.post('billId')}).page(page, size).countSelect();
+    const list = await model.where({'m.type': this.post('type'), 'd.bill_id': this.post('billId')}).order(['d.recommend desc']).page(page, size).countSelect();
     this.json(list);
   }
   async getDetailByBillIdAndRecommendAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const model = this.model('bill_detail');
-    const list = await model.where({'recommend': this.post('recommend'), 'bill_id': this.post('billId')}).page(page, size).countSelect();
+    const list = await model.where({'recommend': this.post('recommend'), 'bill_id': this.post('billId')}).order(['recommend desc']).page(page, size).countSelect();
     _.each(list, (item) => {
       if (item.recommend === 'tj') {
         item.recommend = '推荐';
@@ -134,7 +134,7 @@ module.exports = class extends Base {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const model = this.model('bill_detail');
-    const list = await model.where({'recommend': ['!=', ''], 'bill_id': this.post('billId')}).page(page, size).countSelect();
+    const list = await model.where({'recommend': ['!=', ''], 'bill_id': this.post('billId')}).order(['recommend desc']).page(page, size).countSelect();
     _.each(list, (item) => {
       if (item.recommend === 'tj') {
         item.recommend = '推荐';
@@ -149,7 +149,7 @@ module.exports = class extends Base {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const model = this.model('bill_detail');
-    const list = await model.where({'material_id': 0, 'bill_id': this.post('billId')}).page(page, size).countSelect();
+    const list = await model.where({'material_id': 0, 'bill_id': this.post('billId')}).order(['recommend desc']).page(page, size).countSelect();
     this.json(list);
   }
 };

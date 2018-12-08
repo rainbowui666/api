@@ -1,7 +1,7 @@
 const moment = require('moment');
 
 module.exports = class extends think.Model {
-  async getGroupList({name, page, size, province, userId}) {
+  async getGroupList(name, page, size, province, userId) {
     const model = this.model('group_bill').alias('gb');
     const whereMap = {};
     whereMap['gb.private'] = 0;

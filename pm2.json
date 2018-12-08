@@ -1,0 +1,15 @@
+{
+  "apps": [{
+    "name": "jyhs-product",
+    "script": "production.js",
+    "cwd": "/root/api",
+    "exec_mode": "fork",
+    "max_memory_restart": "2G",
+    "autorestart": true,
+    "node_args": [],
+    "args": [],
+    "env": {
+      
+    }
+  }]
+}

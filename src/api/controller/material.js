@@ -304,8 +304,9 @@ module.exports = class extends Base {
     }
   }
   async randomImageListAction() {
-    const pathList = await this.cache('material-hy-path');
+    let pathList = await this.cache('material-hy-path');
     if (think.isEmpty(pathList)) {
+      pathList = [];
       const path = this.config('image.material') + `/small/hy/`;
       const files = fs.readdirSync(path);
       files.forEach((filename) => {

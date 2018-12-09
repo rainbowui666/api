@@ -74,7 +74,7 @@ module.exports = class extends think.Model {
         group['status'] = 1;
       } else {
         group['status'] = 0;
-        await this.model('group_bill_id').where({'id': id}).update({'status': 0});
+        await this.model('group_bill').where({'id': id}).update({'status': 0});
       }
     }
 

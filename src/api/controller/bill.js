@@ -65,14 +65,23 @@ module.exports = class extends Base {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const id = this.post('billId');
-    const model = this.model('bill_detail');
-    const whereMap = {};
-    whereMap['bill_id'] = id;
-    if (!think.isEmpty(this.post('name'))) {
-      whereMap['name'] = ['like', `%${this.post('name')}%`];
+    const key = 'getDetailByBillIdAction'+id;
+    const cacheList = await this.cache(key);
+    if(cacheList){
+      this.json(cacheList);
+    }else{
+      const model = this.model('bill_detail');
+      const whereMap = {};
+      whereMap['bill_id'] = id;
+      if (!think.isEmpty(this.post('name'))) {
+        whereMap['name'] = ['like', `%${this.post('name')}%`];
+      }
+      const list = await model.where(whereMap).page(page, size).countSelect();
+      await this.cache(key,list, {
+        timeout: 36 * 60 * 60 * 1000
+      });
+      this.json(list);
     }
-    const list = await model.where(whereMap).page(page, size).countSelect();
-    return this.json(list);
   }
   async getDetailByBillIdAndCategoryAction() {
     const page = this.post('page') || 1;

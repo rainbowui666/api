@@ -3,7 +3,7 @@ const XLSX = require('xlsx');
 const moment = require('moment');
 const _ = require('lodash');
 const parse = require('url-parse');
-const rp = require('request-promise');
+// const rp = require('request-promise');
 
 module.exports = class extends Base {
   async addAction() {

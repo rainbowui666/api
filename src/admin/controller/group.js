@@ -77,9 +77,9 @@ module.exports = class extends Base {
     }
   }
   async deleteAction() {
-    const billId = this.model('group').field('bill_id').where({'id': this.post('groupId')}).find();
-    await this.model('bill_detail').where({'bill_id': billId}).delete();
-    await this.model('bill').where({'id': billId}).delete();
+    const billIdObject = await this.model('group_bill').field('bill_id').where({'id': this.post('groupId')}).find();
+    await this.model('bill_detail').where({bill_id: billIdObject.bill_id}).delete();
+    await this.model('bill').where({'id': billIdObject.bill_id}).delete();
     await this.model('group').delete(this.post('groupId'));
     await this.model('cart').where({'group_bill_id': this.post('groupId')}).delete();
     await this.model('group_bill').where({'id': this.post('groupId')}).delete();
@@ -266,12 +266,7 @@ module.exports = class extends Base {
       returnDataWithfreight.push([]);
     });
     const name = 'coral123-' + group.id + '.xlsx';
-    const path = this.config('image.bill') + '/' + name;
-    var buffer = xlsx.build([{name: '总单(不含运费)', data: totleReturnData}, {name: '明细(不含运费)', data: returnData}, {name: '总单(含运费)', data: totleReturnDataWithfreight}, {name: '明细(含运费)', data: returnDataWithfreight}]);
-    // const buffer = xlsx.build([{name: '总单', data: totleReturnData}, {name: '明细', data: returnData}], {'!merges': rangeList});
-    // const ws = fs.createWriteStream(path);
-    // await ws.write(buffer, 'utf8');
-    // this.json({'name': name});
+    const buffer = xlsx.build([{name: '总单(不含运费)', data: totleReturnData}, {name: '明细(不含运费)', data: returnData}, {name: '总单(含运费)', data: totleReturnDataWithfreight}, {name: '明细(含运费)', data: returnDataWithfreight}]);
     this.type = 'application/vnd.ms-excel';
     this.ctx.attachment(name);
     this.body = buffer;

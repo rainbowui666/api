@@ -1,6 +1,6 @@
 const Base = require('./base.js');
-const { createCanvas } = require('canvas');
-const fs = require('fs');
+// const { createCanvas } = require('canvas');
+// const fs = require('fs');
 // const images = require('images');
 
 module.exports = class extends Base {
@@ -27,14 +27,14 @@ module.exports = class extends Base {
     ]);
   }
   async imageAction() {
-    const canvas = createCanvas(300, 120);
-    const ctx = canvas.getContext('2d');
+    // const canvas = createCanvas(300, 120);
+    // const ctx = canvas.getContext('2d');
 
-    ctx.font = '14px "Microsoft YaHei"';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText('', 50, 100);
-    ctx.fillText(this.getNewline('全国满200元起发货包装费20元按货单满2500元打88折'), 84, 24, 204);
-    fs.writeFileSync('/Users/tony/Documents/2.png', canvas.toBuffer());
+    // ctx.font = '14px "Microsoft YaHei"';
+    // ctx.fillStyle = '#ffffff';
+    // ctx.fillText('', 50, 100);
+    // ctx.fillText(this.getNewline('全国满200元起发货包装费20元按货单满2500元打88折'), 84, 24, 204);
+    // fs.writeFileSync('/Users/tony/Documents/2.png', canvas.toBuffer());
     // images('/Users/tony/Documents/1.jpg').draw(images('/Users/tony/Documents/2.png'), 10, 50).save('/Users/tony/Documents/3.png');
   }
 };

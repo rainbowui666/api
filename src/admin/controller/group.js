@@ -2,7 +2,7 @@ const Base = require('./base.js');
 const moment = require('moment');
 const _ = require('lodash');
 const xlsx = require('node-xlsx');
-const fs = require('fs');
+// const fs = require('fs');
 module.exports = class extends Base {
   async userListAction() {
     const page = this.post('page') || 1;
@@ -77,9 +77,9 @@ module.exports = class extends Base {
     }
   }
   async deleteAction() {
-    const billId = this.model('group').field('bill_id').where({'id':this.post('groupId')}).find();
-    await this.model('bill_detail').where({'bill_id':billId}).delete();
-    await this.model('bill').where({'id':billId}).delete();
+    const billId = this.model('group').field('bill_id').where({'id': this.post('groupId')}).find();
+    await this.model('bill_detail').where({'bill_id': billId}).delete();
+    await this.model('bill').where({'id': billId}).delete();
     await this.model('group').delete(this.post('groupId'));
     await this.model('cart').where({'group_bill_id': this.post('groupId')}).delete();
     await this.model('group_bill').where({'id': this.post('groupId')}).delete();
@@ -183,7 +183,6 @@ module.exports = class extends Base {
     _itemList.push('共计');
     _itemList.push(totleSum);
     totleReturnData.push(_itemList);
-   
 
     const _itemListWithfreight = [];
     _itemListWithfreight.push('');

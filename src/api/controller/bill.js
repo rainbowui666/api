@@ -39,21 +39,30 @@ module.exports = class extends Base {
   }
   async getCategoryListAction() {
     const billId = this.post('billId');
-    const model = this.model('bill_detail').alias('d');
-    model.field(['d.*']).join({
-      table: 'material',
-      join: 'inner',
-      as: 'm',
-      on: ['d.material_id', 'm.id']
-    });
-    const categoryList = await model.field('distinct m.category code').where({bill_id: billId}).select();
-    const defineCategoryList = await this.controller('material', 'api').categoryAction();
-    const result = _.intersectionBy(defineCategoryList, categoryList, 'code');
-    const count = await this.model('bill_detail').where({bill_id: billId, material_id: 0}).count();
-    if (count > 0) {
-      result.push({'code': 'other', 'name': '未分类', 'desc': ''});
+    const key = 'getCategoryListAction' + billId;
+    const cacheList = await this.cache(key);
+    if (cacheList) {
+      this.json(cacheList);
+    } else {
+      const model = this.model('bill_detail').alias('d');
+      model.field(['d.*']).join({
+        table: 'material',
+        join: 'inner',
+        as: 'm',
+        on: ['d.material_id', 'm.id']
+      });
+      const categoryList = await model.field('distinct m.category code').where({bill_id: billId}).select();
+      const defineCategoryList = await this.controller('material', 'api').categoryAction();
+      const result = _.intersectionBy(defineCategoryList, categoryList, 'code');
+      const count = await this.model('bill_detail').where({bill_id: billId, material_id: 0}).count();
+      if (count > 0) {
+        result.push({'code': 'other', 'name': '未分类', 'desc': ''});
+      }
+      await this.cache(key, result, {
+        timeout: 36 * 60 * 60 * 1000
+      });
+      this.json(result);
     }
-    return this.json(result);
   }
 
   async getDetailByIdAction() {
@@ -64,20 +73,20 @@ module.exports = class extends Base {
   async getDetailByBillIdAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
-    const id = this.post('billId');
-    const key = 'getDetailByBillIdAction'+id;
+    const billId = this.post('billId');
+    const key = 'getDetailByBillIdAction' + billId;
     const cacheList = await this.cache(key);
-    if(cacheList){
+    if (cacheList) {
       this.json(cacheList);
-    }else{
+    } else {
       const model = this.model('bill_detail');
       const whereMap = {};
-      whereMap['bill_id'] = id;
+      whereMap['bill_id'] = billId;
       if (!think.isEmpty(this.post('name'))) {
         whereMap['name'] = ['like', `%${this.post('name')}%`];
       }
       const list = await model.where(whereMap).page(page, size).countSelect();
-      await this.cache(key,list, {
+      await this.cache(key, list, {
         timeout: 36 * 60 * 60 * 1000
       });
       this.json(list);
@@ -86,30 +95,41 @@ module.exports = class extends Base {
   async getDetailByBillIdAndCategoryAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
-    const model = this.model('bill_detail').alias('d');
-    model.field(['d.*']).join({
-      table: 'material',
-      join: 'left',
-      as: 'm',
-      on: ['d.material_id', 'm.id']
-    });
-    const whereMap = {};
-    whereMap['d.bill_id'] = this.post('billId');
-    if (this.post('category') === 'other') {
-      whereMap['d.material_id'] = 0;
-    } else if (!think.isEmpty(this.post('name'))) {
-      whereMap['d.name'] = ['like', `%${this.post('name')}%`];
+    const billId = this.post('billId');
+    const key = 'getDetailByBillIdAndCategoryAction' + billId;
+    // const cacheList = await this.cache(key);
+    const cacheList = null;
+    if (cacheList) {
+      this.json(cacheList);
     } else {
-      whereMap['m.category'] = this.post('category');
+      const model = this.model('bill_detail').alias('d');
+      model.field(['d.*']).join({
+        table: 'material',
+        join: 'left',
+        as: 'm',
+        on: ['d.material_id', 'm.id']
+      });
+      const whereMap = {};
+      whereMap['d.bill_id'] = this.post('billId');
+      if (this.post('category') === 'other') {
+        whereMap['d.material_id'] = 0;
+      } else if (!think.isEmpty(this.post('name'))) {
+        whereMap['d.name'] = ['like', `%${this.post('name')}%`];
+      } else {
+        whereMap['m.category'] = this.post('category');
+      }
+      const order = this.post('priceOrder');
+      let list = null;
+      if (think.isEmpty(order)) {
+        list = await model.where(whereMap).order(['d.recommend desc']).page(page, size).countSelect();
+      } else {
+        list = await model.where(whereMap).order(['d.price ' + order]).page(page, size).countSelect();
+      }
+      await this.cache(key, list, {
+        timeout: 36 * 60 * 60 * 1000
+      });
+      this.json(list);
     }
-    const order = this.post('priceOrder');
-    let list = null;
-    if (think.isEmpty(order)) {
-      list = await model.where(whereMap).order(['d.recommend desc']).page(page, size).countSelect();
-    } else {
-      list = await model.where(whereMap).order(['d.price ' + order]).page(page, size).countSelect();
-    }
-    this.json(list);
   }
   async getDetailByBillIdAndTypeAction() {
     const page = this.post('page') || 1;

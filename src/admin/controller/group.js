@@ -78,8 +78,11 @@ module.exports = class extends Base {
   }
   async deleteAction() {
     const billIdObject = await this.model('group_bill').field('bill_id').where({'id': this.post('groupId')}).find();
-    await this.model('bill_detail').where({bill_id: billIdObject.bill_id}).delete();
-    await this.model('bill').where({'id': billIdObject.bill_id}).delete();
+    const groupList = await this.model('group_bill').where({'bill_id': billIdObject.bill_id}).select();
+    if (_.size(groupList) === 1) {
+      await this.model('bill_detail').where({bill_id: billIdObject.bill_id}).delete();
+      await this.model('bill').where({'id': billIdObject.bill_id}).delete();
+    }
     await this.model('group').delete(this.post('groupId'));
     await this.model('cart').where({'group_bill_id': this.post('groupId')}).delete();
     await this.model('group_bill').where({'id': this.post('groupId')}).delete();

@@ -128,12 +128,7 @@ module.exports = class extends Base {
     });
     this.json(returnList);
   }
-  async checkNameAction() {
-    const material = await this.model('material').where({name: this.post('name')}).find();
-    if (!think.isEmpty(material)) {
-      this.fail('名字已经存在');
-    }
-  }
+
   async compatibilityAction() {
     const category = [
       {'code': 'jr', 'name': '兼容', 'desc': ''},

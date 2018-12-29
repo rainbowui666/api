@@ -7,7 +7,9 @@ module.exports = class extends Base {
   async deleteImageAction() {
     const material = await this.model('material').where({id: this.post('materialId')}).find();
     const filePath = think.config('image.material') + '/' + material.category + '/' + this.post('imgName');
+    const smallPath = this.config('image.material') + '/small/' + material.category + '/' + this.post('imgName');
     fs.unlinkSync(filePath);
+    fs.unlinkSync(smallPath);
   }
   async deleteAction() {
     const material = await this.model('material').where({id: this.post('materialId')}).find();
@@ -65,12 +67,16 @@ module.exports = class extends Base {
     const name = timestamp + '-' + code + '.' + tempName[1];
     const path = this.config('image.material') + '/' + category + '/' + name;
     const smallPath = this.config('image.material') + '/small/' + category + '/' + name;
+    await this.cache('material_image' + this.post('materialId'), null);
+    await this.cache('material_image_small' + this.get('materialId'), null);
     return new Promise((resolve, reject) => {
-      fs.createWriteStream(path);
+      fs.renameSync(img.path, path);
       const returnPath = `/${category}/${name}`;
-      images(path).size(150).save(smallPath, {
+
+      images(path + '').size(150).save(smallPath, {
         quality: 75
       });
+
       resolve(this.json({'imgPath': returnPath}));
     });
   }
@@ -116,5 +122,11 @@ module.exports = class extends Base {
     });
     const list = await model.where({'f.user_id': userId}).page(page, size).countSelect();
     this.json(list);
+  }
+  async checkNameAction() {
+    const material = await this.model('material').where({name: this.post('name')}).find();
+    if (!think.isEmpty(material)) {
+      this.fail('名字已经存在');
+    }
   }
 };

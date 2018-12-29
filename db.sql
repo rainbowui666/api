@@ -31,6 +31,9 @@ alter table user add column insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 alter table user modify column city varchar(50) null;
 alter table user modify column type varchar(20) DEFAULT 'yy';
 alter table user add column tag varchar(20);
+alter table user add column discount double(3,2);
+
+ 
 
 
 create table material(
@@ -71,7 +74,7 @@ alter table bill_detail change `size` `size` varchar(20) character set utf8 not 
 alter table bill_detail add column numbers int;
 alter table bill_detail add column limits int;
 alter table bill_detail add column recommend varchar(20);
-
+alter table bill_detail modify column size varchar(200);
 
 alter table bill_detail character set utf8;
 
@@ -143,6 +146,10 @@ alter table group_bill change `flash_desc` `flash_desc` varchar(500) character s
 alter table group_bill change `pickup_date` `pickup_date` TIMESTAMP;
 alter table group_bill change `freight` `freight` double(3,2);
 alter table group_bill add column private int  default 0;
+alter table group_bill add column supplier_freight int  DEFAULT 0;
+alter table group_bill add column delivery_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+alter table group_bill add column supplier_confirm int;
+
 
 
 create table cart(
@@ -290,7 +297,7 @@ INSERT INTO `provinces` VALUES ('xj', '新疆');
 INSERT INTO `provinces` VALUES ('xz', '西藏');
 INSERT INTO `provinces` VALUES ('yn', '云南');
 INSERT INTO `provinces` VALUES ('zj', '浙江');
-
+INSERT INTO `provinces` VALUES ('china', '全国');
 update citys set name='上海' where mark='shc';
 update citys set name='北京' where mark='bjc';
 update citys set name='天津' where mark='tjc';
@@ -320,4 +327,61 @@ create table pay(
     primary key(id)
 );
 
+create table user_type(
+    id int not null auto_increment,
+    name varchar(100),
+    code varchar(100),
+    description varchar(100),
+    primary key(id)
+);
 
+create table user_type_relation(
+    id int not null auto_increment,
+    type_id int not null,
+    user_id int not null,
+    primary key(id)
+);
+
+INSERT INTO `user_type` (name,code) VALUES ('鱼友','yy');
+INSERT INTO `user_type` (name,code) VALUES ('超级鱼友','cjyy');
+INSERT INTO `user_type` (name,code) VALUES ('超级团长','cjtz');
+INSERT INTO `user_type` (name,code) VALUES ('服务商','fws');
+INSERT INTO `user_type` (name,code) VALUES ('零售商','lss');
+INSERT INTO `user_type` (name,code) VALUES ('批发商','pfs');
+INSERT INTO `user_type` (name,code) VALUES ('器材商','qcs');
+INSERT INTO `user_type` (name,code) VALUES ('团购管理员','tggly');
+INSERT INTO `user_type` (name,code) VALUES ('超级管理员','admin');
+INSERT INTO `user_type` (name,code) VALUES ('用户管理员','yhgly');
+INSERT INTO `user_type` (name,code) VALUES ('交易管理员','jygly');
+INSERT INTO `user_type` (name,code) VALUES ('活动管理员','hdgly');
+INSERT INTO `user_type` (name,code) VALUES ('百科管理员','bkgly');
+
+
+insert into user_type_relation (user_id,type_id) select id,1 from user where type='yy';
+insert into user_type_relation (user_id,type_id) select id,2 from user where type='cjyy';
+insert into user_type_relation (user_id,type_id) select id,3 from user where type='cjtz';
+insert into user_type_relation (user_id,type_id) select id,4 from user where type='fws';
+insert into user_type_relation (user_id,type_id) select id,5 from user where type='lss';
+insert into user_type_relation (user_id,type_id) select id,6 from user where type='pfs';
+insert into user_type_relation (user_id,type_id) select id,7 from user where type='qcs';
+insert into user_type_relation (user_id,type_id) select id,8 from user where type='tggly';
+insert into user_type_relation (user_id,type_id) select id,9 from user where type='admin';
+insert into user_type_relation (user_id,type_id) select id,10 from user where type='yhgly';
+insert into user_type_relation (user_id,type_id) select id,11 from user where type='jygly';
+insert into user_type_relation (user_id,type_id) select id,12 from user where type='hdgly';
+insert into user_type_relation (user_id,type_id) select id,13 from user where type='bkgly';
+
+
+create table service(
+    id int not null auto_increment,
+    user_id int not null,
+    title varchar(100),
+    description varchar(2000),
+    longitude double(9,6),
+    latitude double(9,6),
+    province varchar(10),
+    location varchar(100),
+    scope int,
+    type int default 0,
+    primary key(id)
+);

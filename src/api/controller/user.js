@@ -6,7 +6,7 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const _ = require('lodash');
-
+const images = require('images');
 module.exports = class extends Base {
   async login() {
     const name = this.post('name');
@@ -91,40 +91,30 @@ module.exports = class extends Base {
 
       const userInfoJson = await rp(options);
       const userInfo = JSON.parse(userInfoJson);
-      // console.log('userInfo', userInfo);
-      // let city = userInfo.city ? await this.model('citys').field('mark').where({ name: userInfo.city }).find() : 'shc';
-      // let province = userInfo.province ? await this.model('provinces').field('code').where({ name: userInfo.province }).find() : 'sh';
 
-      // if (think.isEmpty(province)) {
-      //   province = 'sh';
-      //   city = 'shc';
-      // } else if (province === 'sh') {
-      //   city = 'shc';
-      // } else if (province === 'bj') {
-      //   city = 'bjc';
-      // } else if (province === 'tj') {
-      //   city = 'tjc';
-      // } else if (province === 'cq') {
-      //   city = 'cqc';
-      // }
-      // 注册
-      user = {
-        name: userInfo.nickname,
-        nickname: userInfo.nickname,
-        password: '0ff8ecf84a686258caeb350dbc8040d6',
-        city: 'shc',
-        phone: '18888888888',
-        type: 'yy',
-        province: 'sh',
-        country: userInfo.country,
-        openid: userInfo.openid,
-        headimgurl: userInfo.headimgurl || '',
-        sex: userInfo.sex || 1, // 性别 0：未知、1：男、2：女
-        province_name: userInfo.province,
-        city_name: userInfo.city,
-        unionid: userInfo.unionid
-      };
-      user.id = await this.model('user').add(user);
+      const userInfoObj = await this.model('user').where({ name: userInfo.nickname }).find();
+      if (!think.isEmpty(userInfoObj)) {
+        user = userInfoObj;
+      } else {
+        user = {
+          name: userInfo.nickname,
+          nickname: userInfo.nickname,
+          password: '0ff8ecf84a686258caeb350dbc8040d6',
+          city: 'shc',
+          phone: '18888888888',
+          type: 'yy',
+          province: 'sh',
+          country: userInfo.country,
+          openid: userInfo.openid,
+          headimgurl: userInfo.headimgurl || '',
+          sex: userInfo.sex || 1, // 性别 0：未知、1：男、2：女
+          province_name: userInfo.province,
+          city_name: userInfo.city,
+          unionid: userInfo.unionid
+        };
+        user.id = await this.model('user').add(user);
+        await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
+      }
     }
     // 更新登录信息
     await this.model('user').where({ id: user.id }).update({
@@ -271,5 +261,69 @@ module.exports = class extends Base {
         };
       }
     }
+  }
+  async getUserByTokenAction() {
+    const token = this.post('token');
+    const tokenSerivce = think.service('token');
+    const user = await tokenSerivce.getUser(token);
+    this.json(user);
+  }
+  async getByIdAction() {
+    const user = await this.model('user').where({id: this.post('userId')}).find();
+    const focus = await this.model('focus').where({'user_id': user.id, material_id: ['!=', null]}).count();
+    user.focusNo = focus || 0;
+    delete user.password;
+    this.json(user);
+  }
+  async updateAction() {
+    const userId = this.post('userId');
+
+    const user = {
+      city: this.post('city'),
+      province: this.post('province'),
+      phone: this.post('phone'),
+      code: this.post('code'),
+      address: this.post('address'),
+      description: this.post('description'),
+      contacts: this.post('contacts'),
+      status: this.post('status'),
+      point: this.post('point') || 0
+    };
+    await this.model('user').where({id: userId}).update(user);
+    if (think.isEmpty(this.post('city')) && !think.isEmpty(this.post('phone'))) {
+      const cityObj = await this.controller('tools', 'api').getCityByPhoneAction(this.post('phone'));
+      if (cityObj) {
+        this.model('user').where({ 'id': userId }).update({city: cityObj.mark, province: cityObj.area, city_name: cityObj.city, province_name: cityObj.province});
+      }
+    }
+    this.json('OK');
+  }
+  async uploadAvatarAction() {
+    const avatar = this.file('avatar');
+    const id = this.post('userId');
+    const files = fs.readdirSync(this.config('image.user'));
+    if (!think.isEmpty(files)) {
+      files.forEach((itm, index) => {
+        const filedId = itm.split('.')[0];
+        if (Number(filedId) === id) {
+          fs.unlinkSync(this.config('image.user') + '/' + itm);
+        }
+      });
+    }
+    const _name = avatar.name;
+    const tempName = _name.split('.');
+    const name = id + '.' + tempName[1];
+    const tempPath = this.config('image.user') + '/temp/' + name;
+    fs.renameSync(avatar.path, tempPath);
+    await this.cache('getAvatarAction' + id, null);
+    images(tempPath + '').size(150).save(this.config('image.user') + '/' + name, {
+      quality: 75
+    });
+  }
+
+  async changPasswordAction() {
+    await this.model('user').where({ id: this.post('userId') }).update({
+      password: md5(this.post('password'))
+    });
   }
 };

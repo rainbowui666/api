@@ -39,6 +39,7 @@ module.exports = class extends think.Logic {
     this.rules = {
       code: {string: true, required: true, trim: true},
       category: {string: true, required: true, trim: true},
+      materialId: {int: true, required: true, trim: true},
       img: {method: 'file', required: true}
     };
   }
@@ -61,6 +62,12 @@ module.exports = class extends think.Logic {
       page: {int: true, trim: true},
       size: {int: true, trim: true},
       materialId: {int: true, required: true, trim: true}
+    };
+  }
+  checkNameAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      name: {string: true, required: true, trim: true}
     };
   }
 };

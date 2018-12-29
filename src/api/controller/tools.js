@@ -51,10 +51,4 @@ module.exports = class extends Base {
     this.json(tempCity);
     return tempCity;
   }
-  async getUserByTokenAction() {
-    const token = this.post('token');
-    const tokenSerivce = think.service('token');
-    const user = await tokenSerivce.getUser(token);
-    this.json(user);
-  }
 };

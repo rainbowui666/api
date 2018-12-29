@@ -52,7 +52,7 @@ module.exports = class extends Base {
         on: ['d.material_id', 'm.id']
       });
       const categoryList = await model.field('distinct m.category code').where({bill_id: billId}).select();
-      const defineCategoryList = await this.controller('material', 'api').categoryAction();
+      const defineCategoryList = await this.controller('material', 'group').categoryAction();
       const result = _.intersectionBy(defineCategoryList, categoryList, 'code');
       const count = await this.model('bill_detail').where({bill_id: billId, material_id: 0}).count();
       if (count > 0) {

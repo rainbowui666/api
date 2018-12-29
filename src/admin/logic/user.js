@@ -1,26 +1,4 @@
 module.exports = class extends think.Logic {
-  updateAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      userId: {int: true, required: true, trim: true},
-      city: {string: true, trim: true},
-      province: {string: true, trim: true},
-      phone: {mobile: 'zh-CN', trim: true},
-      type: {string: true, trim: true},
-      code: {string: true, trim: true},
-      address: {string: true, trim: true},
-      description: {string: true, trim: true},
-      contacts: {string: true, trim: true},
-      status: {int: true, trim: true},
-      point: {int: true, trim: true}
-    };
-  }
-  getByIdAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      userId: { required: true, int: true, trim: true }
-    };
-  }
   getCartListAction() {
     this.allowMethods = 'post';
     this.rules = {
@@ -61,28 +39,38 @@ module.exports = class extends think.Logic {
     };
   }
 
-  uploadAvatarAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      avatar: {method: 'file', required: true}
-    };
-  }
-
-  changPasswordAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      userId: { required: true, int: true, trim: true },
-      password: {string: true, required: true, trim: true, length: {min: 1, max: 20}}
-    };
-  }
-
-  registerAction() {
+  addTypeAction() {
     this.allowMethods = 'post';
     this.rules = {
       name: {string: true, required: true, trim: true},
-      password1: {string: true, required: true, trim: true, length: {min: 1, max: 20}},
-      password2: {string: true, required: true, trim: true, length: {min: 1, max: 20}},
-      phone: {mobile: 'zh-CN', required: true, trim: true}
+      code: {string: true, required: true, trim: true},
+      description: {string: true, trim: true}
+    };
+  }
+
+  addUserTypeRelationAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      userId: {int: true, required: true, trim: true},
+      typeId: {int: true, required: true, trim: true}
+    };
+  }
+
+  deleteUserTypeRelationAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      userId: {int: true, required: true, trim: true},
+      typeId: {int: true, required: true, trim: true}
+    };
+  }
+
+  updateTypeAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      id: {int: true, required: true, trim: true},
+      name: {string: true, required: true, trim: true},
+      code: {string: true, required: true, trim: true},
+      description: {string: true, trim: true}
     };
   }
 };

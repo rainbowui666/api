@@ -23,4 +23,18 @@ module.exports = class extends think.Logic {
       code: {string: true, required: true, trim: true}
     };
   }
+  searchLocationAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      keyword: {string: true, required: true, trim: true},
+      province: {string: true, required: true, trim: true}
+    };
+  }
+  distanceAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      from: {string: true, required: true, trim: true},
+      to: {string: true, required: true, trim: true}
+    };
+  }
 };

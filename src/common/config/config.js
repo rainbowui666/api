@@ -18,7 +18,9 @@ module.exports = {
     partner_key: '3e7b1b2235b7fdeed18afbb299a64683', // 微信支付密钥
     notify_url: '', // 微信异步通知，例：https://www.nideshop.com/api/pay/notify
     accessKeyId: '1400101084', // 短信key
-    secretAccessKey: '7c1e62752a6cd88719ef61cbf3b93ccb'// 短信key
+    secretAccessKey: '7c1e62752a6cd88719ef61cbf3b93ccb', // 短信key
+    mapKey: 'KKJBZ-PPXA4-WDYUI-XF4IJ-XCIGF-UOFNQ',
+    mapSig: 'YX2OOpoRyQPwAa48kmgEfhmiRL0hQYy'
   },
   express: {
     // 快递物流信息查询使用的是快递鸟接口，申请地址：http://www.kdniao.com/

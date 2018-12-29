@@ -1,5 +1,7 @@
 const Base = require('./base.js');
 const _ = require('lodash');
+const rp = require('request-promise');
+
 module.exports = class extends Base {
   async getChinaAction() {
     const provinces = await this.model('provinces').select();
@@ -33,5 +35,34 @@ module.exports = class extends Base {
   async getProvincesByCodeAction(code) {
     const provinces = await this.model('provinces').where({'code': this.post('code')}).find();
     this.json(provinces);
+  }
+  async searchLocationAction() {
+    const region = await this.model('provinces').where({'code': this.post('province')}).find();
+    const options = {
+      method: 'GET',
+      url: 'https://apis.map.qq.com/ws/place/v1/suggestion/',
+      qs: {
+        region: region.name,
+        keyword: this.post('keyword'),
+        key: think.config('weixin.mapKey')
+      }
+    };
+
+    const sessionData = await rp(options);
+    this.json(JSON.parse(sessionData));
+  }
+  async distanceAction() {
+    const options = {
+      method: 'GET',
+      url: 'https://apis.map.qq.com/ws/distance/v1/',
+      qs: {
+        from: this.post('from'),
+        to: this.post('to'),
+        key: think.config('weixin.mapKey')
+      }
+    };
+
+    const sessionData = await rp(options);
+    this.json(JSON.parse(sessionData));
   }
 };

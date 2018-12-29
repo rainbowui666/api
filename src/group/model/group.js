@@ -3,16 +3,16 @@ const moment = require('moment');
 module.exports = class extends think.Model {
   async getGroupList(name, page, size, province, userId) {
     const model = this.model('group_bill').alias('gb');
-    const whereMap = {};
-    whereMap['gb.private'] = 0;
+    let whereMap = ` gb.private=0 `;
+
     if (!think.isEmpty(province)) {
-      whereMap['gb.province'] = province;
+      whereMap += ` and (gb.province='${province}' or gb.province='china') `;
     }
     if (!think.isEmpty(name)) {
-      whereMap['gb.name'] = ['like', `%${name}%`];
+      whereMap += ` and gb.name like '%${name}%' `;
     }
     if (!think.isEmpty(userId)) {
-      whereMap['gb.user_id'] = userId;
+      whereMap += ` and gb.user_id = '%${userId}%' `;
     }
     const list = await model.field(['gb.*', '(select type from user where id=gb.user_id) user_type', 'date_format(gb.end_date, \'%Y-%m-%d %H:%i\') end_date_format', 'gb.bill_id billId', 'b.name bill_name', 'c.name city_name', 'p.name province_name', 'u.name supplier_name'])
       .join({

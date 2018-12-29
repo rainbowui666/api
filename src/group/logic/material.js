@@ -1,11 +1,4 @@
 module.exports = class extends think.Logic {
-  checkNameAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      name: {string: true, required: true, trim: true}
-    };
-  }
-
   getAction() {
     this.allowMethods = 'post';
     this.rules = {

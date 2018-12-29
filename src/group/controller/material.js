@@ -107,7 +107,7 @@ module.exports = class extends Base {
       {'code': 'rtlujiaosh', 'name': '鹿角珊瑚', 'desc': '', 'pc': 'yg'},
       {'code': 'ygqt', 'name': '其它', 'desc': '', 'pc': 'yg'},
       {'code': 'dj', 'name': '灯具', 'desc': '', 'pc': 'sb'},
-      {'code': 'sb', 'name': '水泵', 'desc': '', 'pc': 'sb'},
+      {'code': 'shuib', 'name': '水泵', 'desc': '', 'pc': 'sb'},
       {'code': 'df', 'name': '蛋分', 'desc': '', 'pc': 'sb'},
       {'code': 'hxt', 'name': '活性炭', 'desc': '', 'pc': 'hc'},
       {'code': 'mfs', 'name': '麦饭石', 'desc': '', 'pc': 'hc'},
@@ -184,17 +184,25 @@ module.exports = class extends Base {
     }
     const materialList = await this.model('material').where(whereMap).order(['id DESC']).page(page, size).countSelect();
     const focusList = await this.model('focus').where({'user_id': this.getLoginUserId()}).select();
-    _.each(materialList.data, (material) => {
+    for (const material of materialList.data) {
       material.focus_id = null;
       _.each(focusList, (focus) => {
         if (material.id === focus.material_id) {
           material.focus_id = focus.id;
         }
       });
-    });
+      const types = await this.typeAction(material.category);
+      _.each(types, (type) => {
+        if (type.code === material.type) {
+          material['type_name'] = type.name;
+        }
+      });
+    }
+
     this.json(materialList);
   }
-  async typeAction() {
+  async typeAction(category) {
+    const _category = category || this.post('category');
     const types = [
       {'code': 'awtl', 'name': '凹尾塘鳢', 'desc': '', 'pc': 'hy'},
       {'code': 'bfy', 'name': '蝙蝠鱼', 'desc': '', 'pc': 'hy'},
@@ -276,7 +284,7 @@ module.exports = class extends Base {
       {'code': 'rtlujiaosh', 'name': '鹿角珊瑚', 'desc': '', 'pc': 'yg'},
       {'code': 'ygqt', 'name': '其它', 'desc': '', 'pc': 'yg'},
       {'code': 'dj', 'name': '灯具', 'desc': '', 'pc': 'sb'},
-      {'code': 'sb', 'name': '水泵', 'desc': '', 'pc': 'sb'},
+      {'code': 'shuib', 'name': '水泵', 'desc': '', 'pc': 'sb'},
       {'code': 'df', 'name': '蛋分', 'desc': '', 'pc': 'sb'},
       {'code': 'hxt', 'name': '活性炭', 'desc': '', 'pc': 'hc'},
       {'code': 'mfs', 'name': '麦饭石', 'desc': '', 'pc': 'hc'},
@@ -286,16 +294,18 @@ module.exports = class extends Base {
       {'code': 'csj', 'name': '测试剂', 'desc': '', 'pc': 'hc'}
     ];
 
-    if (this.post('category') === 'all') {
+    if (_category === 'all') {
       this.json(types);
+      return types;
     } else {
       const tp = [];
       _.each(types, (item) => {
-        if (item['pc'] === this.post('category')) {
+        if (item['pc'] === _category) {
           tp.push(item);
         }
       });
       this.json(tp);
+      return tp;
     }
   }
   async randomImageListAction() {

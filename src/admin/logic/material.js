@@ -10,9 +10,9 @@ module.exports = class extends think.Logic {
       tag: {string: true, trim: true},
       code: {string: true, required: true, trim: true},
       level: {string: true, required: true, trim: true},
-      price: {int: true, required: true, trim: true},
+      price: {int: true, trim: true, default: 0},
       compatibility: {string: true, required: true, trim: true},
-      description: {string: true, required: true, trim: true},
+      description: {string: true, trim: true},
       classification: {int: true, trim: true, default: 0}
     };
   }

@@ -5,7 +5,7 @@ module.exports = class extends think.Logic {
       page: {int: true, trim: true},
       size: {int: true, trim: true},
       title: {string: true, trim: true},
-      province: {string: true, required: true, trim: true}
+      province: {string: true, trim: true}
     };
   }
   getByUserIdAction() {

@@ -37,4 +37,10 @@ module.exports = class extends think.Logic {
       to: {string: true, required: true, trim: true}
     };
   }
+  getProvinceByLocationAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      location: {string: true, required: true, trim: true}
+    };
+  }
 };

@@ -26,6 +26,11 @@ module.exports = class extends Base {
   }
   async getCityByProvinceAction() {
     const citys = await this.model('citys').where({'area': this.post('province')}).select();
+    const user = this.getLoginUser();
+    if (user && user.type.indexOf('lss') >= 0) {
+      const china = await this.model('citys').where({'area': 'china'}).find();
+      citys.unshift(china);
+    }
     this.json(citys);
   }
   async getProvincesAction() {
@@ -64,5 +69,20 @@ module.exports = class extends Base {
 
     const sessionData = await rp(options);
     this.json(JSON.parse(sessionData));
+  }
+  async getProvinceByLocationAction(location) {
+    const options = {
+      method: 'GET',
+      url: 'https://apis.map.qq.com/ws/geocoder/v1/',
+      qs: {
+        location: location || this.post('location'),
+        get_poi: 0,
+        key: think.config('weixin.mapKey')
+      }
+    };
+
+    const sessionData = await rp(options);
+    this.json(JSON.parse(sessionData));
+    return sessionData;
   }
 };

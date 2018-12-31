@@ -12,17 +12,6 @@ module.exports = {
     'bill/getDetailByBillId',
     'bill/getDetailByBillIdAndCategory',
     'group/list',
-    'group/get',
-    'notice/get',
-    'notice/handleWxNotify',
-    'notice/check',
-    'material/categoryAll',
-    'material/category',
-    'material/list',
-    'material/get',
-    'material/getImage',
-    'material/getImageSmall',
-    'material/randomList',
-    'material/randomImageList'
+    'group/get'
   ]
 };

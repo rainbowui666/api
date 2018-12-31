@@ -13,7 +13,7 @@ module.exports = class extends Base {
       whereMap['s.title|s.description'] = ['like', '%' + title + '%'];
     }
     const model = this.model('service').alias('s');
-    model.field(['s.*', 'u.name', 'u.province_name', 'u.city_name']).join({
+    model.field(['s.*', 'u.name', 'u.province_name', 'u.city_name', 'u.phone']).join({
       table: 'user',
       join: 'inner',
       as: 'u',

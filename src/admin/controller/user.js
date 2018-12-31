@@ -24,21 +24,7 @@ module.exports = class extends Base {
     await this.controller('cart', 'admin').deleteAction(this.post('cartId'));
   }
 
-  async getByTypeAction() {
-    const page = this.post('page') || 1;
-    const size = this.post('size') || 10;
-    const province = this.post('province');
-    const whereMap = {};
-    whereMap['type'] = this.post('type');
-    if (!think.isEmpty(province)) {
-      whereMap['province'] = province;
-    }
-    const users = await this.model('user').where(whereMap).order(['id DESC']).page(page, size).countSelect();
-    for (const item of users.data) {
-      delete item.password;
-    }
-    this.json(users);
-  }
+ 
 
   async listAction() {
     const page = this.post('page') || 1;

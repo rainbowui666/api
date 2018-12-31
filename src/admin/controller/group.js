@@ -38,44 +38,8 @@ module.exports = class extends Base {
     this.type = 'image/svg+xml';
     this.body = qrService.getQrByUrl(url);
   }
-  async finishAction() {
-    const endDate = this.service('date', 'api').convertWebDateToSubmitDateTime();
-    await this.model('group_bill').where({id: this.post('groupId')}).update({status: 0, 'end_date': endDate});
-    const group = await this.model('group_bill').where({id: this.post('groupId')}).find();
-    const model = this.model('cart').alias('c');
-    model.field(['u.*']).join({
-      table: 'user',
-      join: 'inner',
-      as: 'u',
-      on: ['c.user_id', 'u.id']
-    });
-    const userList = await model.where({'u.openid': ['!=', null], 'c.sum': ['!=', 0], 'c.group_bill_id': this.post('groupId')}).select();
-    const wexinService = this.service('weixin', 'api');
-    const token = await wexinService.getToken();
-    _.each(userList, (item) => {
-      wexinService.sendFinishGroupMessage(_.values(token)[0], item, group);
-    });
-    this.success(true);
-  }
-  async backAction() {
-    const group = await this.model('group_bill').where({id: this.post('groupId')}).find();
-    group.current_step = group.current_step - 1;
-    await this.model('group_bill').where({id: this.post('groupId')}).update({current_step: group.current_step});
-  }
-  async nextAction() {
-    const group = await this.model('group_bill').where({id: this.post('groupId')}).find();
-    if (Number(group.status) === 1) {
-      this.fail('请先结束团购');
-    } else {
-      const cart = await this.model('cart').field('count(is_pay) count').where({status: 1, is_pay: 0, is_confirm: 1, sum: ['!=', 0], group_bill_id: this.post('groupId')}).find();
-      if (cart.count > 0) {
-        this.fail('鱼友尚未全部支付');
-      } else {
-        group.current_step = group.current_step + 1;
-        await this.model('group_bill').where({id: this.post('groupId')}).update({current_step: group.current_step});
-      }
-    }
-  }
+
+  
   async deleteAction() {
     const billIdObject = await this.model('group_bill').field('bill_id').where({'id': this.post('groupId')}).find();
     const groupList = await this.model('group_bill').where({'bill_id': billIdObject.bill_id}).select();

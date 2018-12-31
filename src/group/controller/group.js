@@ -1,5 +1,6 @@
 const Base = require('./base.js');
 const moment = require('moment');
+const _ = require('lodash');
 
 // const { createCanvas } = require('canvas');
 // const fs = require('fs');
@@ -22,21 +23,21 @@ module.exports = class extends Base {
     return this.json(group);
   }
   async deliveryAction() {
-    const group = this.model('group').where({'id': this.post('groupId')}).find();
+    const group = await this.model('group_bill').where({'id': this.post('groupId')}).find();
     const nextSetp = Number(group.current_step) + 1;
-    await this.model('group').where({'id': this.post('groupId')}).update({'supplier_freight': this.post('supplierFreight'), 'current_step': nextSetp});
+    await this.model('group_bill').where({'id': this.post('groupId')}).update({'supplier_freight': this.post('supplierFreight'), 'current_step': nextSetp});
     return this.success('操作成功');
   }
   async supplierConfirmAction() {
-    const group = this.model('group').where({'id': this.post('groupId')}).find();
+    const group = await this.model('group_bill').where({'id': this.post('groupId')}).find();
     const nextSetp = Number(group.current_step) + 1;
-    await this.model('group').where({'id': this.post('groupId')}).update({'supplier_confirm': this.post('supplierConfirm'), 'current_step': nextSetp});
+    await this.model('group_bill').where({'id': this.post('groupId')}).update({'supplier_confirm': this.post('supplierConfirm'), 'current_step': nextSetp});
     return this.success('操作成功');
   }
   async updatePickupAddressAction() {
-    const group = this.model('group').where({'id': this.post('groupId')}).find();
+    const group = await this.model('group_bill').where({'id': this.post('groupId')}).find();
     const nextSetp = Number(group.current_step) + 1;
-    await this.model('group').where({'id': this.post('groupId')}).update({'supplier_confirm': this.post('supplierConfirm'), 'current_step': nextSetp});
+    await this.model('group_bill').where({'id': this.post('groupId')}).update({'pickup_address': this.post('pickupAddress'), 'current_step': nextSetp});
     return this.success('操作成功');
   }
   async activityAction() {
@@ -46,7 +47,7 @@ module.exports = class extends Base {
       {'code': 'jp', 'name': '精品推荐', 'desc': ''}
     ]);
   }
-  async userListAction() {
+  async myGroupListAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const name = this.post('name') || '';
@@ -96,10 +97,83 @@ module.exports = class extends Base {
       const sumObj = await this.model('cart').field(['sum(sum) sum']).where({'group_bill_id': item['id'], 'is_confirm': 1}).find();
       item['sum'] = sumObj.sum || 0;
     }
+    this.json(list);
     return list;
   }
-  async payAction() {
+  async finishAction() {
+    const endDate = this.service('date', 'api').convertWebDateToSubmitDateTime();
+    await this.model('group_bill').where({id: this.post('groupId')}).update({status: 0, 'end_date': endDate,'current_step':1});
+    const group = await this.model('group_bill').where({id: this.post('groupId')}).find();
+    const model = this.model('cart').alias('c');
+    model.field(['u.*']).join({
+      table: 'user',
+      join: 'inner',
+      as: 'u',
+      on: ['c.user_id', 'u.id']
+    });
+    const userList = await model.where({'u.openid': ['!=', null], 'c.sum': ['!=', 0], 'c.group_bill_id': this.post('groupId')}).select();
+    const wexinService = this.service('weixin', 'api');
+    const token = await wexinService.getToken();
+    _.each(userList, (item) => {
+      wexinService.sendFinishGroupMessage(_.values(token)[0], item, group);
+    });
+    this.success(true);
   }
+
+  async addAction() {
+    const user = this.getLoginUser();
+    const effortDate = this.service('date', 'api').convertWebDateToSubmitDateTime(this.post('endDate'));
+    if (!moment(effortDate).isAfter(moment())) {
+      this.fail('结束日期必须大于今天');
+    } else {
+      const group = {
+        name: this.post('name'),
+        contacts: user.name,
+        phone: user.phone,
+        end_date: moment(effortDate).format(this.config('date_format')),
+        pickup_address: '',
+        pickup_date: new Date(),
+        pay_type: 0,
+        pay_name: '',
+        freight: this.post('freight'),
+        description: this.post('description'),
+        bill_id: this.post('billId'),
+        user_id: user.id,
+        city: this.post('city'),
+        province: this.post('province'),
+        private: this.post('private'),
+        top_freight: this.post('topFreight')
+      };
+      const groupId = await this.model('group_bill').add(group);
+      const city = await this.model('citys').where({'mark': this.post('city')}).find();
+      group['id'] = groupId;
+      group['city_name'] = city.name;
+      const wexinService = this.service('weixin', 'api');
+      const userList = await this.model('user').where({province: group.province, openid: ['!=', null]}).select();
+      const token = await wexinService.getToken();
+      _.each(userList, (item) => {
+        wexinService.sendOpenGroupMessage(_.values(token)[0], item, group);
+      });
+    }
+  }
+
+  async backAction() {
+    const group = await this.model('group_bill').where({id: this.post('groupId')}).find();
+    group.current_step = group.current_step - 1;
+    await this.model('group_bill').where({id: this.post('groupId')}).update({current_step: group.current_step});
+    this.success(true);
+  }
+  async nextAction() {
+    const group = await this.model('group_bill').where({id: this.post('groupId')}).find();
+    if (Number(group.status) === 1) {
+      this.fail('请先结束团购');
+    } else {
+      group.current_step = group.current_step + 1;
+      await this.model('group_bill').where({id: this.post('groupId')}).update({current_step: group.current_step});
+    }
+    this.success(true);
+  }
+
   async imageAction() {
     // const canvas = createCanvas(300, 120);
     // const ctx = canvas.getContext('2d');

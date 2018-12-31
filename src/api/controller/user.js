@@ -326,4 +326,26 @@ module.exports = class extends Base {
       password: md5(this.post('password'))
     });
   }
+
+  async getByTypeAction() {
+    const page = this.post('page') || 1;
+    const size = this.post('size') || 10;
+    const province = this.post('province');
+    const whereMap = {};
+    const type = this.post('type');
+    if(type==='pfs' || type==='lss'|| type==='cjtz'|| type==='tz'|| type==='qcs'){
+      whereMap['type'] = type;
+      if (!think.isEmpty(province)) {
+        whereMap['province'] = province;
+      }
+      const users = await this.model('user').where(whereMap).order(['id DESC']).page(page, size).countSelect();
+      for (const item of users.data) {
+        delete item.password;
+      }
+      this.json(users);
+    }else{
+      this.json([]);
+    }
+    
+  }
 };

@@ -19,7 +19,10 @@ module.exports = class extends think.Controller {
           if (this.ctx.controller === 'ad' && this.ctx.state.user.type !== 'xtgly') {
             return this.fail(401, '无权访问');
           }
-          if ((this.ctx.controller === 'service' || this.ctx.controller === 'group' || this.ctx.controller === 'cart' || this.ctx.controller === 'bill') && this.ctx.state.user.type !== 'tggly') {
+          if ((this.ctx.controller === 'group' || this.ctx.controller === 'cart' || this.ctx.controller === 'bill') && this.ctx.state.user.type !== 'tggly') {
+            return this.fail(401, '无权访问');
+          }
+          if (this.ctx.controller === 'service'  && this.ctx.state.user.type !== 'yhgly') {
             return this.fail(401, '无权访问');
           }
           if (this.ctx.controller === 'user' && this.ctx.state.user.type !== 'yhgly') {

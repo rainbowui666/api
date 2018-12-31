@@ -19,14 +19,6 @@ module.exports = class extends think.Logic {
     };
   }
 
-  getByTypeAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      type: { required: true, string: true, trim: true },
-      city: { string: true, trim: true }
-    };
-  }
-
   listAction() {
     this.allowMethods = 'post';
     this.rules = {

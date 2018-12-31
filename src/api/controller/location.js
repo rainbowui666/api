@@ -52,7 +52,6 @@ module.exports = class extends Base {
         key: think.config('weixin.mapKey')
       }
     };
-
     const sessionData = await rp(options);
     this.json(JSON.parse(sessionData));
   }

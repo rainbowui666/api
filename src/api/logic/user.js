@@ -95,4 +95,12 @@ module.exports = class extends think.Logic {
       password: {string: true, required: true, trim: true, length: {min: 1, max: 20}}
     };
   }
+
+  getByTypeAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      type: { required: true, string: true, trim: true },
+      city: { string: true, trim: true }
+    };
+  }
 };

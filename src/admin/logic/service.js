@@ -9,7 +9,7 @@ module.exports = class extends think.Logic {
       userId: {int: true, required: true, trim: true},
       longitude: {float: true, required: true, trim: true},
       latitude: {float: true, required: true, trim: true},
-      type: {int: true, trim: true},
+      type: {string: true, required: true, trim: true},
       scope: {int: true, trim: true}
     };
   }

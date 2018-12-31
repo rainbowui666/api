@@ -31,18 +31,7 @@ module.exports = class extends think.Logic {
       private: {int: true, trim: true, default: 0}
     };
   }
-  backAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      groupId: {int: true, required: true, trim: true}
-    };
-  }
-  nextAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      groupId: {int: true, required: true, trim: true}
-    };
-  }
+
   addGroupQrAction() {
     this.allowMethods = 'post';
     this.rules = {
@@ -60,12 +49,7 @@ module.exports = class extends think.Logic {
       groupId: {int: true, required: true, trim: true}
     };
   }
-  finishAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      groupId: {int: true, required: true, trim: true}
-    };
-  }
+  
   privateQrAction() {
     this.allowMethods = 'post';
     this.rules = {

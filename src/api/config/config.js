@@ -14,7 +14,16 @@ module.exports = {
     'user/getAvatar',
     'ad/getNumber',
     'notice/get',
+    'notice/handleWxNotify',
     'notice/check',
+    'material/categoryAll',
+    'material/category',
+    'material/list',
+    'material/get',
+    'material/getImage',
+    'material/getImageSmall',
+    'material/randomList',
+    'material/randomImageList',
     'location/getChina',
     'location/getProvinces'
   ]

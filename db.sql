@@ -382,6 +382,6 @@ create table service(
     province varchar(10),
     location varchar(100),
     scope int,
-    type int default 0,
+    type varchar(100),
     primary key(id)
 );

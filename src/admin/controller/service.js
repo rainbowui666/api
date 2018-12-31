@@ -9,6 +9,7 @@ module.exports = class extends Base {
     const longitude = this.post('longitude');
     const latitude = this.post('latitude');
     const scope = this.post('scope');
+    const type = this.post('type');
     await this.model('service').add({
       title,
       description,
@@ -17,6 +18,7 @@ module.exports = class extends Base {
       longitude,
       latitude,
       scope,
+      type,
       'user_id': userId
     });
   }

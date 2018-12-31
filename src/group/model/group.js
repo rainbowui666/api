@@ -94,8 +94,12 @@ module.exports = class extends think.Model {
       }).where({'g.id': id}).find();
     group['supplierName'] = supplierNameObj ? supplierNameObj.supplierName : '';
 
-    const sumObj = await this.model('cart').field(['sum(sum) sum']).where({'group_bill_id': id, 'is_confirm': 1}).find();
+    const sumObj = await this.model('cart').field(['sum(sum) sum','count(10) cartCount']).where({'group_bill_id': id, 'is_confirm': 1}).find();
+    const detailCountSql = `select sum(bill_detail_num) - sum(lost_num) - sum(damage_num) detailCount from cart_detail where cart_id in (select u.id from (select c.id from cart c where c.group_bill_id=${id}) u)`;
+    const detailCount =  await this.query(detailCountSql);
     group['sum'] = sumObj.sum || 0;
+    group['cart_count'] = sumObj.cartCount || 0;
+    group['detail_count'] = detailCount[0].detailCount || 0;
     return group;
   }
 };

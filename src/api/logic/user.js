@@ -52,6 +52,12 @@ module.exports = class extends think.Logic {
     };
   }
 
+  getLocationAvatar() {
+    this.rules = {
+      userId: {int: true, required: true, trim: true}
+    };
+  }
+
   getUserByTokenAction() {
     this.allowMethods = 'post';
     this.rules = {

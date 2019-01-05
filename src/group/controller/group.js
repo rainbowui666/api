@@ -3,8 +3,8 @@ const moment = require('moment');
 const _ = require('lodash');
 
 // const { createCanvas } = require('canvas');
-// const fs = require('fs');
-// const images = require('images');
+const fs = require('fs');
+const images = require('images');
 
 module.exports = class extends Base {
   async listAction() {
@@ -37,8 +37,27 @@ module.exports = class extends Base {
   async updatePickupAddressAction() {
     const group = await this.model('group_bill').where({'id': this.post('groupId')}).find();
     const nextSetp = Number(group.current_step) + 1;
-    await this.model('group_bill').where({'id': this.post('groupId')}).update({'pickup_address': this.post('pickupAddress'), 'current_step': nextSetp});
+    const now = this.post('effortDate') ? this.service('date', 'api').convertWebDateToSubmitDateTime() : null;
+    await this.model('group_bill').where({'id': this.post('groupId')}).update({'pickup_date': now, 'pickup_address': this.post('pickupAddress'), 'current_step': nextSetp});
     return this.success('操作成功');
+  }
+  async checkSupplierDeliveryAction() {
+    await this.model('group_bill').where({'current_step': 3, 'supplier_freight': 0, 'pickup_date': ['<=', 'date_sub(now(), interval 36 hour)']}).update({
+      'current_step': 7
+    });
+    // 退款
+  }
+  async checkSupplierConfirmAction() {
+    await this.model('group_bill').where({'current_step': 6, 'supplier_freight': 0, 'pickup_date': ['<=', 'date_sub(now(), interval 24 hour)']}).update({
+      'current_step': 7
+    });
+    // 打钱给团长
+  }
+  async delayPickupDateAction() {
+    const date = moment().add(36, 'h').format('YYYY-MM-DD HH:mm:ss');
+    const delayDate = this.service('date', 'api').convertWebDateToSubmitDateTime(date);
+    await this.model('group_bill').where({'id': this.post('groupId')}).update({'pickup_date': delayDate});
+    this.success('操作成功');
   }
   async activityAction() {
     this.json([
@@ -102,7 +121,7 @@ module.exports = class extends Base {
   }
   async finishAction() {
     const endDate = this.service('date', 'api').convertWebDateToSubmitDateTime();
-    await this.model('group_bill').where({id: this.post('groupId')}).update({status: 0, 'end_date': endDate,'current_step':1});
+    await this.model('group_bill').where({id: this.post('groupId')}).update({status: 0, 'end_date': endDate, 'current_step': 1});
     const group = await this.model('group_bill').where({id: this.post('groupId')}).find();
     const model = this.model('cart').alias('c');
     model.field(['u.*']).join({
@@ -122,38 +141,42 @@ module.exports = class extends Base {
 
   async addAction() {
     const user = this.getLoginUser();
-    const effortDate = this.service('date', 'api').convertWebDateToSubmitDateTime(this.post('endDate'));
-    if (!moment(effortDate).isAfter(moment())) {
-      this.fail('结束日期必须大于今天');
+    if (user.phone && user.phone === '18888888888') {
+      this.fail('请在我的设置里修改正确的手机号');
     } else {
-      const group = {
-        name: this.post('name'),
-        contacts: user.name,
-        phone: user.phone,
-        end_date: moment(effortDate).format(this.config('date_format')),
-        pickup_address: '',
-        pickup_date: new Date(),
-        pay_type: 0,
-        pay_name: '',
-        freight: this.post('freight'),
-        description: this.post('description'),
-        bill_id: this.post('billId'),
-        user_id: user.id,
-        city: this.post('city'),
-        province: this.post('province'),
-        private: this.post('private'),
-        top_freight: this.post('topFreight')
-      };
-      const groupId = await this.model('group_bill').add(group);
-      const city = await this.model('citys').where({'mark': this.post('city')}).find();
-      group['id'] = groupId;
-      group['city_name'] = city.name;
-      const wexinService = this.service('weixin', 'api');
-      const userList = await this.model('user').where({province: group.province, openid: ['!=', null]}).select();
-      const token = await wexinService.getToken();
-      _.each(userList, (item) => {
-        wexinService.sendOpenGroupMessage(_.values(token)[0], item, group);
-      });
+      const effortDate = this.service('date', 'api').convertWebDateToSubmitDateTime(this.post('endDate'));
+      if (!moment(effortDate).isAfter(moment())) {
+        this.fail('结束日期必须大于今天');
+      } else {
+        const group = {
+          name: this.post('name'),
+          contacts: user.name,
+          phone: user.phone,
+          end_date: moment(effortDate).format(this.config('date_format')),
+          pickup_address: '',
+          pickup_date: new Date(),
+          pay_type: 0,
+          pay_name: '',
+          freight: this.post('freight'),
+          description: this.post('description'),
+          bill_id: this.post('billId'),
+          user_id: user.id,
+          city: this.post('city'),
+          province: this.post('province'),
+          private: this.post('private'),
+          top_freight: this.post('topFreight')
+        };
+        const groupId = await this.model('group_bill').add(group);
+        const city = await this.model('citys').where({'mark': this.post('city')}).find();
+        group['id'] = groupId;
+        group['city_name'] = city.name;
+        const wexinService = this.service('weixin', 'api');
+        const userList = await this.model('user').where({province: group.province, openid: ['!=', null]}).select();
+        const token = await wexinService.getToken();
+        _.each(userList, (item) => {
+          wexinService.sendOpenGroupMessage(_.values(token)[0], item, group);
+        });
+      }
     }
   }
 
@@ -163,6 +186,7 @@ module.exports = class extends Base {
     await this.model('group_bill').where({id: this.post('groupId')}).update({current_step: group.current_step});
     this.success(true);
   }
+
   async nextAction() {
     const group = await this.model('group_bill').where({id: this.post('groupId')}).find();
     if (Number(group.status) === 1) {
@@ -172,6 +196,38 @@ module.exports = class extends Base {
       await this.model('group_bill').where({id: this.post('groupId')}).update({current_step: group.current_step});
     }
     this.success(true);
+  }
+
+  async groupEvidenceUploadAction() {
+    const user = this.getLoginUser();
+    if (user.type.indexOf('tz') >= 0) {
+      const groupId = this.post('groupId');
+      const img = this.file('img');
+      const _name = img.name;
+      const tempName = _name.split('.');
+      let timestamp = Date.parse(new Date());
+      timestamp = timestamp / 1000;
+      const name = timestamp + '.' + tempName[1];
+      const path = this.config('image.evidence') + '/' + name;
+      const smallPath = this.config('image.evidence') + '/small/' + name;
+      fs.renameSync(img.path, path);
+      images(path + '').size(150).save(smallPath, {
+        quality: 75
+      });
+      await this.model('damage_evidence').add({
+        group_id: groupId,
+        path: name
+      });
+      this.success(true);
+    } else {
+      this.fail('权限不足');
+    }
+  }
+
+  async groupEvidenceListAction() {
+    const groupId = this.post('groupId');
+    const list = await this.model('damage_evidence').where({group_id: groupId}).select();
+    this.json(list);
   }
 
   async imageAction() {

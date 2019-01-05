@@ -83,4 +83,23 @@ module.exports = class extends think.Logic {
       groupId: {int: true, required: true, trim: true}
     };
   }
+  groupEvidenceUploadAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      groupId: {int: true, required: true, trim: true},
+      img: {method: 'file', required: true}
+    };
+  }
+  groupEvidenceListAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      groupId: {int: true, required: true, trim: true}
+    };
+  }
+  delayPickupDateAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      groupId: {int: true, required: true, trim: true}
+    };
+  }
 };

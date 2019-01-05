@@ -123,6 +123,7 @@ alter table group_bill add column province varchar(20);
 alter table group_bill add column current_step int not null DEFAULT 0;
 alter table group_bill add column top_freight int  DEFAULT 0;
 alter table group_bill add column activity_code varchar(10);
+alter table group_bill add column damage_message varchar(1000);
 
 
 
@@ -383,5 +384,14 @@ create table service(
     location varchar(100),
     scope int,
     type varchar(100),
+    primary key(id)
+);
+
+
+create table damage_evidence(
+    id int not null auto_increment,
+    group_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    path varchar(2000),
     primary key(id)
 );

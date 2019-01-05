@@ -2,16 +2,20 @@
 module.exports = {
   // 可以公开访问的Controller
   publicController: [
+    'region'
   ],
 
   // 可以公开访问的Action
   publicAction: [
+    'comment/list',
+    'comment/count',
     'user/loginByCode',
     'user/loginByPassword',
     'user/checkName',
     'user/forgetPassword',
     'user/register',
     'user/getAvatar',
+    'user/getLocationAvatar',
     'ad/getNumber',
     'notice/get',
     'notice/handleWxNotify',

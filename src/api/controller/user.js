@@ -7,6 +7,7 @@ const url = require('url');
 const fs = require('fs');
 const _ = require('lodash');
 const images = require('images');
+
 module.exports = class extends Base {
   async login() {
     const name = this.post('name');
@@ -205,16 +206,17 @@ module.exports = class extends Base {
     }
   }
 
-  async getAvatarAction() {
-    const userId = this.get('userId');
-    const key = 'getAvatarAction' + userId;
+  async getAvatarAction(_userId) {
+    const userId = _userId || this.get('userId');
+    const key = 'getAvatarAction1' + userId;
     const avatar = await this.cache(key);
     if (avatar) {
       this.type = 'image/jpeg';
       this.body = Buffer.from(avatar, 'base64');
+      return this.body;
     } else {
       const user = await this.model('user').field(['headimgurl']).where({ id: userId }).find();
-      if (!_.isEmpty(user.headimgurl)) {
+      if (user.headimgurl) {
         return new Promise((resolve, reject) => {
           const urlObject = url.parse(user.headimgurl);
           const options = {
@@ -259,6 +261,7 @@ module.exports = class extends Base {
           this.cache(key, decodeImg);
           this.body = decodeImg;
         };
+        return this.body;
       }
     }
   }
@@ -333,7 +336,7 @@ module.exports = class extends Base {
     const province = this.post('province');
     const whereMap = {};
     const type = this.post('type');
-    if(type==='pfs' || type==='lss'|| type==='cjtz'|| type==='tz'|| type==='qcs'){
+    if (type === 'pfs' || type === 'lss' || type === 'cjtz' || type === 'tz' || type === 'qcs') {
       whereMap['type'] = type;
       if (!think.isEmpty(province)) {
         whereMap['province'] = province;
@@ -343,9 +346,30 @@ module.exports = class extends Base {
         delete item.password;
       }
       this.json(users);
-    }else{
+    } else {
       this.json([]);
     }
-    
+  }
+  async getLocationAvatarAction() {
+    const userId = this.get('userId');
+    const key = 'getLocationAvatarAction' + userId;
+    const avatar = await this.cache(key);
+    if (avatar) {
+      this.type = 'image/png';
+      this.body = Buffer.from(avatar, 'base64');
+      return this.body;
+    } else {
+      const userAvatar = await this.controller('user').getAvatarAction(userId);
+      const bg = this.config('image.user') + '/bg.png';
+      const temp = this.config('image.user') + '/temp.png';
+      const locationUser = this.config('image.user') + '/locationUser.png';
+      fs.writeFileSync(temp, userAvatar);
+      images(bg).draw(images(temp).resize(32), 2, 2).save(locationUser);
+      const image = fs.readFileSync(locationUser);
+      const decodeImg = Buffer.from(image.toString('base64'), 'base64');
+      this.type = 'image/png';
+      this.cache(key, decodeImg);
+      this.body = decodeImg;
+    }
   }
 };

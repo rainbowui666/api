@@ -7,7 +7,7 @@ module.exports = class extends Base {
       title: this.post('title'),
       time: this.post('time')
     };
-    const game = await this.model('game').getScore(5157);
+    const game = await this.model('game').getScore(this.getLoginUserId());
     if (think.isEmpty(game)) {
       await this.model('game').add(userObj);
       this.success('ok');

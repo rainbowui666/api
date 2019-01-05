@@ -3,6 +3,25 @@ const QcloudSms = require('qcloudsms_js');
 const rp = require('request-promise');
 
 module.exports = class extends Base {
+  async validateVerificationAction() {
+    const requestId = this.post('requestId');
+    const code = this.post('code');
+    const userId = this.post('userId');
+    const phone = this.post('phone');
+    const auth = await this.cache(requestId);
+    if (think.isEmpty(code)) {
+      this.fail('验证码失效');
+    } else if (code !== auth) {
+      this.fail('验证码不正确');
+    } else {
+      if (userId) {
+        await this.model('user').where({'id': userId}).update({'phone': phone});
+        this.success(true);
+      } else {
+        this.fail('用户不存在');
+      }
+    }
+  }
   async sendVerificationAction() {
     const accessKeyId = think.config('weixin.accessKeyId');
     const secretAccessKey = think.config('weixin.secretAccessKey');

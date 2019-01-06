@@ -16,10 +16,8 @@ module.exports = class extends Base {
     } else {
       if (userId) {
         await this.model('user').where({'id': userId}).update({'phone': phone});
-        this.success(true);
-      } else {
-        this.fail('用户不存在');
       }
+      this.success(true);
     }
   }
   async sendVerificationAction() {

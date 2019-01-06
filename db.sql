@@ -344,7 +344,7 @@ create table user_type_relation(
 );
 
 INSERT INTO `user_type` (name,code) VALUES ('鱼友','yy');
-INSERT INTO `user_type` (name,code) VALUES ('超级鱼友','cjyy');
+INSERT INTO `user_type` (name,code) VALUES ('超级鱼友','cjy');
 INSERT INTO `user_type` (name,code) VALUES ('超级团长','cjtz');
 INSERT INTO `user_type` (name,code) VALUES ('服务商','fws');
 INSERT INTO `user_type` (name,code) VALUES ('零售商','lss');
@@ -359,7 +359,7 @@ INSERT INTO `user_type` (name,code) VALUES ('百科管理员','bkgly');
 
 
 insert into user_type_relation (user_id,type_id) select id,1 from user where type='yy';
-insert into user_type_relation (user_id,type_id) select id,2 from user where type='cjyy';
+insert into user_type_relation (user_id,type_id) select id,2 from user where type='cjy';
 insert into user_type_relation (user_id,type_id) select id,3 from user where type='cjtz';
 insert into user_type_relation (user_id,type_id) select id,4 from user where type='fws';
 insert into user_type_relation (user_id,type_id) select id,5 from user where type='lss';

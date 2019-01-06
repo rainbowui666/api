@@ -5,7 +5,7 @@ module.exports = class extends Base {
     let userId = this.post('userId');
     const user = this.getLoginUser();
     const whereMap = {};
-    if (user.type === 'admin' || user.type === 'tggly') {
+    if (user.type.indexOf('admin') >= 0 || user.type.indexOf('tggly') >= 0) {
       const loginUserId = this.getLoginUserId();
       if (Number(loginUserId) !== Number(userId)) {
         whereMap['g.user_id'] = userId;
@@ -62,7 +62,7 @@ module.exports = class extends Base {
     const to = this.service('date', 'api').convertWebDateToSubmitDate(this.post('to'));
     let userId = this.post('userId');
     const user = this.getLoginUser();
-    if (user.type === 'admin' || user.type === 'tggly') {
+    if (user.type.indexOf('admin') >= 0 || user.type.indexOf('tggly') >= 0) {
       const loginUserId = this.getLoginUserId();
       if (Number(loginUserId) === Number(userId)) {
         userId = null;
@@ -81,7 +81,7 @@ module.exports = class extends Base {
     const to = this.service('date', 'api').convertWebDateToSubmitDate(this.post('to'));
     let userId = this.post('userId');
     const user = this.getLoginUser();
-    if (user.type === 'admin' || user.type === 'tggly') {
+    if (user.type.indexOf('admin') >= 0 || user.type.indexOf('tggly') >= 0) {
       const loginUserId = this.getLoginUserId();
       if (Number(loginUserId) === Number(userId)) {
         userId = null;
@@ -104,7 +104,7 @@ module.exports = class extends Base {
     const limit = this.post('limit');
     let userId = this.post('userId');
     const user = this.getLoginUser();
-    if (user.type === 'admin' || user.type === 'tggly') {
+    if (user.type.indexOf('admin') >= 0 || user.type.indexOf('tggly') >= 0) {
       const loginUserId = this.getLoginUserId();
       if (Number(loginUserId) === Number(userId)) {
         userId = null;
@@ -122,7 +122,7 @@ module.exports = class extends Base {
     const limit = this.post('limit');
     let userId = this.post('userId');
     const user = this.getLoginUser();
-    if (user.type === 'admin' || user.type === 'tggly') {
+    if (user.type.indexOf('admin') >= 0 || user.type.indexOf('tggly') >= 0) {
       const loginUserId = this.getLoginUserId();
       if (Number(loginUserId) === Number(userId)) {
         userId = null;
@@ -142,7 +142,7 @@ module.exports = class extends Base {
   async userListByProvinceAction() {
     const user = this.getLoginUser();
     const limit = this.post('limit');
-    if (user.type === 'admin' || user.type === 'yhgly') {
+    if (user.type.indexOf('admin') >= 0 || user.type.indexOf('yhgly') >= 0) {
       const list = await this.model('user').userListByProvince(limit);
       const obj = {};
       _.each(list, (item) => {
@@ -155,7 +155,7 @@ module.exports = class extends Base {
   }
   async userCityListByProvinceAction() {
     const user = this.getLoginUser();
-    if (user.type === 'admin' || user.type === 'yhgly') {
+    if (user.type.indexOf('admin') >= 0 || user.type.indexOf('yhgly') >= 0) {
       const list = await this.model('user').userCityListByProvince(this.post('province'));
       this.json(list);
     } else {

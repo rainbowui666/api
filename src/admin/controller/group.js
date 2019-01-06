@@ -12,6 +12,59 @@ module.exports = class extends Base {
     const list = await this.model('group').getGroupList(name, page, size, userId);
     return this.json(list);
   }
+  async myGroupListAction() {
+    const page = this.post('page') || 1;
+    const size = this.post('size') || 10;
+    const name = this.post('name') || '';
+    const userId = this.getLoginUserId();
+    const model = this.model('group_bill').alias('gb');
+    const whereMap = {};
+    if (!think.isEmpty(name)) {
+      whereMap['gb.name'] = ['like', `%${name}%`];
+    }
+    if (!think.isEmpty(userId)) {
+      whereMap['gb.user_id'] = userId;
+    }
+    const list = await model.field(['gb.*', '(select type from user where id=gb.user_id) user_type', 'date_format(gb.end_date, \'%Y-%m-%d %H:%i\') end_date_format', 'gb.bill_id billId', 'b.name bill_name', 'c.name city_name', 'p.name province_name', 'u.name supplier_name'])
+      .join({
+        table: 'citys',
+        join: 'inner',
+        as: 'c',
+        on: ['gb.city', 'c.mark']
+      })
+      .join({
+        table: 'provinces',
+        join: 'inner',
+        as: 'p',
+        on: ['gb.province', 'p.code']
+      })
+      .join({
+        table: 'bill',
+        join: 'inner',
+        as: 'b',
+        on: ['gb.bill_id', 'b.id']
+      })
+      .join({
+        table: 'user',
+        join: 'inner',
+        as: 'u',
+        on: ['b.supplier_id', 'u.id']
+      }).where(whereMap).order(['gb.status DESC', 'gb.id DESC', 'gb.end_date DESC']).page(page, size).countSelect();
+    for (const item of list.data) {
+      if (item['status'] !== 0) {
+        if (moment(item['end_date']).isAfter(moment())) {
+          item['status'] = 1;
+        } else {
+          item['status'] = 0;
+          await this.model('group_bill').where({'id': item['id']}).update({'status': 0});
+        }
+      }
+      const sumObj = await this.model('cart').field(['sum(sum) sum']).where({'group_bill_id': item['id'], 'is_confirm': 1}).find();
+      item['sum'] = sumObj.sum || 0;
+    }
+    this.json(list);
+    return list;
+  }
   async listAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
@@ -39,7 +92,6 @@ module.exports = class extends Base {
     this.body = qrService.getQrByUrl(url);
   }
 
-  
   async deleteAction() {
     const billIdObject = await this.model('group_bill').field('bill_id').where({'id': this.post('groupId')}).find();
     const groupList = await this.model('group_bill').where({'bill_id': billIdObject.bill_id}).select();
@@ -245,5 +297,25 @@ module.exports = class extends Base {
       sum += item.sum;
     });
     return sum;
+  }
+
+  async finishAction() {
+    const endDate = this.service('date', 'api').convertWebDateToSubmitDateTime();
+    await this.model('group_bill').where({id: this.post('groupId')}).update({status: 0, 'end_date': endDate, 'current_step': 1});
+    const group = await this.model('group_bill').where({id: this.post('groupId')}).find();
+    const model = this.model('cart').alias('c');
+    model.field(['u.*']).join({
+      table: 'user',
+      join: 'inner',
+      as: 'u',
+      on: ['c.user_id', 'u.id']
+    });
+    const userList = await model.where({'u.openid': ['!=', null], 'c.sum': ['!=', 0], 'c.group_bill_id': this.post('groupId')}).select();
+    const wexinService = this.service('weixin', 'api');
+    const token = await wexinService.getToken();
+    _.each(userList, (item) => {
+      wexinService.sendFinishGroupMessage(_.values(token)[0], item, group);
+    });
+    this.success(true);
   }
 };

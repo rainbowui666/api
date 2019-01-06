@@ -77,7 +77,6 @@ module.exports = class extends think.Logic {
       city: {string: true, trim: true},
       province: {string: true, trim: true},
       phone: {mobile: 'zh-CN', trim: true},
-      type: {string: true, trim: true},
       code: {string: true, trim: true},
       address: {string: true, trim: true},
       description: {string: true, trim: true},

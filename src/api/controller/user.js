@@ -280,7 +280,6 @@ module.exports = class extends Base {
   }
   async updateAction() {
     const userId = this.post('userId');
-
     const user = {
       city: this.post('city'),
       province: this.post('province'),

@@ -146,23 +146,30 @@ module.exports = class extends Base {
     };
     const types = this.post('type');
     if (types && types.length > 0) {
-      await this.model('user_type_relation').where({'user_id': userId}).delete();
-      for (const code of types) {
-        const type = await this.model('user_type').where({'code': code}).find();
-        await this.model('user_type_relation').add({
-          'user_id': userId,
-          'type_id': type.id
-        });
-      }
-      user.type = types.join(',');
-      await this.model('user').where({id: userId}).update(user);
-      if (think.isEmpty(this.post('city')) && !think.isEmpty(this.post('phone'))) {
-        const cityObj = await this.controller('tools', 'api').getCityByPhoneAction(this.post('phone'));
-        if (cityObj) {
-          this.model('user').where({ 'id': userId }).update({city: cityObj.mark, province: cityObj.area, city_name: cityObj.city, province_name: cityObj.province});
+      const yy = _.find(types, (type) => {
+        return type === 'yy';
+      });
+      if (yy && _.size(types) > 1) {
+        this.fail('不能同时授权渔友和其他角色');
+      } else {
+        await this.model('user_type_relation').where({'user_id': userId}).delete();
+        for (const code of types) {
+          const type = await this.model('user_type').where({'code': code}).find();
+          await this.model('user_type_relation').add({
+            'user_id': userId,
+            'type_id': type.id
+          });
         }
+        user.type = types.join(',');
+        await this.model('user').where({id: userId}).update(user);
+        if (think.isEmpty(this.post('city')) && !think.isEmpty(this.post('phone'))) {
+          const cityObj = await this.controller('tools', 'api').getCityByPhoneAction(this.post('phone'));
+          if (cityObj) {
+            this.model('user').where({ 'id': userId }).update({city: cityObj.mark, province: cityObj.area, city_name: cityObj.city, province_name: cityObj.province});
+          }
+        }
+        this.json('OK');
       }
-      this.json('OK');
     } else if (types && types.length === 0) {
       this.fail('用户权限不能为空');
     } else {

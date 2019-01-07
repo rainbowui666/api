@@ -14,7 +14,9 @@ module.exports = class extends Base {
     const param = this.post('param');
     const date = this.post('date');
     const deleteItem = this.post('delete');
-    const list = await this.model('share').where({'user_id': userId, 'param': param, 'insert_date': date}).select();
+    const sql = `select * from share where user_id=${userId} and param='${param}' and DATE_FORMAT(insert_date, '%Y-%m-%d')='${date}'`;
+    const list = await this.model().query(sql);
+
     if (deleteItem) {
       _.each(list, (item) => {
         this.model('share').where({'id': item.id}).delete();

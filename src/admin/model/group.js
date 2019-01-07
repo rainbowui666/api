@@ -87,7 +87,7 @@ module.exports = class extends think.Model {
     }
     return list;
   }
-  
+
   async getGroup(id) {
     const model = this.model('group_bill').alias('gb');
     const group = await model.field(['gb.*', 'c.name city', 'p.name province', 'u.name supplier_name'])

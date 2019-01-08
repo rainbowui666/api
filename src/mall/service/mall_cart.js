@@ -1,4 +1,4 @@
-module.exports = class extends think.Model {
+module.exports = class extends think.Service {
   /**
    * 获取购物车的商品
    * @returns {Promise.<*>}

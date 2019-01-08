@@ -153,7 +153,7 @@ module.exports = class extends Base {
       });
     }
     await this.model('order_goods').addMany(orderGoodsData);
-    await this.model('mall_cart').clearBuyGoods();
+    await this.service('mall_cart', 'mall').clearBuyGoods();
     return this.success({ orderInfo: orderInfo });
   }
 

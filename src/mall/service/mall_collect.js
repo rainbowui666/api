@@ -1,4 +1,4 @@
-module.exports = class extends think.Model {
+module.exports = class extends think.Service {
   /**
    * 判断用户是否收藏过该对象
    * @param userId
@@ -7,7 +7,7 @@ module.exports = class extends think.Model {
    * @returns {Promise.<boolean>}
    */
   async isUserHasCollect(userId, typeId, valueId) {
-    const hasCollect = await this.where({type_id: typeId, value_id: valueId, user_id: userId}).limit(1).count('id');
+    const hasCollect = await this.model('mall_collect').where({type_id: typeId, value_id: valueId, user_id: userId}).limit(1).count('id');
     return hasCollect;
   }
 };

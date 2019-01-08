@@ -142,9 +142,9 @@ module.exports = class extends Base {
       // 添加规格名和值
       let goodsSepcifition = [];
       if (!think.isEmpty(productInfo.goods_specification_ids)) {
-        goodsSepcifition = await this.model('goods_specification').field(['xbyjshop_goods_specification.*', 'xbyjshop_specification.name']).join('xbyjshop_specification ON xbyjshop_specification.id=xbyjshop_goods_specification.specification_id').where({
-          'xbyjshop_goods_specification.goods_id': goodsId,
-          'xbyjshop_goods_specification.id': {'in': productInfo.goods_specification_ids.split('_')}
+        goodsSepcifition = await this.model('goods_specification').field(['mall_goods_specification.*', 'mall_specification.name']).join('mall_specification ON mall_specification.id=mall_goods_specification.specification_id').where({
+          'mall_goods_specification.goods_id': goodsId,
+          'mall_goods_specification.id': {'in': productInfo.goods_specification_ids.split('_')}
         }).select();
       }
 

@@ -31,9 +31,9 @@ module.exports = class extends Base {
     const model = this.model('mall_goods');
 
     const info = await model.where({'id': goodsId}).find();
-    const gallery = await this.model('goods_gallery').where({goods_id: goodsId}).limit(4).select();
-    const attribute = await this.model('goods_attribute').field('xbyjshop_goods_attribute.value, xbyjshop_attribute.name').join('xbyjshop_attribute ON xbyjshop_goods_attribute.attribute_id=xbyjshop_attribute.id').order({'xbyjshop_goods_attribute.id': 'asc'}).where({'xbyjshop_goods_attribute.goods_id': goodsId}).select();
-    const issue = await this.model('goods_issue').select();
+    const gallery = await this.model('mall_goods_gallery').where({goods_id: goodsId}).limit(4).select();
+    const attribute = await this.model('mall_goods_attribute').field('mall_goods_attribute.value, mall_attribute.name').join('mall_attribute ON mall_goods_attribute.attribute_id=mall_attribute.id').order({'mall_goods_attribute.id': 'asc'}).where({'mall_goods_attribute.goods_id': goodsId}).select();
+    const issue = await this.model('mall_goods_issue').select();
     const brand = await this.model('mall_brand').where({id: info.brand_id}).find();
     const commentCount = await this.model('comment').where({value_id: goodsId, type_id: 0}).count();
     const hotComment = await this.model('comment').where({value_id: goodsId, type_id: 0}).find();
@@ -55,10 +55,10 @@ module.exports = class extends Base {
     };
 
     // 当前用户是否收藏
-    const userHasCollect = await this.model('mall_collect').isUserHasCollect(think.userId, 0, goodsId);
+    const userHasCollect = await this.service('mall_collect', 'mall').isUserHasCollect(think.userId, 0, goodsId);
 
     // 记录用户的足迹 TODO
-    await await this.model('mall_footprint').addFootprint(think.userId, goodsId);
+    await await this.service('mall_footprint', 'mall').addFootprint(think.userId, goodsId);
 
     // return this.json(jsonData);
     return this.success({
@@ -69,8 +69,8 @@ module.exports = class extends Base {
       issue: issue,
       comment: comment,
       brand: brand,
-      specificationList: await model.getSpecificationList(goodsId),
-      productList: await model.getProductList(goodsId)
+      specificationList: await this.service('mall_goods', 'mall').getSpecificationList(goodsId),
+      productList: await this.service('mall_goods', 'mall').getProductList(goodsId)
     });
   }
 
@@ -203,7 +203,7 @@ module.exports = class extends Base {
     const goodsQuery = this.model('mall_goods');
 
     if (!think.isEmpty(categoryId)) {
-      goodsQuery.where({category_id: {'in': await this.model('mall_category').getChildCategoryId(categoryId)}});
+      goodsQuery.where({category_id: {'in': await this.service('mall_category', 'mall').getChildCategoryId(categoryId)}});
     }
 
     if (!think.isEmpty(isNew)) {
@@ -275,7 +275,7 @@ module.exports = class extends Base {
     // 大家都在看商品,取出关联表的商品，如果没有则随机取同分类下的商品
     const model = this.model('mall_goods');
     const goodsId = this.get('id');
-    const relatedGoodsIds = await this.model('related_goods').where({goods_id: goodsId}).getField('related_goods_id');
+    const relatedGoodsIds = await this.model('mall_related_goods').where({goods_id: goodsId}).getField('related_goods_id');
     let relatedGoods = null;
     if (think.isEmpty(relatedGoodsIds)) {
       // 查找同分类下的商品

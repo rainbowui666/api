@@ -1,11 +1,11 @@
-module.exports = class extends think.Model {
+module.exports = class extends think.Service {
   /**
    * 获取商品的product
    * @param goodsId
    * @returns {Promise.<*>}
    */
   async getProductList(goodsId) {
-    const goods = await this.model('product').where({goods_id: goodsId}).select();
+    const goods = await this.model('mall_product').where({goods_id: goodsId}).select();
     return goods;
   }
 
@@ -16,10 +16,10 @@ module.exports = class extends think.Model {
    */
   async getSpecificationList(goodsId) {
     // 根据sku商品信息，查找规格值列表
-    const specificationRes = await this.model('goods_specification').alias('gs')
+    const specificationRes = await this.model('mall_goods_specification').alias('gs')
       .field(['gs.*', 's.name'])
       .join({
-        table: 'specification',
+        table: 'mall_specification',
         join: 'inner',
         as: 's',
         on: ['specification_id', 'id']

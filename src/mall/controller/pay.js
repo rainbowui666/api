@@ -19,7 +19,7 @@ module.exports = class extends Base {
     if (think.isEmpty(openid)) {
       return this.fail('微信支付失败');
     }
-    const WeixinSerivce = this.service('weixin', 'api');
+    const WeixinSerivce = this.service('weixin', 'mall');
     try {
       const returnParams = await WeixinSerivce.createUnifiedOrder({
         openid: openid,
@@ -35,13 +35,13 @@ module.exports = class extends Base {
   }
 
   async notifyAction() {
-    const WeixinSerivce = this.service('weixin', 'api');
+    const WeixinSerivce = this.service('weixin', 'mall');
     const result = WeixinSerivce.payNotify(this.post('xml'));
     if (!result) {
       return `<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[支付失败]]></return_msg></xml>`;
     }
 
-    const orderModel = this.model('mall_order');
+    const orderModel = this.service('mall_order', 'mall');
     const orderInfo = await orderModel.getOrderByOrderSn(result.out_trade_no);
     if (think.isEmpty(orderInfo)) {
       return `<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[订单不存在]]></return_msg></xml>`;

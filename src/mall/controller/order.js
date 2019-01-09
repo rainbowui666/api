@@ -18,10 +18,10 @@ module.exports = class extends Base {
       });
 
       // 订单状态的处理
-      item.order_status_text = await this.model('mall_order').getOrderStatusText(item.id);
+      item.order_status_text = await this.service('mall_order', 'mall').getOrderStatusText(item.id);
 
       // 可操作的选项
-      item.handleOption = await this.model('mall_order').getOrderHandleOption(item.id);
+      item.handleOption = await this.service('mall_order', 'mall').getOrderHandleOption(item.id);
 
       newOrderList.push(item);
     }
@@ -47,13 +47,13 @@ module.exports = class extends Base {
     orderInfo.district_name = await this.model('region').where({ id: orderInfo.district }).getField('name', true);
     orderInfo.full_region = orderInfo.province_name + orderInfo.city_name + orderInfo.district_name;
 
-    const latestExpressInfo = await this.model('order_express').getLatestOrderExpress(orderId);
+    const latestExpressInfo = await this.service('mall_order_express', 'mall').getLatestOrderExpress(orderId);
     orderInfo.express = latestExpressInfo;
 
     const orderGoods = await this.model('order_goods').where({ order_id: orderId }).select();
 
     // 订单状态的处理
-    orderInfo.order_status_text = await this.model('mall_order').getOrderStatusText(orderId);
+    orderInfo.order_status_text = await this.service('mall_order', 'mall').getOrderStatusText(orderId);
     orderInfo.add_time = moment.unix(orderInfo.add_time).format('YYYY-MM-DD HH:mm:ss');
     orderInfo.final_pay_time = moment('001234', 'Hmmss').format('mm:ss');
     // 订单最后支付时间
@@ -66,7 +66,7 @@ module.exports = class extends Base {
     }
 
     // 订单可操作的选择,删除，支付，收货，评论，退换货
-    const handleOption = await this.model('mall_order').getOrderHandleOption(orderId);
+    const handleOption = await this.service('mall_order', 'mall').getOrderHandleOption(orderId);
 
     return this.success({
       orderInfo: orderInfo,
@@ -109,7 +109,7 @@ module.exports = class extends Base {
     const currentTime = parseInt(this.getTime() / 1000);
 
     const orderInfo = {
-      order_sn: this.model('mall_order').generateOrderNumber(),
+      order_sn: this.service('mall_order', 'mall').generateOrderNumber(),
       user_id: think.userId,
       // 收货地址和运费
       consignee: checkedAddress.name,
@@ -166,7 +166,7 @@ module.exports = class extends Base {
     if (think.isEmpty(orderId)) {
       return this.fail('订单不存在');
     }
-    const latestExpressInfo = await this.model('order_express').getLatestOrderExpress(orderId);
+    const latestExpressInfo = await this.service('mall_order_express', 'mall').getLatestOrderExpress(orderId);
     return this.success(latestExpressInfo);
   }
 };

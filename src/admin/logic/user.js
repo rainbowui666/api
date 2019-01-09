@@ -44,7 +44,8 @@ module.exports = class extends think.Logic {
       size: {int: true, trim: true},
       city: {string: true, trim: true},
       province: {string: true, trim: true},
-      type: {string: true, trim: true}
+      type: {string: true, trim: true},
+      isPhone: {boolean: true, trim: true}
     };
   }
 

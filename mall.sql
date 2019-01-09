@@ -1160,7 +1160,7 @@ UNLOCK TABLES;
 ALTER TABLE mall_address RENAME TO address;
 ALTER TABLE mall_region RENAME TO region;
 ALTER TABLE mall_comment RENAME TO comment;
-
+ALTER TABLE mall_shipper RENAME TO shipper;
 --
 -- Dumping events for database 'mall'
 --

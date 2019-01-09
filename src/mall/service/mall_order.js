@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-module.exports = class extends think.Model {
+module.exports = class extends think.Service {
   /**
    * 生成订单的编号order_sn
    * @returns {string}
@@ -27,7 +27,7 @@ module.exports = class extends think.Model {
       buy: false // 再次购买
     };
 
-    const orderInfo = await this.where({id: orderId}).find();
+    const orderInfo = await this.model('mall_order').where({id: orderId}).find();
 
     // 订单流程：下单成功－》支付订单－》发货－》收货－》评论
     // 订单相关状态字段设计，采用单个字段表示全部的订单状态
@@ -70,7 +70,7 @@ module.exports = class extends think.Model {
   }
 
   async getOrderStatusText(orderId) {
-    const orderInfo = await this.where({id: orderId}).find();
+    const orderInfo = await this.model('mall_order').where({id: orderId}).find();
     let statusText = '未付款';
     switch (orderInfo.order_status) {
       case 0:
@@ -88,7 +88,7 @@ module.exports = class extends think.Model {
    * @returns {Promise.<boolean>}
    */
   async updatePayStatus(orderId, payStatus = 0) {
-    return this.where({id: orderId}).limit(1).update({pay_status: parseInt(payStatus)});
+    return this.model('mall_order').where({id: orderId}).limit(1).update({pay_status: parseInt(payStatus)});
   }
 
   /**
@@ -100,6 +100,6 @@ module.exports = class extends think.Model {
     if (think.isEmpty(orderSn)) {
       return {};
     }
-    return this.where({order_sn: orderSn}).find();
+    return this.model('mall_order').where({order_sn: orderSn}).find();
   }
 };

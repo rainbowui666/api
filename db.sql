@@ -357,7 +357,7 @@ INSERT INTO `user_type` (name,code) VALUES ('交易管理员','jygly');
 INSERT INTO `user_type` (name,code) VALUES ('活动管理员','hdgly');
 INSERT INTO `user_type` (name,code) VALUES ('百科管理员','bkgly');
 
-
+update user set type='cjy' where type='cjyy';
 insert into user_type_relation (user_id,type_id) select id,1 from user where type='yy';
 insert into user_type_relation (user_id,type_id) select id,2 from user where type='cjy';
 insert into user_type_relation (user_id,type_id) select id,3 from user where type='cjtz';

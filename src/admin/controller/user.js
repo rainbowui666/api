@@ -47,7 +47,7 @@ module.exports = class extends Base {
     if (!think.isEmpty(name)) {
       whereMap['u.name'] = ['like', `%${name}%`];
     }
-    if (!think.isEmpty(isPhone)) {
+    if (!think.isEmpty(isPhone) && isPhone) {
       whereMap['u.phone'] = ['!=', `18888888888`];
     }
     const model = this.model('user').alias('u');

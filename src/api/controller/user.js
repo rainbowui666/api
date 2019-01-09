@@ -193,6 +193,7 @@ module.exports = class extends Base {
           type: 'yy'
         };
         user.id = await this.model('user').add(user);
+        await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
         if (user.id > 0) {
           const cityObj = await this.controller('tools').getCityByPhoneAction(phone);
           if (cityObj) {

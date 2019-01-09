@@ -1,4 +1,4 @@
-module.exports = class extends think.Model {
+module.exports = class extends think.Service {
   get tableName() {
     return this.tablePrefix + 'order_express';
   }
@@ -17,7 +17,7 @@ module.exports = class extends think.Model {
       request_time: 0,
       traces: []
     };
-    const orderExpress = await this.where({ order_id: orderId }).find();
+    const orderExpress = await this.model('mall_order_express').where({ order_id: orderId }).find();
     if (think.isEmpty(orderExpress)) {
       return returnExpressInfo;
     }
@@ -38,7 +38,7 @@ module.exports = class extends think.Model {
     }
 
     // 查询最新物流信息
-    const ExpressSerivce = think.service('express', 'api');
+    const ExpressSerivce = think.service('express', 'mall');
     const latestExpressInfo = await ExpressSerivce.queryExpress(orderExpress.shipper_code, orderExpress.logistic_code);
     const nowTime = Number.parseInt(Date.now() / 1000);
     const updateData = {

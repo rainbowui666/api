@@ -34,7 +34,7 @@ module.exports = class extends Base {
     }
 
     // 解释用户数据
-    const WeixinSerivce = this.service('weixin', 'api');
+    const WeixinSerivce = this.service('weixin', 'mall');
     const weixinUserInfo = await WeixinSerivce.decryptUserInfoData(sessionData.session_key, fullUserInfo.encryptedData, fullUserInfo.iv);
     if (think.isEmpty(weixinUserInfo)) {
       return this.fail('登录失败');
@@ -70,7 +70,7 @@ module.exports = class extends Base {
       last_login_ip: clientIp
     });
 
-    const TokenSerivce = this.service('token', 'api');
+    const TokenSerivce = this.service('token', 'mall');
     const sessionKey = await TokenSerivce.create(sessionData);
 
     if (think.isEmpty(newUserInfo) || think.isEmpty(sessionKey)) {

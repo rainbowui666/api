@@ -8,6 +8,9 @@ module.exports = class extends Base {
     const material = await this.model('material').where({id: this.post('materialId')}).find();
     const filePath = think.config('image.material') + '/' + material.category + '/' + this.post('imgName');
     const smallPath = this.config('image.material') + '/small/' + material.category + '/' + this.post('imgName');
+    await this.cache('material_image' + this.post('materialId'), null);
+    await this.cache('material_image_small' + this.post('materialId'), null);
+    await this.cache('material_image' + this.post('materialId'), null);
     fs.unlinkSync(filePath);
     fs.unlinkSync(smallPath);
   }
@@ -25,6 +28,9 @@ module.exports = class extends Base {
       fs.unlinkSync(filePath + '/' + file);
     });
     await this.model('material').where({id: this.post('materialId')}).delete();
+    await this.cache('material_image' + this.post('materialId'), null);
+    await this.cache('material_image_small' + this.post('materialId'), null);
+    await this.cache('material_image' + this.post('materialId'), null);
   }
   async addAction() {
     const tag = this.post('tag') ? this.post('tag').replace(/，/ig, ',') : '';
@@ -68,7 +74,9 @@ module.exports = class extends Base {
     const path = this.config('image.material') + '/' + category + '/' + name;
     const smallPath = this.config('image.material') + '/small/' + category + '/' + name;
     await this.cache('material_image' + this.post('materialId'), null);
-    await this.cache('material_image_small' + this.get('materialId'), null);
+    await this.cache('material_image_small' + this.post('materialId'), null);
+    await this.cache('material_image' + this.post('materialId'), null);
+
     return new Promise((resolve, reject) => {
       fs.renameSync(img.path, path);
       const returnPath = `/${category}/${name}`;

@@ -29,7 +29,16 @@ module.exports = class extends Base {
 
     await this.model('cart_detail').where({bill_detail_id: billDetailId, cart_id: cartId}).update({'lost_num': lostNum, 'bill_detail_num': billDetailNum, 'lost_back_freight': lostBackFreight});
     await this.model('cart').where({id: cartId}).update({'lost_back': lostBack});
-    this.success(true);
+
+    const sumObj = await this.model('cart').field(['sum(sum) sum', 'count(1) cartCount', 'sum(damage_back) damage_back', 'sum(lost_back) lost_back']).where({'group_bill_id': groupDetail.id, 'is_confirm': 1}).find();
+    const detailCountSql = `select sum(bill_detail_num) - sum(lost_num) - sum(damage_num) detailCount,sum(lost_num) lost_num,sum(damage_num) damage_num from cart_detail where cart_id in (select u.id from (select c.id from cart c where c.group_bill_id=${groupDetail.id}) u)`;
+    const detailCount = await this.model().query(detailCountSql);
+    groupDetail['lost_num'] = detailCount[0].lost_num || 0;
+    groupDetail['damage_num'] = detailCount[0].damage_num || 0;
+    groupDetail['damage_back'] = sumObj.damage_back || 0;
+    groupDetail['lost_back'] = sumObj.lost_back || 0;
+
+    this.success(groupDetail);
   }
   async lostSubAction() {
     const cartId = this.post('cartId');
@@ -58,7 +67,15 @@ module.exports = class extends Base {
 
     await this.model('cart_detail').where({bill_detail_id: billDetailId, cart_id: cartId}).update({'lost_num': lostNum, 'bill_detail_num': billDetailNum, 'lost_back_freight': lostBackFreight});
     await this.model('cart').where({id: cartId}).update({'lost_back': lostBack});
-    this.success(true);
+    const sumObj = await this.model('cart').field(['sum(sum) sum', 'count(1) cartCount', 'sum(damage_back) damage_back', 'sum(lost_back) lost_back']).where({'group_bill_id': groupDetail.id, 'is_confirm': 1}).find();
+    const detailCountSql = `select sum(bill_detail_num) - sum(lost_num) - sum(damage_num) detailCount,sum(lost_num) lost_num,sum(damage_num) damage_num from cart_detail where cart_id in (select u.id from (select c.id from cart c where c.group_bill_id=${groupDetail.id}) u)`;
+    const detailCount = await this.model().query(detailCountSql);
+    groupDetail['lost_num'] = detailCount[0].lost_num || 0;
+    groupDetail['damage_num'] = detailCount[0].damage_num || 0;
+    groupDetail['damage_back'] = sumObj.damage_back || 0;
+    groupDetail['lost_back'] = sumObj.lost_back || 0;
+
+    this.success(groupDetail);
   }
   async damageAddAction() {
     const cartId = this.post('cartId');
@@ -72,7 +89,22 @@ module.exports = class extends Base {
     const damageBack = cart.damage_back - billDetail.price;
     await this.model('cart_detail').where({bill_detail_id: billDetailId, cart_id: cartId}).update({'damage_num': damageNum, 'bill_detail_num': billDetailNum, 'damage_back_freight': 0});
     await this.model('cart').where({id: cartId}).update({'damage_back': damageBack});
-    this.success(true);
+
+    const groupDetail = await this.model('cart').alias('c').field(['g.*', 'c.lost_back']).join({
+      table: 'group_bill',
+      join: 'inner',
+      as: 'g',
+      on: ['c.group_bill_id', 'g.id']
+    }).where({'c.id': cartId}).find();
+    const sumObj = await this.model('cart').field(['sum(sum) sum', 'count(1) cartCount', 'sum(damage_back) damage_back', 'sum(lost_back) lost_back']).where({'group_bill_id': groupDetail.id, 'is_confirm': 1}).find();
+    const detailCountSql = `select sum(bill_detail_num) - sum(lost_num) - sum(damage_num) detailCount,sum(lost_num) lost_num,sum(damage_num) damage_num from cart_detail where cart_id in (select u.id from (select c.id from cart c where c.group_bill_id=${groupDetail.id}) u)`;
+    const detailCount = await this.model().query(detailCountSql);
+    groupDetail['lost_num'] = detailCount[0].lost_num || 0;
+    groupDetail['damage_num'] = detailCount[0].damage_num || 0;
+    groupDetail['damage_back'] = sumObj.damage_back || 0;
+    groupDetail['lost_back'] = sumObj.lost_back || 0;
+
+    this.success(groupDetail);
   }
   async damageSubAction() {
     const cartId = this.post('cartId');
@@ -87,7 +119,22 @@ module.exports = class extends Base {
 
     await this.model('cart_detail').where({bill_detail_id: billDetailId, cart_id: cartId}).update({'damage_num': damageNum, 'bill_detail_num': billDetailNum, 'damage_back_freight': 0});
     await this.model('cart').where({id: cartId}).update({'damage_back': damageBack});
-    this.success(true);
+
+    const groupDetail = await this.model('cart').alias('c').field(['g.*', 'c.lost_back']).join({
+      table: 'group_bill',
+      join: 'inner',
+      as: 'g',
+      on: ['c.group_bill_id', 'g.id']
+    }).where({'c.id': cartId}).find();
+    const sumObj = await this.model('cart').field(['sum(sum) sum', 'count(1) cartCount', 'sum(damage_back) damage_back', 'sum(lost_back) lost_back']).where({'group_bill_id': groupDetail.id, 'is_confirm': 1}).find();
+    const detailCountSql = `select sum(bill_detail_num) - sum(lost_num) - sum(damage_num) detailCount,sum(lost_num) lost_num,sum(damage_num) damage_num from cart_detail where cart_id in (select u.id from (select c.id from cart c where c.group_bill_id=${groupDetail.id}) u)`;
+    const detailCount = await this.model().query(detailCountSql);
+    groupDetail['lost_num'] = detailCount[0].lost_num || 0;
+    groupDetail['damage_num'] = detailCount[0].damage_num || 0;
+    groupDetail['damage_back'] = sumObj.damage_back || 0;
+    groupDetail['lost_back'] = sumObj.lost_back || 0;
+
+    this.success(groupDetail);
   }
   async deleteAction(_cartId) {
     const cartId = _cartId || this.post('cartId');
@@ -417,7 +464,7 @@ module.exports = class extends Base {
     const cartId = this.post('cartId');
 
     const model = this.model('cart_detail').alias('cd');
-    model.field(['cd.*', 'b.size', 'b.price', 'b.point', 'b.material_id', 'b.numbers', 'b.limits', 'b.recommend', 'b.name']).join({
+    model.field(['cd.*', 'b.size', 'b.price', 'b.point', 'b.material_id', 'm.name material_name', 'b.numbers', 'b.limits', 'b.recommend', 'b.name']).join({
       table: 'cart',
       join: 'inner',
       as: 'c',
@@ -427,6 +474,11 @@ module.exports = class extends Base {
       join: 'inner',
       as: 'b',
       on: ['b.id', 'cd.bill_detail_id']
+    }).join({
+      table: 'material',
+      join: 'inner',
+      as: 'm',
+      on: ['m.id', 'b.material_id']
     });
     const list = await model.where({'cd.cart_id': cartId}).order(['cd.id DESC']).page(page, size).countSelect();
     return this.json(list);

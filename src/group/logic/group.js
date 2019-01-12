@@ -87,7 +87,7 @@ module.exports = class extends think.Logic {
     this.allowMethods = 'post';
     this.rules = {
       groupId: {int: true, required: true, trim: true},
-      img: {method: 'file', required: true}
+      file: {method: 'file', required: true}
     };
   }
   groupEvidenceListAction() {

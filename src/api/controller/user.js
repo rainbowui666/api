@@ -372,4 +372,13 @@ module.exports = class extends Base {
       this.body = decodeImg;
     }
   }
+
+  async decryptUserInfoDataAction() {
+    const WXSerivce = this.service('weixin', 'api');
+    const sessionKey = this.post('sessionKey');
+    const encryptedData = this.post('encryptedData');
+    const iv = this.post('iv');
+    const appid = this.post('appid');
+    return WXSerivce.decryptUserInfoData(sessionKey, encryptedData, iv, appid);
+  }
 };

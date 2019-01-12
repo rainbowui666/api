@@ -19,6 +19,8 @@ module.exports = class extends Base {
     const group = await this.model('group').getGroup(this.post('groupId'));
     if (group) {
       group['end_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(group['end_date']);
+      group['pickup_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(group['pickup_date']);
+      group['finish_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(group['finish_date']);
     }
     return this.json(group);
   }
@@ -26,20 +28,34 @@ module.exports = class extends Base {
     const group = await this.model('group_bill').where({'id': this.post('groupId')}).find();
     const nextSetp = Number(group.current_step) + 1;
     await this.model('group_bill').where({'id': this.post('groupId')}).update({'supplier_freight': this.post('supplierFreight'), 'current_step': nextSetp});
-    return this.success('操作成功');
+    const updategroups = await this.model('group_bill').where({'id': this.post('groupId')}).find();
+    updategroups['end_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(updategroups['end_date']);
+    updategroups['pickup_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(updategroups['pickup_date']);
+    updategroups['finish_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(updategroups['finish_date']);
+    return this.success(updategroups);
   }
   async supplierConfirmAction() {
     const group = await this.model('group_bill').where({'id': this.post('groupId')}).find();
     const nextSetp = Number(group.current_step) + 1;
     await this.model('group_bill').where({'id': this.post('groupId')}).update({'supplier_confirm': this.post('supplierConfirm'), 'current_step': nextSetp});
-    return this.success('操作成功');
+    const updategroups = await this.model('group_bill').where({'id': this.post('groupId')}).find();
+    updategroups['end_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(updategroups['end_date']);
+    updategroups['pickup_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(updategroups['pickup_date']);
+    updategroups['finish_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(updategroups['finish_date']);
+    return this.success(updategroups);
   }
   async updatePickupAddressAction() {
     const group = await this.model('group_bill').where({'id': this.post('groupId')}).find();
     const nextSetp = Number(group.current_step) + 1;
+    const date = moment().add(36, 'h').format('YYYY-MM-DD HH:mm:ss');
+    const finishDate = this.service('date', 'api').convertWebDateToSubmitDateTime(date);
     const now = this.post('effortDate') ? this.service('date', 'api').convertWebDateToSubmitDateTime() : null;
-    await this.model('group_bill').where({'id': this.post('groupId')}).update({'pickup_date': now, 'pickup_address': this.post('pickupAddress'), 'current_step': nextSetp});
-    return this.success('操作成功');
+    await this.model('group_bill').where({'id': this.post('groupId')}).update({'pickup_date': now, 'finish_date': finishDate, 'pickup_address': this.post('pickupAddress'), 'current_step': nextSetp});
+    const updategroups = await this.model('group_bill').where({'id': this.post('groupId')}).find();
+    updategroups['end_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(updategroups['end_date']);
+    updategroups['pickup_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(updategroups['pickup_date']);
+    updategroups['finish_date_format'] = this.service('date', 'api').convertWebDateToSubmitDateTime(updategroups['finish_date']);
+    return this.success(updategroups);
   }
   async checkSupplierDeliveryAction() {
     await this.model('group_bill').where({'current_step': 3, 'supplier_freight': 0, 'pickup_date': ['<=', 'date_sub(now(), interval 36 hour)']}).update({
@@ -202,7 +218,7 @@ module.exports = class extends Base {
     const user = this.getLoginUser();
     if (user.type.indexOf('tz') >= 0) {
       const groupId = this.post('groupId');
-      const img = this.file('img');
+      const img = this.file('file');
       const _name = img.name;
       const tempName = _name.split('.');
       let timestamp = Date.parse(new Date());

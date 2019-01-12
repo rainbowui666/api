@@ -94,12 +94,16 @@ module.exports = class extends think.Model {
       }).where({'g.id': id}).find();
     group['supplierName'] = supplierNameObj ? supplierNameObj.supplierName : '';
 
-    const sumObj = await this.model('cart').field(['sum(sum) sum','count(10) cartCount']).where({'group_bill_id': id, 'is_confirm': 1}).find();
-    const detailCountSql = `select sum(bill_detail_num) - sum(lost_num) - sum(damage_num) detailCount from cart_detail where cart_id in (select u.id from (select c.id from cart c where c.group_bill_id=${id}) u)`;
-    const detailCount =  await this.query(detailCountSql);
+    const sumObj = await this.model('cart').field(['sum(sum) sum', 'count(1) cartCount', 'sum(damage_back) damage_back', 'sum(lost_back) lost_back']).where({'group_bill_id': id, 'is_confirm': 1}).find();
+    const detailCountSql = `select sum(bill_detail_num) - sum(lost_num) - sum(damage_num) detailCount,sum(lost_num) lost_num,sum(damage_num) damage_num from cart_detail where cart_id in (select u.id from (select c.id from cart c where c.group_bill_id=${id}) u)`;
+    const detailCount = await this.query(detailCountSql);
     group['sum'] = sumObj.sum || 0;
     group['cart_count'] = sumObj.cartCount || 0;
     group['detail_count'] = detailCount[0].detailCount || 0;
+    group['lost_num'] = detailCount[0].lost_num || 0;
+    group['damage_num'] = detailCount[0].damage_num || 0;
+    group['damage_back'] = sumObj.damage_back || 0;
+    group['lost_back'] = sumObj.lost_back || 0;
     return group;
   }
 };

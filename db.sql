@@ -150,6 +150,7 @@ alter table group_bill add column private int  default 0;
 alter table group_bill add column supplier_freight int  DEFAULT 0;
 alter table group_bill add column delivery_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 alter table group_bill add column supplier_confirm int;
+alter table group_bill add column finish_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 
 
@@ -358,19 +359,20 @@ INSERT INTO `user_type` (name,code) VALUES ('活动管理员','hdgly');
 INSERT INTO `user_type` (name,code) VALUES ('百科管理员','bkgly');
 
 update user set type='cjy' where type='cjyy';
-insert into user_type_relation (user_id,type_id) select id,1 from user where type='yy';
-insert into user_type_relation (user_id,type_id) select id,2 from user where type='cjy';
-insert into user_type_relation (user_id,type_id) select id,3 from user where type='cjtz';
-insert into user_type_relation (user_id,type_id) select id,4 from user where type='fws';
-insert into user_type_relation (user_id,type_id) select id,5 from user where type='lss';
-insert into user_type_relation (user_id,type_id) select id,6 from user where type='pfs';
-insert into user_type_relation (user_id,type_id) select id,7 from user where type='qcs';
-insert into user_type_relation (user_id,type_id) select id,8 from user where type='tggly';
-insert into user_type_relation (user_id,type_id) select id,9 from user where type='admin';
-insert into user_type_relation (user_id,type_id) select id,10 from user where type='yhgly';
-insert into user_type_relation (user_id,type_id) select id,11 from user where type='jygly';
-insert into user_type_relation (user_id,type_id) select id,12 from user where type='hdgly';
-insert into user_type_relation (user_id,type_id) select id,13 from user where type='bkgly';
+delete from user_type_relation;
+insert into user_type_relation (user_id,type_id) select id,1 from user where type like '%yy%';
+insert into user_type_relation (user_id,type_id) select id,2 from user where type like '%cjy%';
+insert into user_type_relation (user_id,type_id) select id,3 from user where type like '%cjtz%';
+insert into user_type_relation (user_id,type_id) select id,4 from user where type like '%fws%';
+insert into user_type_relation (user_id,type_id) select id,5 from user where type like '%lss%';
+insert into user_type_relation (user_id,type_id) select id,6 from user where type like '%pfs%';
+insert into user_type_relation (user_id,type_id) select id,7 from user where type like '%qcs%';
+insert into user_type_relation (user_id,type_id) select id,8 from user where type like '%tggly%';
+insert into user_type_relation (user_id,type_id) select id,9 from user where type like '%admin%';
+insert into user_type_relation (user_id,type_id) select id,10 from user where type like '%yhgly%';
+insert into user_type_relation (user_id,type_id) select id,11 from user where type like '%jygly%';
+insert into user_type_relation (user_id,type_id) select id,12 from user where type like '%hdgly%';
+insert into user_type_relation (user_id,type_id) select id,13 from user where type like '%bkgly%';
 
 
 create table service(

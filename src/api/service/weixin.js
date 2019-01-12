@@ -196,7 +196,7 @@ module.exports = class extends think.Service {
    * @param iv
    * @returns {Promise.<string>}
    */
-  async decryptUserInfoData(sessionKey, encryptedData, iv) {
+  async decryptUserInfoData(sessionKey, encryptedData, iv, appid) {
     // base64 decode
     const _sessionKey = Buffer.from(sessionKey, 'base64');
     encryptedData = Buffer.from(encryptedData, 'base64');
@@ -215,7 +215,7 @@ module.exports = class extends think.Service {
       return '';
     }
 
-    if (decoded.watermark.appid !== think.config('weixin.mini_appid')) {
+    if (decoded.watermark.appid !== appid) {
       return '';
     }
 

@@ -1,13 +1,14 @@
 const Base = require('./base.js');
+const _ = require('lodash');
 
 module.exports = class extends Base {
   async infoAction() {
-    const region = await this.model('region').getRegionInfo(this.get('regionId'));
+    const region = await this.controller('region').getRegionInfo(this.get('regionId'));
     return this.success(region);
   }
 
   async listAction() {
-    const regionList = await this.model('region').getRegionList(this.get('parentId'));
+    const regionList = await this.controller('region').getRegionList(this.get('parentId'));
     return this.success(regionList);
   }
 

@@ -96,7 +96,7 @@ module.exports = class extends Base {
       comment.value_id = commentItem.value_id;
       comment.id = commentItem.id;
       comment.add_time = think.datetime(new Date(commentItem.add_time * 1000));
-      comment.user_info = await this.model('user').field(['username', 'avatar', 'nickname']).where({id: commentItem.user_id}).find();
+      comment.user_info = await this.model('user').field(['name username', 'headimgurl avatar', 'nickname']).where({id: commentItem.user_id}).find();
       comment.pic_list = await this.model('comment_picture').where({
         comment_id: commentItem.id
       }).select();

@@ -59,7 +59,7 @@ module.exports = class extends Base {
     }
 
     // 取得规格的信息,判断规格库存
-    const productInfo = await this.model('product').where({goods_id: goodsId, id: productId}).find();
+    const productInfo = await this.model('mall_product').where({goods_id: goodsId, id: productId}).find();
     if (think.isEmpty(productInfo) || productInfo.goods_number < number) {
       return this.fail(400, '库存不足');
     }
@@ -119,7 +119,7 @@ module.exports = class extends Base {
     const number = parseInt(this.post('number')); // 不是
 
     // 取得规格的信息,判断规格库存
-    const productInfo = await this.model('product').where({goods_id: goodsId, id: productId}).find();
+    const productInfo = await this.model('mall_product').where({goods_id: goodsId, id: productId}).find();
     if (think.isEmpty(productInfo) || productInfo.goods_number < number) {
       return this.fail(400, '库存不足');
     }

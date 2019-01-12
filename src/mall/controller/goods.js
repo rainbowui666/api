@@ -39,7 +39,7 @@ module.exports = class extends Base {
     const hotComment = await this.model('comment').where({value_id: goodsId, type_id: 0}).find();
     let commentInfo = {};
     if (!think.isEmpty(hotComment)) {
-      const commentUser = await this.model('user').field(['nickname', 'username', 'avatar']).where({id: hotComment.user_id}).find();
+      const commentUser = await this.model('user').field(['nickname', 'name username', 'headimgurl avatar']).where({id: hotComment.user_id}).find();
       commentInfo = {
         content: Buffer.from(hotComment.content, 'base64').toString(),
         add_time: think.datetime(new Date(hotComment.add_time * 1000)),
@@ -176,7 +176,7 @@ module.exports = class extends Base {
 
     // 加入分类条件
     if (!think.isEmpty(categoryId) && parseInt(categoryId) > 0) {
-      whereMap.category_id = ['in', await this.model('mall_category').getCategoryWhereIn(categoryId)];
+      whereMap.category_id = ['in', await this.service('mall_category', 'mall').getCategoryWhereIn(categoryId)];
     }
 
     // 搜索到的商品

@@ -374,11 +374,13 @@ module.exports = class extends Base {
   }
 
   async decryptUserInfoDataAction() {
+    const result = await this.service('weixin', 'api').getSessionKeyByCode(this.post('code'));
+    console.log(result);
     const WXSerivce = this.service('weixin', 'api');
-    const sessionKey = this.post('sessionKey');
+    const sessionKey = result.data;
     const encryptedData = this.post('encryptedData');
     const iv = this.post('iv');
-    const appid = this.post('appid');
-    return WXSerivce.decryptUserInfoData(sessionKey, encryptedData, iv, appid);
+    const userInfo = WXSerivce.decryptUserInfoData(sessionKey, encryptedData, iv);
+    this.json(userInfo);
   }
 };

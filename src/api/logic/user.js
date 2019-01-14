@@ -111,10 +111,9 @@ module.exports = class extends think.Logic {
 
   decryptUserInfoDataAction() {
     this.rules = {
-      sessionKey: { required: true, string: true, trim: true },
+      code: { required: true, string: true, trim: true },
       encryptedData: { required: true, string: true, trim: true },
-      iv: { required: true, string: true, trim: true },
-      appId: { required: true, string: true, trim: true }
+      iv: { required: true, string: true, trim: true }
     };
   }
 };

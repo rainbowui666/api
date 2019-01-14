@@ -19,6 +19,21 @@ module.exports = class extends think.Service {
     const sessionData = await rp(options);
     return JSON.parse(sessionData);
   }
+  async getSessionKeyByCode(code) {
+    const options = {
+      method: 'GET',
+      url: 'https://api.weixin.qq.com/sns/jscode2session',
+      qs: {
+        grant_type: 'authorization_code',
+        secret: think.config('weixin.mini_secret'),
+        appid: think.config('weixin.mini_appid'),
+        js_code: code
+      }
+    };
+    const sessionData = await rp(options);
+    return JSON.parse(sessionData);
+  }
+
   async sendSubscribeMessage() {
     const token = await this.service('weixin').getToken();
     const options = {
@@ -196,15 +211,15 @@ module.exports = class extends think.Service {
    * @param iv
    * @returns {Promise.<string>}
    */
-  async decryptUserInfoData(sessionKey, encryptedData, iv, appid) {
+  async decryptUserInfoData(sessionKey, encryptedData, iv) {
     // base64 decode
-    const _sessionKey = Buffer.from(sessionKey, 'base64');
+    sessionKey = Buffer.from(sessionKey, 'base64');
     encryptedData = Buffer.from(encryptedData, 'base64');
     iv = Buffer.from(iv, 'base64');
     let decoded = '';
     try {
       // 解密
-      const decipher = crypto.createDecipheriv('aes-128-cbc', _sessionKey, iv);
+      const decipher = crypto.createDecipheriv('aes-128-cbc', sessionKey, iv);
       // 设置自动 padding 为 true，删除填充补位
       decipher.setAutoPadding(true);
       decoded = decipher.update(encryptedData, 'binary', 'utf8');
@@ -212,10 +227,14 @@ module.exports = class extends think.Service {
 
       decoded = JSON.parse(decoded);
     } catch (err) {
+      console.log(err);
+
       return '';
     }
 
-    if (decoded.watermark.appid !== appid) {
+    console.log(decoded);
+
+    if (decoded.watermark.appid !== think.config('weixin.mini_appid')) {
       return '';
     }
 

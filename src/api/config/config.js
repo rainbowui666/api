@@ -8,6 +8,7 @@ module.exports = {
 
   // 可以公开访问的Action
   publicAction: [
+    'service/list',
     'comment/list',
     'comment/count',
     'user/loginByCode',
@@ -17,6 +18,7 @@ module.exports = {
     'user/register',
     'user/getAvatar',
     'user/getLocationAvatar',
+    'user/decryptUserInfoData',
     'ad/getNumber',
     'notice/get',
     'notice/handleWxNotify',

@@ -9,8 +9,10 @@ module.exports = {
     phone_key: '29ae0de1fea82b9060cbc069b99b876a'
   },
   weixin: {
-    mini_appid: 'wx6689f1d6479c5425', // 小程序 appid
-    mini_secret: '43f4cbef1445051cbbd4edb6c23b0fa2', // 小程序密钥
+    // mini_appid: 'wx6689f1d6479c5425', // 小程序 appid
+    // mini_secret: '43f4cbef1445051cbbd4edb6c23b0fa2', // 小程序密钥
+    mini_appid: 'wx9f635f06da7360d7', // 小程序 appid
+    mini_secret: 'ef11fda091769b57be6226beb2ba0294', // 小程序密钥
     public_appid: 'wx6edb9c7695fb8375', // 公众号 appid
     public_secret: '3e7b1b2235b7fdeed18afbb299a64683',
     book_url: 'https://mp.weixin.qq.com/mp/subscribemsg?action=get_confirm&appid=wx6edb9c7695fb8375&scene=1000&template_id=MBKFHUw6G4vVktlxqxu4BGRzH8u9xSBRaMDL0dUBJfU&redirect_url=http%3a%2f%2fgroup.huanjiaohu.com&book=done#wechat_redirect',

@@ -4,6 +4,8 @@ const qs = require('querystring');
 const https = require('https');
 const _ = require('lodash');
 const rp = require('request-promise');
+// const WXBizDataCrypt = require('../util/WXBizDataCrypt');
+
 module.exports = class extends think.Service {
   async getToken() {
     const options = {
@@ -216,28 +218,20 @@ module.exports = class extends think.Service {
     sessionKey = Buffer.from(sessionKey, 'base64');
     encryptedData = Buffer.from(encryptedData, 'base64');
     iv = Buffer.from(iv, 'base64');
-    let decoded = '';
+    // base64 decode
+
     try {
-      // 解密
-      const decipher = crypto.createDecipheriv('aes-128-cbc', sessionKey, iv);
+    // 解密
+      var decipher = crypto.createDecipheriv('aes-128-cbc', sessionKey, iv);
       // 设置自动 padding 为 true，删除填充补位
       decipher.setAutoPadding(true);
-      decoded = decipher.update(encryptedData, 'binary', 'utf8');
+      var decoded = decipher.update(encryptedData, 'binary', 'utf8');
       decoded += decipher.final('utf8');
 
       decoded = JSON.parse(decoded);
     } catch (err) {
-      console.log(err);
-
-      return '';
+      throw new Error('Illegal Buffer');
     }
-
-    console.log(decoded);
-
-    if (decoded.watermark.appid !== think.config('weixin.mini_appid')) {
-      return '';
-    }
-
     return decoded;
   }
 

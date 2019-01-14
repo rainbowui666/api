@@ -56,8 +56,8 @@ module.exports = class extends Base {
       tempCity = JSON.parse(phoneDate).result;
     } else {
       tempCity = {
-        'province': '西藏',
-        'city': '拉萨'
+        'province': '上海',
+        'city': '上海'
       };
     }
     const returnCity = await this.model('citys').where({'name': tempCity.city, 'type': 2}).find();

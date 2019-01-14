@@ -13,6 +13,7 @@ module.exports = {
     'comment/count',
     'user/loginByCode',
     'user/loginByPassword',
+    'user/loginByMiniProgram',
     'user/checkName',
     'user/forgetPassword',
     'user/register',

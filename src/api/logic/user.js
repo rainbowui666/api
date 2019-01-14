@@ -39,6 +39,16 @@ module.exports = class extends think.Logic {
     };
   }
 
+  loginByMiniProgramAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      name: {string: true, required: true, trim: true},
+      phone: {mobile: 'zh-CN', required: true, trim: true},
+      avatarUrl: {string: true, required: true, trim: true},
+      code: {string: true, required: true, trim: true}
+    };
+  }
+
   checkNameAction() {
     this.allowMethods = 'post';
     this.rules = {

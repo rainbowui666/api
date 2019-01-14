@@ -59,8 +59,8 @@ module.exports = class extends Base {
   async loginByCodeAction() {
     const code = this.post('code');
     const from = this.post('from');
-    const appid = from ? think.config('weixin.mini_appid') : think.config('weixin.public_appid');
-    const secret = from ? think.config('weixin.mini_secret') : think.config('weixin.public_secret');
+    const appid = from ? 'wx6689f1d6479c5425' : think.config('weixin.public_appid');
+    const secret = from ? '43f4cbef1445051cbbd4edb6c23b0fa2' : think.config('weixin.public_secret');
     // 获取unionid
     const options = {
       method: 'GET',
@@ -207,6 +207,42 @@ module.exports = class extends Base {
     }
   }
 
+  async loginByMiniProgramAction() {
+    const avatarUrl = this.post('avatarUrl');
+    const name = this.post('name');
+    const phone = this.post('phone');
+    const code = this.post('code');
+    let user = await this.model('user').where({phone}).find();
+    const result = await this.service('weixin', 'api').getSessionKeyByCode(code);
+    if (think.isEmpty(user)) {
+      user = {
+        name: name,
+        nickname: name,
+        password: md5('coral123'),
+        phone: phone,
+        type: 'yy'
+      };
+      user.id = await this.model('user').add(user);
+      await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
+    }
+    user.headimgurl = avatarUrl;
+    user.unionid = result.unionid;
+    user.openid = result.openid;
+    user.nickname = name;
+    const cityObj = await this.controller('tools').getCityByPhoneAction(phone);
+    if (cityObj) {
+      user.city = cityObj.mark;
+      user.province = cityObj.area;
+      user.city_name = cityObj.city;
+      user.province_name = cityObj.province;
+    }
+    await this.model('user').where({ 'id': user.id }).update(user);
+    const tokenSerivce = this.service('token', 'api');
+    const sessionKey = await tokenSerivce.create(user);
+    user.token = sessionKey;
+    return this.json(user);
+  }
+
   async getAvatarAction(_userId) {
     const userId = _userId || this.get('userId');
     const key = 'getAvatarAction1' + userId;
@@ -277,6 +313,7 @@ module.exports = class extends Base {
     const focus = await this.model('focus').where({'user_id': user.id, material_id: ['!=', null]}).count();
     user.focusNo = focus || 0;
     delete user.password;
+    delete user.phone;
     this.json(user);
   }
   async updateAction() {
@@ -375,9 +412,11 @@ module.exports = class extends Base {
 
   async decryptUserInfoDataAction() {
     const result = await this.service('weixin', 'api').getSessionKeyByCode(this.post('code'));
-    console.log(result);
+    //     { session_key: 'qITkzFr79I1LVbKPD/62Jw==',
+    // 0|jyhs  |   openid: 'oeSe94uLH-KrxqGfMIao6l-x1b9U',
+    // 0|jyhs  |   unionid: 'ohbZ81rojJDLl6nZVjzIldmw5bMk' }
     const WXSerivce = this.service('weixin', 'api');
-    const sessionKey = result.data;
+    const sessionKey = result.session_key;
     const encryptedData = this.post('encryptedData');
     const iv = this.post('iv');
     const userInfo = WXSerivce.decryptUserInfoData(sessionKey, encryptedData, iv);

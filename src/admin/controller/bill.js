@@ -181,7 +181,7 @@ module.exports = class extends Base {
             if (i === length) {
               const wexinService = this.service('weixin', 'api');
               const userList = await this.model('user').where({type: ['IN', ['cjyy', 'cjtz']]}).select();
-              const token = await wexinService.getToken();
+              const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
               _.each(userList, (item) => {
                 if (!think.isEmpty(item['openid'])) {
                   wexinService.sendAddBillMessage(_.values(token)[0], item, bill);
@@ -251,11 +251,15 @@ module.exports = class extends Base {
     let name = fishName ? fishName.join('') : detailObj['name'];
     // name = _.trim(name.split(/\s+/)[0]);
     // name = _.trim(name);
-    const arrMg = ['美国', '越南', '沙巴', '夏威夷', '墨西哥', '澳洲', '印尼', '颗粒', '进口', '拖尾', '斯里兰卡', '苏门答腊', '特价', '翻砂', '巴东', '不折', '一条', '秒颗粒', '对装', '冲颗粒', '一对', '母', '公', '大心', '瑕疵', '变异', '小心', '一个', '可竖选', '单头', '多头', '瘦'];
+    const arrMg = ['美国', '越南', '沙巴', '夏威夷', '翻砂', '墨西哥', '澳洲', '印尼', '颗粒', '进口', '拖尾', '斯里兰卡', '苏门答腊', '特价', '巴东', '不折', '一条', '秒颗粒', '对装', '冲颗粒', '一对', '母', '公', '大心', '瑕疵', '变异', '小心', '一个', '可竖选', '单头', '多头', '瘦'];
     _.each(arrMg, (item) => {
       const r = new RegExp(item, 'ig');
       name = name.replace(r, '');
     });
+    const witeList = ['翻砂星', '6线龙', '8线龙', '3角吊', '4线笛鲷'];
+    if (witeList.includes(detailObj['name'])) {
+      name = detailObj['name'];
+    }
     const material = await this.model('material').where({ name: name }).find();
     if (think.isEmpty(material)) {
       const likeMaterial = await this.model('material').where({ tag: ['like', `%${name}%`] }).select();

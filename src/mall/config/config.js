@@ -4,7 +4,6 @@ module.exports = {
   publicController: [
     // 格式为controller
     'index',
-    'catalog',
     'topic',
     'auth',
     'goods',

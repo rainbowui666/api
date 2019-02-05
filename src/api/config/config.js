@@ -3,7 +3,8 @@ module.exports = {
   // 可以公开访问的Controller
   publicController: [
     'region',
-    'tools'
+    'tools',
+    'catalog'
   ],
 
   // 可以公开访问的Action
@@ -26,6 +27,7 @@ module.exports = {
     'notice/check',
     'material/categoryAll',
     'material/category',
+    'material/count',
     'material/list',
     'material/get',
     'material/getImage',
@@ -33,6 +35,7 @@ module.exports = {
     'material/randomList',
     'material/randomImageList',
     'location/getChina',
-    'location/getProvinces'
+    'location/getProvinces',
+    'information/getSubscriptionList'
   ]
 };

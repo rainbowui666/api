@@ -397,3 +397,18 @@ create table damage_evidence(
     path varchar(2000),
     primary key(id)
 );
+create table active(
+    id int not null auto_increment,
+    parent_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    end_date  TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
+    cover varchar(200) not null,
+    title varchar(200) not null,
+    digest varchar(500) not null,
+    type varchar(20) not null,
+    url varchar(200),
+    content varchar(4000),
+    target varchar(200),
+    is_goto int,
+    primary key(id)
+);

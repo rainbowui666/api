@@ -1,16 +1,6 @@
 const Base = require('./base.js');
 
 module.exports = class extends Base {
-  /**
-   * 评论类型说明：
-   * 0 商品
-   * 1 专题
-   */
-
-  /**
-   * 发表评论
-   * @returns {Promise.<*|PreventPromise|void|Promise>}
-   */
   async postAction() {
     const typeId = this.post('typeId');
     const valueId = this.post('valueId');
@@ -58,9 +48,8 @@ module.exports = class extends Base {
     const typeId = this.get('typeId');
     const valueId = this.get('valueId');
     const showType = this.get('showType'); // 选择评论的类型 0 全部， 1 只显示图片
-
-    const page = this.get('page');
-    const size = this.get('size');
+    const page = this.get('page') || 1;
+    const size = this.get('size') || 10;
 
     let comments = [];
     if (showType !== 1) {
@@ -101,9 +90,9 @@ module.exports = class extends Base {
         comment_id: commentItem.id
       }).select();
       // 卖家评论先写死哦~
-      comment.commentReplyVO = {
-        replyContent: '666,谢谢好评~'
-      };
+      // comment.commentReplyVO = {
+      //   replyContent: '666,谢谢好评~'
+      // };
       commentList.push(comment);
     }
     comments.data = commentList;

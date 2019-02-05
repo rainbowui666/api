@@ -88,7 +88,7 @@ module.exports = class extends Base {
    * @returns {Promise.<*>}
    */
   async categoryAction() {
-    const model = this.model('mall_category');
+    const model = this.model('category');
     const currentCategory = await model.where({id: this.get('id')}).find();
     const parentCategory = await model.where({id: currentCategory.parent_id}).find();
     const brotherCategory = await model.where({parent_id: currentCategory.parent_id}).select();
@@ -130,7 +130,7 @@ module.exports = class extends Base {
     if (!think.isEmpty(keyword)) {
       whereMap.name = ['like', `%${keyword}%`];
       // 添加到搜索历史
-      await this.model('search_history').add({
+      await this.model('mall_search_history').add({
         keyword: keyword,
         user_id: think.userId,
         add_time: parseInt(new Date().getTime() / 1000)
@@ -165,9 +165,9 @@ module.exports = class extends Base {
     const categoryIds = await goodsQuery.where(whereMap).getField('category_id', 10000);
     if (!think.isEmpty(categoryIds)) {
       // 查找二级分类的parent_id
-      const parentIds = await this.model('mall_category').where({id: {'in': categoryIds}}).getField('parent_id', 10000);
+      const parentIds = await this.model('category').where({id: {'in': categoryIds}}).getField('parent_id', 10000);
       // 一级分类
-      const parentCategory = await this.model('mall_category').field(['id', 'name']).order({'sort_order': 'asc'}).where({'id': {'in': parentIds}}).select();
+      const parentCategory = await this.model('category').field(['id', 'name']).order({'sort_order': 'asc'}).where({'id': {'in': parentIds}}).select();
 
       if (!think.isEmpty(parentCategory)) {
         filterCategory = filterCategory.concat(parentCategory);
@@ -227,9 +227,9 @@ module.exports = class extends Base {
     const categoryIds = await goodsQuery.getField('category_id', 10000);
     if (!think.isEmpty(categoryIds)) {
       // 查找二级分类的parent_id
-      const parentIds = await this.model('mall_category').where({id: {'in': categoryIds}}).getField('parent_id', 10000);
+      const parentIds = await this.model('category').where({id: {'in': categoryIds}}).getField('parent_id', 10000);
       // 一级分类
-      const parentCategory = await this.model('mall_category').field(['id', 'name']).order({'sort_order': 'asc'}).where({'id': {'in': parentIds}}).select();
+      const parentCategory = await this.model('category').field(['id', 'name']).order({'sort_order': 'asc'}).where({'id': {'in': parentIds}}).select();
 
       if (!think.isEmpty(parentCategory)) {
         filterCategory = filterCategory.concat(parentCategory);

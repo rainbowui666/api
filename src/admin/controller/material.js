@@ -107,30 +107,6 @@ module.exports = class extends Base {
     await this.model('material').where({id: this.post('materialId')}).update(materialObj);
   }
 
-  async focusAction() {
-    const userId = this.getLoginUserId();
-    const focus = await this.model('focus').where({user_id: userId, material_id: this.post('materialId')}).find();
-    if (think.isEmpty(focus)) {
-      await this.model('focus').add({user_id: userId, material_id: this.post('materialId')});
-    } else {
-      await this.model('focus').where({user_id: userId, material_id: this.post('materialId')}).delete();
-    }
-    this.success(true);
-  }
-  async focusListAction() {
-    const userId = this.getLoginUserId();
-    const page = this.post('page') || 1;
-    const size = this.post('size') || 10;
-    const model = this.model('material').alias('m');
-    model.field(['m.*']).join({
-      table: 'focus',
-      join: 'inner',
-      as: 'f',
-      on: ['f.material_id', 'm.id']
-    });
-    const list = await model.where({'f.user_id': userId}).page(page, size).countSelect();
-    this.json(list);
-  }
   async checkNameAction() {
     const material = await this.model('material').where({name: this.post('name')}).find();
     if (!think.isEmpty(material)) {

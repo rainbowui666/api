@@ -7,19 +7,27 @@ const rp = require('request-promise');
 // const WXBizDataCrypt = require('../util/WXBizDataCrypt');
 
 module.exports = class extends think.Service {
-  async getToken() {
-    const options = {
-      method: 'GET',
-      url: 'https://api.weixin.qq.com/cgi-bin/token',
-      qs: {
-        grant_type: 'client_credential',
-        secret: think.config('weixin.public_secret'),
-        appid: think.config('weixin.public_appid')
-      }
-    };
+  async getToken(appid, secret) {
+    const token = await think.cache(appid);
+    if (token) {
+      return JSON.parse(token);
+    } else {
+      const options = {
+        method: 'GET',
+        url: 'https://api.weixin.qq.com/cgi-bin/token',
+        qs: {
+          grant_type: 'client_credential',
+          secret: secret,
+          appid: appid
+        }
+      };
 
-    const sessionData = await rp(options);
-    return JSON.parse(sessionData);
+      const sessionData = await rp(options);
+      think.cache(appid, sessionData, {
+        timeout: 60 * 60 * 2 * 1000
+      });
+      return JSON.parse(sessionData);
+    }
   }
   async getSessionKeyByCode(code) {
     const options = {
@@ -37,7 +45,7 @@ module.exports = class extends think.Service {
   }
 
   async sendSubscribeMessage() {
-    const token = await this.service('weixin').getToken();
+    const token = await this.service('weixin').getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
     const options = {
       method: 'POST',
       url: 'https://api.weixin.qq.com/cgi-bin/message/template/subscribe?access_token=' + _.values(token)[0],
@@ -142,7 +150,7 @@ module.exports = class extends think.Service {
   }
 
   async sendOrderMessage(user, group, cart) {
-    const token = await this.service('weixin').getToken();
+    const token = await this.service('weixin').getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
     const options = {
       method: 'POST',
       url: 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + _.values(token)[0],

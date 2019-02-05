@@ -56,14 +56,7 @@ module.exports = class extends think.Logic {
       imgName: {string: true, required: true, trim: true}
     };
   }
-  focusAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      page: {int: true, trim: true},
-      size: {int: true, trim: true},
-      materialId: {int: true, required: true, trim: true}
-    };
-  }
+
   checkNameAction() {
     this.allowMethods = 'post';
     this.rules = {

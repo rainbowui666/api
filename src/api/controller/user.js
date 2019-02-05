@@ -212,8 +212,9 @@ module.exports = class extends Base {
     const name = this.post('name');
     const phone = this.post('phone');
     const code = this.post('code');
-    let user = await this.model('user').where({phone}).find();
     const result = await this.service('weixin', 'api').getSessionKeyByCode(code);
+    let user = await this.model('user').where({ unionid: result.unionid }).find();
+    user = think.isEmpty(user) ? await this.model('user').where({phone}).find() : user;
     if (think.isEmpty(user)) {
       user = {
         name: name,
@@ -229,12 +230,16 @@ module.exports = class extends Base {
     user.unionid = result.unionid;
     user.openid = result.openid;
     user.nickname = name;
+    user.phone = phone;
     const cityObj = await this.controller('tools').getCityByPhoneAction(phone);
     if (cityObj) {
       user.city = cityObj.mark;
       user.province = cityObj.area;
       user.city_name = cityObj.city;
       user.province_name = cityObj.province;
+    }
+    if (!user.tag) {
+      user.tag = ['青魔'];
     }
     await this.model('user').where({ 'id': user.id }).update(user);
     const tokenSerivce = this.service('token', 'api');

@@ -8,8 +8,8 @@ module.exports = class extends Base {
   async indexAction() {
     const categoryId = this.get('id');
 
-    const model = this.model('mall_category');
-    const data = await model.limit(10).where({parent_id: 0}).select();
+    const model = this.model('category');
+    const data = await model.limit(10).where({parent_id: 0, is_show: 1}).select();
 
     let currentCategory = null;
     if (categoryId) {
@@ -33,7 +33,7 @@ module.exports = class extends Base {
 
   async currentAction() {
     const categoryId = this.get('id');
-    const model = this.model('mall_category');
+    const model = this.model('category');
 
     let currentCategory = null;
     if (categoryId) {

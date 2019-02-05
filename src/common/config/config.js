@@ -15,6 +15,8 @@ module.exports = {
     mini_secret: 'ef11fda091769b57be6226beb2ba0294', // 小程序密钥
     public_appid: 'wx6edb9c7695fb8375', // 公众号 appid
     public_secret: '3e7b1b2235b7fdeed18afbb299a64683',
+    subscribe_appid: 'wxac9b09c7abcca26e', // 公众号 appid
+    subscribe_secret: '832f21bce42162f6f0c3176acfb65a73',
     book_url: 'https://mp.weixin.qq.com/mp/subscribemsg?action=get_confirm&appid=wx6edb9c7695fb8375&scene=1000&template_id=MBKFHUw6G4vVktlxqxu4BGRzH8u9xSBRaMDL0dUBJfU&redirect_url=http%3a%2f%2fgroup.huanjiaohu.com&book=done#wechat_redirect',
     mch_id: '1510134221', // 商户帐号ID
     partner_key: '3e7b1b2235b7fdeed18afbb299a64683', // 微信支付密钥

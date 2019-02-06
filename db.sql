@@ -402,7 +402,7 @@ create table active(
     parent_id int not null,
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     end_date  TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
-    cover varchar(200) not null,
+    cover varchar(200),
     title varchar(200) not null,
     digest varchar(500) not null,
     type varchar(20) not null,

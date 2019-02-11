@@ -216,6 +216,7 @@ create table focus(
 
 
 alter table focus add column notice_id int;
+alter table focus add column circle_id int;
 
 create table black_list(
     id int not null auto_increment,
@@ -402,7 +403,7 @@ create table active(
     parent_id int not null,
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     end_date  TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
-    cover varchar(200),
+    thumb_url varchar(200),
     title varchar(200) not null,
     digest varchar(500) not null,
     type varchar(20) not null,
@@ -410,5 +411,38 @@ create table active(
     content varchar(4000),
     target varchar(200),
     is_goto int,
+    primary key(id)
+);
+
+create table circle_setting(
+    id int not null auto_increment,
+    user_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    title varchar(200),
+    type varchar(20),
+    filter varchar(20),
+    bowl_system varchar(20),
+    size varchar(20),
+    bowl_brand varchar(20),
+    light_brand varchar(20),
+    protein_type varchar(20),
+    stream_type varchar(20),
+    primary key(id)
+);
+
+create table circle(
+    id int not null auto_increment,
+    user_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type int DEFAULT 1,
+    status int DEFAULT 0,
+    description varchar(500),
+    primary key(id)
+);
+create table circle_img(
+    id int not null auto_increment,
+    circle_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    url varchar(500),
     primary key(id)
 );

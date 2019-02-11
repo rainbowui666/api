@@ -34,6 +34,7 @@ module.exports = {
     'material/getImageSmall',
     'material/randomList',
     'material/randomImageList',
+    'active/getActiveList',
     'location/getChina',
     'location/getProvinces',
     'information/getSubscriptionList'

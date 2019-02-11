@@ -81,7 +81,10 @@ module.exports = class extends Base {
     };
 
     const sessionData = await rp(options);
-    this.json(JSON.parse(sessionData));
-    return sessionData;
+    const sessionDataObj = JSON.parse(sessionData);
+    const province = sessionDataObj.result.address_component.province.substring(0, 2);
+    const provinceObj = await this.model('provinces').where({'name': province}).find();
+    this.json(provinceObj);
+    return provinceObj;
   }
 };

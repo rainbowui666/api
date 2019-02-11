@@ -12,8 +12,9 @@ module.exports = class extends Base {
     const content = this.post('content');
     const target = this.post('target');
     const isGoto = this.post('isGoto') || 0;
+    const effortDate = this.service('date', 'api').convertWebDateToSubmitDateTime(endDate);
     const active = {
-      'end_date': endDate,
+      'end_date': effortDate,
       'parent_id': parentId,
       type,
       title,
@@ -27,7 +28,7 @@ module.exports = class extends Base {
     this.json(activeObj);
   }
   async updateAction() {
-    const id = this.post('activeid');
+    const id = this.post('activeId');
     const endDate = this.post('endDate');
     const parentId = this.post('parentId');
     const type = this.post('type');
@@ -37,8 +38,10 @@ module.exports = class extends Base {
     const content = this.post('content');
     const target = this.post('target');
     const isGoto = this.post('isGoto') || 0;
+    const effortDate = this.service('date', 'api').convertWebDateToSubmitDateTime(endDate);
+
     const active = {
-      'end_date': endDate,
+      'end_date': effortDate,
       'parent_id': parentId,
       type,
       title,
@@ -69,13 +72,13 @@ module.exports = class extends Base {
     let timestamp = Date.parse(new Date());
     timestamp = timestamp / 1000;
     const name = timestamp + '-' + activeId + '.' + tempName[1];
-    const cover = this.config('image.active') + '/' + name;
+    const thumbUrl = this.config('image.active') + '/' + name;
     const active = await this.model('active').where({id: activeId}).find();
-    if (!think.isEmpty(active.cover)) {
-      fs.unlinkSync(this.config('image.active') + '/' + active.cover);
+    if (!think.isEmpty(active.thumb_url)) {
+      fs.unlinkSync(this.config('image.active') + '/' + active.thumb_url.replace('https://static.huanjiaohu.com/image/active/', ''));
     }
-    fs.renameSync(img.path, cover);
-    await this.model('active').where({id: activeId}).update({cover: name});
+    fs.renameSync(img.path, thumbUrl);
+    await this.model('active').where({id: activeId}).update({thumb_url: 'https://static.huanjiaohu.com/image/active/' + name});
     this.success('操作成功');
   }
 };

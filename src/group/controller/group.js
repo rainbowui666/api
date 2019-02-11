@@ -7,6 +7,15 @@ const fs = require('fs');
 const images = require('images');
 
 module.exports = class extends Base {
+  async listByLocationAction() {
+    const page = this.post('page') || 1;
+    const size = this.post('size') || 10;
+    const name = this.post('name') || '';
+    const location = this.post('location');
+    const province = await this.controller('location', 'api').getProvinceByLocationAction(location);
+    const list = await this.model('group').getGroupList(name, page, size, province.code);
+    return this.json(list);
+  }
   async listAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;

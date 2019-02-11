@@ -11,6 +11,7 @@ module.exports = {
     user: '/usr/local/nginx/html/static/image/user',
     ad: '/usr/local/nginx/html/static/image/ad',
     active: '/usr/local/nginx/html/static/image/active',
+    circle: '/usr/local/nginx/html/static/image/circle',
     material: '/usr/local/nginx/html/static/image/material',
     evidence: '/usr/local/nginx/html/static/image/evidence',
     notice: '/usr/local/nginx/html/static/image/notice',

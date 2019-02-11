@@ -6,8 +6,6 @@ module.exports = {
 
   // 可以公开访问的Action
   publicAction: [
-    'bill/list',
-    'group/list',
-    'group/listByLocation'
+    'service/list'
   ]
 };

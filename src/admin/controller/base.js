@@ -19,6 +19,9 @@ module.exports = class extends think.Controller {
           if (this.ctx.controller === 'ad' && this.ctx.state.user.type.indexOf('xtgly') < 0) {
             return this.fail(401, '无权访问');
           }
+          if (this.ctx.controller === 'active' && this.ctx.state.user.type.indexOf('xtgly') < 0) {
+            return this.fail(401, '无权访问');
+          }
           if ((this.ctx.controller === 'group' || this.ctx.controller === 'cart' || this.ctx.controller === 'bill')) {
             if (this.ctx.state.user.type.indexOf('tggly') < 0 && this.ctx.state.user.type.indexOf('cjtz') < 0 && this.ctx.state.user.type.indexOf('cjy') < 0) {
               return this.fail(401, '无权访问');

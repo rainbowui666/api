@@ -236,9 +236,7 @@ module.exports = class extends Base {
       const path = this.config('image.evidence') + '/' + name;
       const smallPath = this.config('image.evidence') + '/small/' + name;
       fs.renameSync(img.path, path);
-      images(path + '').size(150).save(smallPath, {
-        quality: 75
-      });
+      images(path + '').resize(150).save(smallPath);
       await this.model('damage_evidence').add({
         group_id: groupId,
         path: name

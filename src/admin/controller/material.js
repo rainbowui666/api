@@ -81,9 +81,7 @@ module.exports = class extends Base {
       fs.renameSync(img.path, path);
       const returnPath = `/${category}/${name}`;
 
-      images(path + '').size(150).save(smallPath, {
-        quality: 75
-      });
+      images(path + '').resize(150).save(smallPath);
 
       resolve(this.json({'imgPath': returnPath}));
     });

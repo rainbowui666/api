@@ -1,4 +1,6 @@
 const Base = require('./base.js');
+const fs = require('fs');
+const images = require('images');
 
 module.exports = class extends Base {
   async listAction() {
@@ -69,5 +71,23 @@ module.exports = class extends Base {
     };
     const settingObj = await this.model('circle_setting').where({user_id: userId}).update(setting);
     this.json(settingObj);
+  }
+  async uploadAction() {
+    const userId = this.getLoginUserId();
+    const img = this.file('file');
+    let timestamp = Date.parse(new Date());
+    timestamp = timestamp / 1000;
+    const name = timestamp + '-' + userId + '.png';
+    // const thumbUrl = this.config('image.circle') + '/' + name;
+    const thumbSmallUrl = this.config('image.circle') + '/small/' + name;
+    const settingObj = await this.model('circle_setting').where({user_id: userId}).find();
+    if (settingObj.cover_url) {
+      const orgPath = settingObj.cover_url.replace('https://static.huanjiaohu.com/image/circle/small/', '');
+      const smallPath = this.config('image.circle') + '/small/' + orgPath;
+      fs.unlinkSync(smallPath);
+    }
+    images(img.path + '').resize(375).save(thumbSmallUrl);
+    await this.model('circle_setting').where({user_id: userId}).update({ cover_url: 'https://static.huanjiaohu.com/image/circle/small/' + name });
+    this.json({cover_url: 'https://static.huanjiaohu.com/image/circle/small/' + name});
   }
 };

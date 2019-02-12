@@ -427,6 +427,7 @@ create table circle_setting(
     light_brand varchar(20),
     protein_type varchar(20),
     stream_type varchar(20),
+    cover_url varchar(500),
     primary key(id)
 );
 

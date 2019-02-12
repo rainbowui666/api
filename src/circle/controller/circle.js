@@ -98,13 +98,26 @@ module.exports = class extends Base {
     for (const c of list.data) {
       const imageList = await this.model('circle_img').where({circle_id: c.id}).select();
       const praiselist = await this.model('focus').where({circle_id: c.id}).select();
+      const comments = await this.model('comment').where({type_id: 2, value_id: c.id}).select();
       c['imageList'] = imageList;
       c['thumImageList'] = imageList.map((item) => { return item.url });
       c['bigImageList'] = imageList.map((item) => { return item.url.replace('small/', '') });
-      c['time'] = this.service('date', 'api').convertWebDateToSubmitDateTime(c['insert_date']);
+      const commentList = [];
+      for (const commentItem of comments) {
+        const comment = {};
+        comment.content = Buffer.from(commentItem.content, 'base64').toString();
+        comment.type_id = commentItem.type_id;
+        comment.value_id = commentItem.value_id;
+        comment.id = commentItem.id;
+        comment.add_time = think.datetime(new Date(commentItem.add_time * 1000), 'YYYY-MM-DD');
+        comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({id: commentItem.user_id}).find();
+        commentList.push(comment);
+      }
+      c['time'] = think.datetime(new Date(c['insert_date']), 'YYYY-MM-DD');
       c['tag'] = c['tag'] ? c['tag'].split(',') : ['青魔'];
       c['interaction'] = {};
       c['interaction']['praiseList'] = praiselist;
+      c['interaction']['commentList'] = commentList;
     }
     this.json(list);
   }
@@ -165,9 +178,7 @@ module.exports = class extends Base {
     const thumbUrl = this.config('image.circle') + '/' + name;
     const thumbSmallUrl = this.config('image.circle') + '/small/' + name;
     fs.renameSync(img.path, thumbUrl);
-    images(thumbUrl + '').size(117).save(thumbSmallUrl, {
-      quality: 100
-    });
+    images(thumbUrl + '').resize(117).save(thumbSmallUrl);
     await this.model('circle_img').add({circle_id: circleId, url: 'https://static.huanjiaohu.com/image/circle/small/' + name});
     this.success('操作成功');
   }
@@ -205,7 +216,7 @@ module.exports = class extends Base {
       comment.type_id = commentItem.type_id;
       comment.value_id = commentItem.value_id;
       comment.id = commentItem.id;
-      comment.add_time = think.datetime(new Date(commentItem.add_time * 1000));
+      comment.add_time = think.datetime(new Date(commentItem.add_time * 1000), 'YYYY-MM-DD');
       comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({id: commentItem.user_id}).find();
       commentList.push(comment);
     }

@@ -48,6 +48,18 @@ module.exports = class extends think.Logic {
       circleId: {int: true, required: true, trim: true}
     };
   }
+  getCircleByIdAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      circleId: {int: true, required: true, trim: true}
+    };
+  }
+  getCommentsAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      circleId: {int: true, required: true, trim: true}
+    };
+  }
   praiseAction() {
     this.allowMethods = 'post';
     this.rules = {

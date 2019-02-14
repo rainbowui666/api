@@ -20,9 +20,9 @@ module.exports = class extends Base {
       as: 's',
       on: ['s.user_id', 'u.id']
     });
-    const list = await model.where({'c.user_id': userId, 'c.type': type}).order('c.insert_date DESC').page(page, size).countSelect();
+    const list = await model.where({ 'c.user_id': userId, 'c.type': type }).order('c.insert_date DESC').page(page, size).countSelect();
     for (const c of list.data) {
-      const imageList = this.model('circle_img').where({circle_id: c.id}).select();
+      const imageList = this.model('circle_img').where({ circle_id: c.id }).select();
       c['imageList'] = imageList;
       c['time'] = this.service('date', 'api').convertWebDateToSubmitDateTime(c['insert_date']);
       c['tag'] = c['tag'] ? c['tag'].split(',') : ['青魔'];
@@ -31,7 +31,7 @@ module.exports = class extends Base {
   }
   async getCircleByIdAction() {
     const model = this.model('circle').alias('c');
-    model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag', 's.title', 's.type', 's.filter', 's.bowlSystem', 's.size', 's.bowlBrand', 's.lightBrand', 's.proteinType', 's.streamType', 's.coverUrl']).join({
+    model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag', 's.type', 's.filter', 's.bowl_system bowlSystem', 's.size', 's.bowl_brand bowlBrand', 's.light_brand lightBrand', 's.protein_type proteinType', 's.stream_type streamType', 's.cover_url coverUrl']).join({
       table: 'user',
       join: 'inner',
       as: 'u',
@@ -42,10 +42,10 @@ module.exports = class extends Base {
       as: 's',
       on: ['s.user_id', 'u.id']
     });
-    const c = await model.where({'c.id': this.post('circleId')}).order('c.insert_date DESC').find();
-    const imageList = await this.model('circle_img').where({circle_id: c.id}).select();
-    const praiselist = await this.model('focus').where({circle_id: c.id}).select();
-    const comments = await this.model('comment').where({type_id: 2, value_id: c.id}).select();
+    const c = await model.where({ 'c.id': this.post('circleId') }).order('c.insert_date DESC').find();
+    const imageList = await this.model('circle_img').where({ circle_id: c.id }).select();
+    const praiselist = await this.model('focus').where({ circle_id: c.id }).select();
+    const comments = await this.model('comment').where({ type_id: 2, value_id: c.id }).select();
     c['imageList'] = imageList;
     c['thumImageList'] = imageList.map((item) => { return item.url });
     c['bigImageList'] = imageList.map((item) => { return item.url.replace('small/', '') });
@@ -56,12 +56,25 @@ module.exports = class extends Base {
       comment.type_id = commentItem.type_id;
       comment.value_id = commentItem.value_id;
       comment.id = commentItem.id;
-      comment.add_time = think.datetime(new Date(commentItem.add_time * 1000), 'YYYY-MM-DD');
-      comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({id: commentItem.user_id}).find();
+      comment.add_time = commentItem.add_time;
+      comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({ id: commentItem.user_id }).find();
       commentList.push(comment);
     }
-    c['time'] = think.datetime(new Date(c['insert_date']), 'YYYY-MM-DD');
-    c['tag'] = c['tag'] ? c['tag'].split(',') : ['青魔'];
+    c['insert_date'] = new Date(c['insert_date']).getTime();
+    switch (Number(c['type'])) {
+      case 1:
+        c['tag'] = ['SPS缸'];
+        break;
+      case 2:
+        c['tag'] = ['LPS缸'];
+        break;
+      case 3:
+        c['tag'] = ['FOT缸'];
+        break;
+      default:
+        c['tag'] = ['青魔'];
+        break;
+    }
     c['interaction'] = {};
     c['interaction']['praiseList'] = praiselist;
     c['interaction']['commentList'] = commentList;
@@ -72,22 +85,17 @@ module.exports = class extends Base {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const model = this.model('circle').alias('c');
-    model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag', 's.title']).join({
+    model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag']).join({
       table: 'user',
       join: 'inner',
       as: 'u',
       on: ['c.user_id', 'u.id']
-    }).join({
-      table: 'circle_setting',
-      join: 'inner',
-      as: 's',
-      on: ['s.user_id', 'u.id']
     });
-    const list = await model.where({'c.type': 1}).order('c.insert_date DESC').page(page, size).countSelect();
+    const list = await model.where({ 'c.type': 1, 'c.status': 1 }).order('c.insert_date DESC').page(page, size).countSelect();
     for (const c of list.data) {
-      const imageList = await this.model('circle_img').where({circle_id: c.id}).select();
-      const praiselist = await this.model('focus').where({circle_id: c.id}).select();
-      const comments = await this.model('comment').where({type_id: 2, value_id: c.id}).select();
+      const imageList = await this.model('circle_img').where({ circle_id: c.id }).select();
+      const praiselist = await this.model('focus').where({ circle_id: c.id }).select();
+      const comments = await this.model('comment').where({ type_id: 2, value_id: c.id }).select();
       c['imageList'] = imageList;
       c['thumImageList'] = imageList.map((item) => { return item.url });
       c['bigImageList'] = imageList.map((item) => { return item.url.replace('small/', '') });
@@ -98,12 +106,25 @@ module.exports = class extends Base {
         comment.type_id = commentItem.type_id;
         comment.value_id = commentItem.value_id;
         comment.id = commentItem.id;
-        comment.add_time = think.datetime(new Date(commentItem.add_time * 1000), 'YYYY-MM-DD');
-        comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({id: commentItem.user_id}).find();
+        comment.add_time = commentItem.add_time;
+        comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({ id: commentItem.user_id }).find();
         commentList.push(comment);
       }
-      c['time'] = think.datetime(new Date(c['insert_date']), 'YYYY-MM-DD');
-      c['tag'] = c['tag'] ? c['tag'].split(',') : ['青魔'];
+      c['insert_date'] = new Date(c['insert_date']).getTime();
+      switch (Number(c['type'])) {
+        case 1:
+          c['tag'] = ['SPS缸'];
+          break;
+        case 2:
+          c['tag'] = ['LPS缸'];
+          break;
+        case 3:
+          c['tag'] = ['FOT缸'];
+          break;
+        default:
+          c['tag'] = ['青魔'];
+          break;
+      }
       c['interaction'] = {};
       c['interaction']['praiseList'] = praiselist;
       c['interaction']['commentList'] = commentList;
@@ -111,7 +132,7 @@ module.exports = class extends Base {
     this.json(list);
   }
   async getCommentsAction() {
-    const comments = await this.model('comment').where({type_id: 2, value_id: this.post('circleId')}).select();
+    const comments = await this.model('comment').where({ type_id: 2, value_id: this.post('circleId') }).select();
     const commentList = [];
     for (const commentItem of comments) {
       const comment = {};
@@ -120,7 +141,7 @@ module.exports = class extends Base {
       comment.value_id = commentItem.value_id;
       comment.id = commentItem.id;
       comment.add_time = think.datetime(new Date(commentItem.add_time * 1000), 'YYYY-MM-DD');
-      comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({id: commentItem.user_id}).find();
+      comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({ id: commentItem.user_id }).find();
       commentList.push(comment);
     }
     this.json(commentList);
@@ -128,14 +149,14 @@ module.exports = class extends Base {
   async createAction() {
     const userId = this.getLoginUserId();
     const type = this.post('type');
-    const circle = {user_id: userId, type};
+    const circle = { user_id: userId, type };
     const id = await this.model('circle').add(circle);
     this.json(id);
   }
   async addAction() {
     const circleId = this.post('circleId');
     const description = this.post('description');
-    const id = await this.model('circle').where({id: circleId}).update({status: 1, description});
+    const id = await this.model('circle').where({ id: circleId }).update({ status: 1, description });
     this.json(id);
   }
   async deleteAction() {
@@ -145,8 +166,11 @@ module.exports = class extends Base {
     if (circle.user_id === userId) {
       const list = await this.model('circle_img').where({ circle_id: circleId }).select();
       for (const c of list) {
-        const path = this.config('image.circle') + '/' + c.name.replace('https://static.huanjiaohu.com/image/circle/', '');
+        const orgPath = c.url.replace('https://static.huanjiaohu.com/image/circle/small/', '');
+        const path = this.config('image.circle') + '/' + orgPath;
+        const smallPath = this.config('image.circle') + '/small/' + orgPath;
         fs.unlinkSync(path);
+        fs.unlinkSync(smallPath);
       }
       await this.model('circle_img').where({ circle_id: circleId }).delete();
       await this.model('circle').where({ id: circleId }).delete();
@@ -184,18 +208,18 @@ module.exports = class extends Base {
     const thumbSmallUrl = this.config('image.circle') + '/small/' + name;
     fs.renameSync(img.path, thumbUrl);
     images(thumbUrl + '').resize(117).save(thumbSmallUrl);
-    await this.model('circle_img').add({circle_id: circleId, url: 'https://static.huanjiaohu.com/image/circle/small/' + name});
+    await this.model('circle_img').add({ circle_id: circleId, url: 'https://static.huanjiaohu.com/image/circle/small/' + name });
     this.success('操作成功');
   }
   async praiseAction() {
     const userId = this.getLoginUserId();
-    const focus = await this.model('focus').where({user_id: userId, circle_id: this.post('circleId')}).find();
+    const focus = await this.model('focus').where({ user_id: userId, circle_id: this.post('circleId') }).find();
     if (think.isEmpty(focus)) {
-      await this.model('focus').add({user_id: userId, circle_id: this.post('circleId')});
+      await this.model('focus').add({ user_id: userId, circle_id: this.post('circleId') });
     } else {
-      await this.model('focus').where({user_id: userId, circle_id: this.post('circleId')}).delete();
+      await this.model('focus').where({ user_id: userId, circle_id: this.post('circleId') }).delete();
     }
-    const list = await this.model('focus').where({circle_id: this.post('circleId')}).select();
+    const list = await this.model('focus').where({ circle_id: this.post('circleId') }).select();
     this.json(list);
   }
   async commentPostAction() {
@@ -222,7 +246,7 @@ module.exports = class extends Base {
       comment.value_id = commentItem.value_id;
       comment.id = commentItem.id;
       comment.add_time = think.datetime(new Date(commentItem.add_time * 1000), 'YYYY-MM-DD');
-      comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({id: commentItem.user_id}).find();
+      comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({ id: commentItem.user_id }).find();
       commentList.push(comment);
     }
     this.json(commentList);

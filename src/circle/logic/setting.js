@@ -2,7 +2,7 @@ module.exports = class extends think.Logic {
   openAction() {
     this.allowMethods = 'post';
     this.rules = {
-      title: {string: true, required: true, trim: true},
+      title: {string: true, trim: true},
       type: {string: true, required: true, trim: true},
       filter: {string: true, required: true, trim: true},
       bowlSystem: {string: true, required: true, trim: true},

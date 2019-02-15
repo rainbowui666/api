@@ -29,6 +29,12 @@ module.exports = class extends Base {
     }
     this.json(list);
   }
+  async getByUserIdAction() {
+    const userId = this.post('userId') || this.getLoginUserId();
+    const type = this.post('type') || 0;
+    const circle = await this.model('circle').where({ 'user_id': userId, 'type': type }).find();
+    this.json(circle);
+  }
   async getCircleByIdAction() {
     const model = this.model('circle').alias('c');
     model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag', 's.type', 's.filter', 's.bowl_system bowlSystem', 's.size', 's.bowl_brand bowlBrand', 's.light_brand lightBrand', 's.protein_type proteinType', 's.stream_type streamType', 's.cover_url coverUrl']).join({
@@ -38,7 +44,7 @@ module.exports = class extends Base {
       on: ['c.user_id', 'u.id']
     }).join({
       table: 'circle_setting',
-      join: 'inner',
+      join: 'left',
       as: 's',
       on: ['s.user_id', 'u.id']
     });
@@ -62,13 +68,13 @@ module.exports = class extends Base {
     }
     c['insert_date'] = new Date(c['insert_date']).getTime();
     switch (Number(c['type'])) {
-      case 1:
+      case 0:
         c['tag'] = ['SPS缸'];
         break;
-      case 2:
+      case 1:
         c['tag'] = ['LPS缸'];
         break;
-      case 3:
+      case 2:
         c['tag'] = ['FOT缸'];
         break;
       default:
@@ -107,18 +113,18 @@ module.exports = class extends Base {
         comment.value_id = commentItem.value_id;
         comment.id = commentItem.id;
         comment.add_time = commentItem.add_time;
-        comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({ id: commentItem.user_id }).find();
+        comment.user_info = await this.model('user').field(['id', 'name', 'headimgurl']).where({ id: commentItem.user_id }).find();
         commentList.push(comment);
       }
       c['insert_date'] = new Date(c['insert_date']).getTime();
       switch (Number(c['type'])) {
-        case 1:
+        case 0:
           c['tag'] = ['SPS缸'];
           break;
-        case 2:
+        case 1:
           c['tag'] = ['LPS缸'];
           break;
-        case 3:
+        case 2:
           c['tag'] = ['FOT缸'];
           break;
         default:
@@ -141,13 +147,13 @@ module.exports = class extends Base {
       comment.value_id = commentItem.value_id;
       comment.id = commentItem.id;
       comment.add_time = think.datetime(new Date(commentItem.add_time * 1000), 'YYYY-MM-DD');
-      comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({ id: commentItem.user_id }).find();
+      comment.user_info = await this.model('user').field(['id', 'name', 'headimgurl']).where({ id: commentItem.user_id }).find();
       commentList.push(comment);
     }
     this.json(commentList);
   }
   async createAction() {
-    const userId = this.getLoginUserId();
+    const userId = this.post('userId') || this.getLoginUserId();
     const type = this.post('type');
     const circle = { user_id: userId, type };
     const id = await this.model('circle').add(circle);
@@ -207,7 +213,7 @@ module.exports = class extends Base {
     const thumbUrl = this.config('image.circle') + '/' + name;
     const thumbSmallUrl = this.config('image.circle') + '/small/' + name;
     fs.renameSync(img.path, thumbUrl);
-    images(thumbUrl + '').resize(117).save(thumbSmallUrl);
+    images(thumbUrl + '').resize(96).save(thumbSmallUrl);
     await this.model('circle_img').add({ circle_id: circleId, url: 'https://static.huanjiaohu.com/image/circle/small/' + name });
     this.success('操作成功');
   }

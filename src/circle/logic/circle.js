@@ -1,24 +1,9 @@
 module.exports = class extends think.Logic {
-  listByUserIdAction() {
+  getByUserIdAction() {
     this.allowMethods = 'post';
     this.rules = {
-      page: {int: true, trim: true},
-      size: {int: true, trim: true}
-    };
-  }
-  listByProvinceAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      page: {int: true, trim: true},
-      size: {int: true, trim: true},
-      province: {string: true, required: true, trim: true}
-    };
-  }
-  listByCommentAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      page: {int: true, trim: true},
-      size: {int: true, trim: true}
+      userid: {int: true, trim: true},
+      type: {int: true, trim: true}
     };
   }
   listAction() {
@@ -31,6 +16,7 @@ module.exports = class extends think.Logic {
   createAction() {
     this.allowMethods = 'post';
     this.rules = {
+      userid: {int: true, trim: true},
       type: {int: true, trim: true}
     };
   }

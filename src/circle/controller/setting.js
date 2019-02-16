@@ -1,6 +1,7 @@
 const Base = require('./base.js');
 const fs = require('fs');
 const images = require('images');
+const _ = require('lodash');
 
 module.exports = class extends Base {
   async listAction() {
@@ -75,8 +76,7 @@ module.exports = class extends Base {
   async uploadAction() {
     const userId = this.getLoginUserId();
     const img = this.file('file');
-    let timestamp = Date.parse(new Date());
-    timestamp = timestamp / 1000;
+    const timestamp = _.uniqueId('circle');
     const name = timestamp + '-' + userId + '.png';
     // const thumbUrl = this.config('image.circle') + '/' + name;
     const thumbSmallUrl = this.config('image.circle') + '/small/' + name;

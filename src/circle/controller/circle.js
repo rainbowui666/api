@@ -1,6 +1,7 @@
 const Base = require('./base.js');
 const fs = require('fs');
 const images = require('images');
+const _ = require('lodash');
 
 module.exports = class extends Base {
   async getByUserIdAction() {
@@ -113,6 +114,8 @@ module.exports = class extends Base {
     const userId = this.getLoginUserId();
     const circle = await this.model('circle').where({ id: circleId }).find();
     if (circle.user_id === userId) {
+      await this.model('circle_img').where({ circle_id: circleId }).delete();
+      await this.model('circle').where({ id: circleId }).delete();
       const list = await this.model('circle_img').where({ circle_id: circleId }).select();
       for (const c of list) {
         const orgPath = c.url.replace('https://static.huanjiaohu.com/image/circle/small/', '');
@@ -121,8 +124,6 @@ module.exports = class extends Base {
         fs.unlinkSync(path);
         fs.unlinkSync(smallPath);
       }
-      await this.model('circle_img').where({ circle_id: circleId }).delete();
-      await this.model('circle').where({ id: circleId }).delete();
       this.success('操作成功');
     } else {
       this.fail('没有权限');
@@ -137,9 +138,9 @@ module.exports = class extends Base {
       const orgPath = circleImg.url.replace('https://static.huanjiaohu.com/image/circle/small/', '');
       const path = this.config('image.circle') + '/' + orgPath;
       const smallPath = this.config('image.circle') + '/small/' + orgPath;
+      await this.model('circle_img').where({ id: circleImgId }).delete();
       fs.unlinkSync(path);
       fs.unlinkSync(smallPath);
-      await this.model('circle_img').where({ id: circleImgId }).delete();
       this.success('操作成功');
     } else {
       this.fail('没有权限');
@@ -150,15 +151,14 @@ module.exports = class extends Base {
     const img = this.file('file');
     const _name = img.name;
     const tempName = _name.split('.');
-    let timestamp = Date.parse(new Date());
-    timestamp = timestamp / 1000;
+    const timestamp = _.uniqueId('circle');
     const name = timestamp + '-' + circleId + '.' + tempName[tempName.length - 1];
     const thumbUrl = this.config('image.circle') + '/' + name;
     const thumbSmallUrl = this.config('image.circle') + '/small/' + name;
     fs.renameSync(img.path, thumbUrl);
     images(thumbUrl + '').resize(96).save(thumbSmallUrl);
-    await this.model('circle_img').add({ circle_id: circleId, url: 'https://static.huanjiaohu.com/image/circle/small/' + name });
-    this.success('操作成功');
+    const imgObj = await this.model('circle_img').add({ circle_id: circleId, url: 'https://static.huanjiaohu.com/image/circle/small/' + name });
+    this.json(imgObj);
   }
   async praiseAction() {
     const userId = this.getLoginUserId();

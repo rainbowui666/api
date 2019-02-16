@@ -7,23 +7,13 @@ module.exports = class extends Base {
     this.json(count);
   }
   async categoryAction() {
-    // const category = [
-    //   {'code': 'hy', 'name': '海鱼', 'desc': ''},
-    //   {'code': 'rt', 'name': '软体', 'desc': ''},
-    //   {'code': 'yg', 'name': '硬骨', 'desc': ''},
-    //   {'code': 'qt', 'name': '其他', 'desc': ''},
-    //   {'code': 'other', 'name': '未知', 'desc': ''},
-    //   {'code': 'hc', 'name': '耗材', 'desc': ''},
-    //   {'code': 'sb', 'name': '设备', 'desc': ''}
-
-    // ];
-    const list = await this.mode('category').where({'level': 'L1', 'type': 0}).select();
+    const list = await this.model('category').where({'level': 'L1', 'type': 0}).select();
     this.json(list);
     return list;
   }
   async categoryAllAction() {
-    const categorys = await this.mode('category').where({'level': 'L1', 'type': 0}).select();
-    const types = await this.mode('category').where({'level': 'L2', 'type': 0}).select();
+    const categorys = await this.model('category').where({'level': 'L1', 'type': 0}).select();
+    const types = await this.model('category').where({'level': 'L2', 'type': 0}).select();
 
     const returnList = [];
     // const returnList = [{'code': 'rm', 'name': '热门', 'desc': '', 'types': [{'code': 'tj', 'name': '推荐', 'desc': '', 'pc': 'rm'}, {'code': 'tej', 'name': '特价', 'desc': '', 'pc': 'rm'}]}];

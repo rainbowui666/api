@@ -22,6 +22,7 @@ module.exports = class extends Base {
     const sessionData = await rp(options);
     this.json(sessionData);
   }
+
   async getInformationByIdAction() {
     const id = this.post('id');
     const token = await this.service('weixin').getToken(think.config('weixin.subscribe_appid'), think.config('weixin.subscribe_secret'));

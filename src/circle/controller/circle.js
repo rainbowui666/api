@@ -47,7 +47,7 @@ module.exports = class extends Base {
       comment.value_id = commentItem.value_id;
       comment.id = commentItem.id;
       comment.add_time = commentItem.add_time;
-      comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({ id: commentItem.user_id }).find();
+      comment.user_info = await this.model('user').field(['id', 'name', 'headimgurl']).where({ id: commentItem.user_id }).find();
       commentList.push(comment);
     }
     c['insert_date'] = new Date(c['insert_date']).getTime();

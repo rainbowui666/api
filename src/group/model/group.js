@@ -6,7 +6,7 @@ module.exports = class extends think.Model {
     let whereMap = ` gb.private=0 `;
 
     if (!think.isEmpty(province)) {
-      whereMap += ` and (gb.province='${province}' or gb.province='china') `;
+      whereMap += ` and (gb.province='${province}') `;
     }
     if (!think.isEmpty(name)) {
       whereMap += ` and gb.name like '%${name}%' `;

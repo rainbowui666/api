@@ -26,17 +26,17 @@ module.exports = class extends Base {
   async openAction() {
     const title = this.post('title');
     const userId = this.getLoginUserId();
-    const type = this.post('type');
-    const filter = this.post('filter');
+    const bowlType = this.post('bowlType');
+    const bowlFilter = this.post('bowlFilter');
     const bowlSystem = this.post('bowlSystem');
-    const size = this.post('size');
+    const bowlSize = this.post('bowlSize');
     const setting = {
       title,
       user_id: userId,
-      type,
-      filter,
+      bowl_type: bowlType,
+      bowl_filter: bowlFilter,
       bowl_system: bowlSystem,
-      size
+      bowl_size: bowlSize
     };
     const settingObj = await this.model('circle_setting').add(setting);
     this.json(settingObj);
@@ -49,20 +49,20 @@ module.exports = class extends Base {
   async updateAction() {
     const title = this.post('title');
     const userId = this.getLoginUserId();
-    const type = this.post('type');
-    const filter = this.post('filter');
+    const bowlType = this.post('bowlType');
+    const bowlFilter = this.post('bowlFilter');
     const bowlSystem = this.post('bowlSystem');
-    const size = this.post('size');
+    const bowlSize = this.post('bowlSize');
     const bowlBrand = this.post('bowlBrand');
     const lightBrand = this.post('lightBrand');
     const proteinType = this.post('proteinType');
     const streamType = this.post('streamType');
     const setting = {
       title,
-      type,
-      filter,
+      bowl_type: bowlType,
+      bowl_filter: bowlFilter,
       bowl_system: bowlSystem,
-      size,
+      bowl_size: bowlSize,
       bowl_brand: bowlBrand,
       light_brand: lightBrand,
       protein_type: proteinType,

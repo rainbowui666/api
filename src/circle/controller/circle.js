@@ -3,32 +3,6 @@ const fs = require('fs');
 const images = require('images');
 
 module.exports = class extends Base {
-  async listByUserIdAction() {
-    const userId = this.getLoginUserId();
-    const page = this.post('page') || 1;
-    const size = this.post('size') || 10;
-    const type = this.post('type');
-    const model = this.model('circle').alias('c');
-    model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag', 's.title']).join({
-      table: 'user',
-      join: 'inner',
-      as: 'u',
-      on: ['c.user_id', 'u.id']
-    }).join({
-      table: 'circle_setting',
-      join: 'inner',
-      as: 's',
-      on: ['s.user_id', 'u.id']
-    });
-    const list = await model.where({ 'c.user_id': userId, 'c.type': type }).order('c.insert_date DESC').page(page, size).countSelect();
-    for (const c of list.data) {
-      const imageList = this.model('circle_img').where({ circle_id: c.id }).select();
-      c['imageList'] = imageList;
-      c['time'] = this.service('date', 'api').convertWebDateToSubmitDateTime(c['insert_date']);
-      c['tag'] = c['tag'] ? c['tag'].split(',') : ['青魔'];
-    }
-    this.json(list);
-  }
   async getByUserIdAction() {
     const userId = this.post('userId') || this.getLoginUserId();
     const type = this.post('type') || 0;
@@ -36,8 +10,15 @@ module.exports = class extends Base {
     this.json(circle);
   }
   async getCircleByIdAction() {
+    const model = this.buildModel();
+    const c = await model.where({ 'c.id': this.post('circleId') }).order('c.insert_date DESC').find();
+    await this.handleCircle(c);
+    this.json(c);
+  }
+
+  buildModel() {
     const model = this.model('circle').alias('c');
-    model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag', 's.type', 's.filter', 's.bowl_system bowlSystem', 's.size', 's.bowl_brand bowlBrand', 's.light_brand lightBrand', 's.protein_type proteinType', 's.stream_type streamType', 's.cover_url coverUrl']).join({
+    model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag', 's.bowl_type bowlType', 's.bowl_filter bowlFilter', 's.bowl_system bowlSystem', 's.bowl_size bowlSize', 's.bowl_brand bowlBrand', 's.light_brand lightBrand', 's.protein_type proteinType', 's.stream_type streamType', 's.cover_url coverUrl']).join({
       table: 'user',
       join: 'inner',
       as: 'u',
@@ -48,7 +29,10 @@ module.exports = class extends Base {
       as: 's',
       on: ['s.user_id', 'u.id']
     });
-    const c = await model.where({ 'c.id': this.post('circleId') }).order('c.insert_date DESC').find();
+    return model;
+  }
+
+  async handleCircle(c) {
     const imageList = await this.model('circle_img').where({ circle_id: c.id }).select();
     const praiselist = await this.model('focus').where({ circle_id: c.id }).select();
     const comments = await this.model('comment').where({ type_id: 2, value_id: c.id }).select();
@@ -67,7 +51,7 @@ module.exports = class extends Base {
       commentList.push(comment);
     }
     c['insert_date'] = new Date(c['insert_date']).getTime();
-    switch (Number(c['type'])) {
+    switch (Number(c['bowlType'])) {
       case 0:
         c['tag'] = ['SPS缸'];
         break;
@@ -84,56 +68,15 @@ module.exports = class extends Base {
     c['interaction'] = {};
     c['interaction']['praiseList'] = praiselist;
     c['interaction']['commentList'] = commentList;
-    this.json(c);
   }
 
   async listAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
-    const model = this.model('circle').alias('c');
-    model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag']).join({
-      table: 'user',
-      join: 'inner',
-      as: 'u',
-      on: ['c.user_id', 'u.id']
-    });
+    const model = this.buildModel();
     const list = await model.where({ 'c.type': 1, 'c.status': 1 }).order('c.insert_date DESC').page(page, size).countSelect();
     for (const c of list.data) {
-      const imageList = await this.model('circle_img').where({ circle_id: c.id }).select();
-      const praiselist = await this.model('focus').where({ circle_id: c.id }).select();
-      const comments = await this.model('comment').where({ type_id: 2, value_id: c.id }).select();
-      c['imageList'] = imageList;
-      c['thumImageList'] = imageList.map((item) => { return item.url });
-      c['bigImageList'] = imageList.map((item) => { return item.url.replace('small/', '') });
-      const commentList = [];
-      for (const commentItem of comments) {
-        const comment = {};
-        comment.content = Buffer.from(commentItem.content, 'base64').toString();
-        comment.type_id = commentItem.type_id;
-        comment.value_id = commentItem.value_id;
-        comment.id = commentItem.id;
-        comment.add_time = commentItem.add_time;
-        comment.user_info = await this.model('user').field(['id', 'name', 'headimgurl']).where({ id: commentItem.user_id }).find();
-        commentList.push(comment);
-      }
-      c['insert_date'] = new Date(c['insert_date']).getTime();
-      switch (Number(c['type'])) {
-        case 0:
-          c['tag'] = ['SPS缸'];
-          break;
-        case 1:
-          c['tag'] = ['LPS缸'];
-          break;
-        case 2:
-          c['tag'] = ['FOT缸'];
-          break;
-        default:
-          c['tag'] = ['青魔'];
-          break;
-      }
-      c['interaction'] = {};
-      c['interaction']['praiseList'] = praiselist;
-      c['interaction']['commentList'] = commentList;
+      await this.handleCircle(c);
     }
     this.json(list);
   }

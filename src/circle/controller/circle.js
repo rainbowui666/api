@@ -49,6 +49,7 @@ module.exports = class extends Base {
       comment.id = commentItem.id;
       comment.add_time = commentItem.add_time;
       comment.user_info = await this.model('user').field(['id', 'name', 'headimgurl']).where({ id: commentItem.user_id }).find();
+      comment.parent_comment = commentItem.new_content ? JSON.parse(commentItem.new_content) : null;
       commentList.push(comment);
     }
     c['insert_date'] = new Date(c['insert_date']).getTime();
@@ -92,6 +93,7 @@ module.exports = class extends Base {
       comment.id = commentItem.id;
       comment.add_time = think.datetime(new Date(commentItem.add_time * 1000), 'YYYY-MM-DD');
       comment.user_info = await this.model('user').field(['id', 'name', 'headimgurl']).where({ id: commentItem.user_id }).find();
+      comment.parent_comment = commentItem.new_content ? JSON.parse(commentItem.new_content) : null;
       commentList.push(comment);
     }
     this.json(commentList);
@@ -183,13 +185,15 @@ module.exports = class extends Base {
     const typeId = this.post('typeId');
     const valueId = this.post('valueId');
     const content = this.post('content');
+    const parentComment = this.post('parentComment');
     const buffer = Buffer.from(content);
     await this.model('comment').add({
       type_id: typeId,
       value_id: valueId,
       content: buffer.toString('base64'),
       add_time: this.getTime(),
-      user_id: this.getLoginUserId()
+      user_id: this.getLoginUserId(),
+      new_content: JSON.stringify(parentComment)
     });
     const commentList = await this.getCommentList(typeId, valueId);
     this.json(commentList);
@@ -208,7 +212,8 @@ module.exports = class extends Base {
       comment.value_id = commentItem.value_id;
       comment.id = commentItem.id;
       comment.add_time = think.datetime(new Date(commentItem.add_time * 1000), 'YYYY-MM-DD');
-      comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({ id: commentItem.user_id }).find();
+      comment.user_info = await this.model('user').field(['id', 'name', 'headimgurl']).where({ id: commentItem.user_id }).find();
+      comment.parent_comment = commentItem.new_content ? JSON.parse(commentItem.new_content) : null;
       commentList.push(comment);
     }
     return commentList;

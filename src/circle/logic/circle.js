@@ -66,6 +66,14 @@ module.exports = class extends think.Logic {
       content: {string: true, required: true, trim: true}
     };
   }
+  commentDeleteAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      typeId: {int: true, required: true, trim: true},
+      valueId: {int: true, required: true, trim: true},
+      commentId: {int: true, required: true, trim: true}
+    };
+  }
   deleteImageAction() {
     this.allowMethods = 'post';
     this.rules = {

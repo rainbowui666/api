@@ -171,6 +171,14 @@ module.exports = class extends Base {
     const list = await this.model('focus').where({ circle_id: this.post('circleId') }).select();
     this.json(list);
   }
+  async commentDeleteAction() {
+    const typeId = this.post('typeId');
+    const valueId = this.post('valueId');
+    const commentId = this.post('commentId');
+    await this.model('comment').where({id: commentId}).delete();
+    const commentList = await this.getCommentList(typeId, valueId);
+    this.json(commentList);
+  }
   async commentPostAction() {
     const typeId = this.post('typeId');
     const valueId = this.post('valueId');
@@ -183,6 +191,11 @@ module.exports = class extends Base {
       add_time: this.getTime(),
       user_id: this.getLoginUserId()
     });
+    const commentList = await this.getCommentList(typeId, valueId);
+    this.json(commentList);
+  }
+
+  async getCommentList(typeId, valueId) {
     const list = await this.model('comment').where({
       type_id: typeId,
       value_id: valueId
@@ -198,6 +211,6 @@ module.exports = class extends Base {
       comment.user_info = await this.model('user').field(['name', 'headimgurl']).where({ id: commentItem.user_id }).find();
       commentList.push(comment);
     }
-    this.json(commentList);
+    return commentList;
   }
 };

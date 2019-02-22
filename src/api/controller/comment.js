@@ -25,8 +25,8 @@ module.exports = class extends Base {
   }
 
   async countAction() {
-    const typeId = this.get('typeId');
-    const valueId = this.get('valueId');
+    const typeId = this.post('typeId');
+    const valueId = this.post('valueId');
 
     const allCount = await this.model('comment').where({type_id: typeId, value_id: valueId}).count('id');
 
@@ -45,11 +45,11 @@ module.exports = class extends Base {
   }
 
   async listAction() {
-    const typeId = this.get('typeId');
-    const valueId = this.get('valueId');
-    const showType = this.get('showType'); // 选择评论的类型 0 全部， 1 只显示图片
-    const page = this.get('page') || 1;
-    const size = this.get('size') || 10;
+    const typeId = this.post('typeId');
+    const valueId = this.post('valueId');
+    const showType = this.post('showType'); // 选择评论的类型 0 全部， 1 只显示图片
+    const page = this.post('page') || 1;
+    const size = this.post('size') || 10;
 
     let comments = [];
     if (showType !== 1) {

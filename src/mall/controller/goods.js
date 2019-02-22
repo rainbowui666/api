@@ -8,6 +8,15 @@ module.exports = class extends Base {
     return this.success(goodsList);
   }
 
+  async getHotGoodsAction() {
+    const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where({is_hot: 1}).limit(4).select();
+    this.json(hotGoods);
+  }
+
+  async getNewGoodsAction() {
+    const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1}).limit(4).select();
+    this.json(newGoods);
+  }
   /**
    * 获取sku信息，用于购物车编辑时选择规格
    * @returns {Promise.<Promise|PreventPromise|void>}
@@ -55,10 +64,10 @@ module.exports = class extends Base {
     };
 
     // 当前用户是否收藏
-    const userHasCollect = await this.service('mall_collect', 'mall').isUserHasCollect(think.userId, 0, goodsId);
+    const userHasCollect = await this.service('mall_collect', 'mall').isUserHasCollect(this.getLoginUserId(), 0, goodsId);
 
     // 记录用户的足迹 TODO
-    await await this.service('mall_footprint', 'mall').addFootprint(think.userId, goodsId);
+    await await this.service('mall_footprint', 'mall').addFootprint(this.getLoginUserId(), goodsId);
 
     // return this.json(jsonData);
     return this.success({
@@ -132,7 +141,7 @@ module.exports = class extends Base {
       // 添加到搜索历史
       await this.model('mall_search_history').add({
         keyword: keyword,
-        user_id: think.userId,
+        user_id: this.getLoginUserId(),
         add_time: parseInt(new Date().getTime() / 1000)
       });
     }

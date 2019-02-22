@@ -6,7 +6,7 @@ module.exports = class extends Base {
    * @returns {Promise.<{cartList: *, cartTotal: {goodsCount: number, goodsAmount: number, checkedGoodsCount: number, checkedGoodsAmount: number}}>}
    */
   async getCart() {
-    const cartList = await this.model('mall_cart').where({user_id: think.userId, session_id: 1}).select();
+    const cartList = await this.model('mall_cart').where({user_id: this.getLoginUserId(), session_id: 1}).select();
     // 获取购物车统计信息
     let goodsCount = 0;
     let goodsAmount = 0.00;
@@ -72,7 +72,7 @@ module.exports = class extends Base {
       // 添加规格名和值
       let goodsSepcifitionValue = [];
       if (!think.isEmpty(productInfo.goods_specification_ids)) {
-        goodsSepcifitionValue = await this.model('goods_specification').where({
+        goodsSepcifitionValue = await this.model('mall_goods_specification').where({
           goods_id: goodsId,
           id: {'in': productInfo.goods_specification_ids.split('_')}
         }).getField('value');
@@ -87,7 +87,7 @@ module.exports = class extends Base {
         list_pic_url: goodsInfo.list_pic_url,
         number: number,
         session_id: 1,
-        user_id: think.userId,
+        user_id: this.getLoginUserId(),
         retail_price: productInfo.retail_price,
         market_price: productInfo.retail_price,
         goods_specifition_name_value: goodsSepcifitionValue.join(';'),
@@ -142,7 +142,7 @@ module.exports = class extends Base {
       // 添加规格名和值
       let goodsSepcifition = [];
       if (!think.isEmpty(productInfo.goods_specification_ids)) {
-        goodsSepcifition = await this.model('goods_specification').field(['mall_goods_specification.*', 'mall_specification.name']).join('mall_specification ON mall_specification.id=mall_goods_specification.specification_id').where({
+        goodsSepcifition = await this.model('mall_goods_specification').field(['mall_goods_specification.*', 'mall_specification.name']).join('mall_specification ON mall_specification.id=mall_goods_specification.specification_id').where({
           'mall_goods_specification.goods_id': goodsId,
           'mall_goods_specification.id': {'in': productInfo.goods_specification_ids.split('_')}
         }).select();
@@ -237,12 +237,12 @@ module.exports = class extends Base {
     if (addressId === 0) {
       checkedAddress = await this.model('address').where({
         is_default: 1,
-        user_id: think.userId
+        user_id: this.getLoginUserId()
       }).find();
     } else {
       checkedAddress = await this.model('address').where({
         id: addressId,
-        user_id: think.userId
+        user_id: this.getLoginUserId()
       }).find();
     }
 

@@ -447,3 +447,12 @@ create table circle_img(
     url varchar(500),
     primary key(id)
 );
+create table coupon_f(
+    id int not null auto_increment,
+    user_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    code varchar(500) not null,
+    price int not null,
+    is_send int,
+    primary key(id)
+);

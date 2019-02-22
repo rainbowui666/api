@@ -7,9 +7,9 @@ module.exports = class extends Base {
     const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1}).limit(4).select();
     const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where({is_hot: 1}).limit(3).select();
     const brandList = await this.model('mall_brand').where({is_new: 1}).order({new_sort_order: 'asc'}).limit(4).select();
-    const topicList = await this.model('mall_topic').limit(3).select();
+    // const topicList = await this.model('mall_topic').limit(3).select();
 
-    const categoryList = await this.model('category').where({parent_id: 0, name: ['<>', '推荐']}).select();
+    const categoryList = await this.model('category').where('id = 1011000 OR id = 1012000').select();
     const newCategoryList = [];
     for (const categoryItem of categoryList) {
       const childCategoryIds = await this.model('category').where({parent_id: categoryItem.id}).getField('id', 100);
@@ -27,7 +27,7 @@ module.exports = class extends Base {
       newGoodsList: newGoods,
       hotGoodsList: hotGoods,
       brandList: brandList,
-      topicList: topicList,
+      // topicList: topicList,
       categoryList: newCategoryList
     });
   }

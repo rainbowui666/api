@@ -1164,6 +1164,8 @@ ALTER TABLE mall_comment_picture RENAME TO comment_picture;
 ALTER TABLE mall_shipper RENAME TO shipper;
 ALTER TABLE mall_category RENAME TO category;
 alter table category add column code varchar(20);
+ALTER TABLE mall_user_coupon RENAME TO user_coupon;
+
 --
 -- Dumping events for database 'mall'
 --

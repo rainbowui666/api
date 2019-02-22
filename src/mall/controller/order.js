@@ -7,7 +7,7 @@ module.exports = class extends Base {
    * @return {Promise} []
    */
   async listAction() {
-    const orderList = await this.model('mall_order').where({ user_id: think.userId }).page(1, 10).countSelect();
+    const orderList = await this.model('mall_order').where({ user_id: this.getLoginUserId() }).page(1, 10).countSelect();
     const newOrderList = [];
     for (const item of orderList.data) {
       // 订单的商品
@@ -36,7 +36,7 @@ module.exports = class extends Base {
    */
   async detailAction() {
     const orderId = this.get('orderId');
-    const orderInfo = await this.model('mall_order').where({ user_id: think.userId, id: orderId }).find();
+    const orderInfo = await this.model('mall_order').where({ user_id: this.getLoginUserId(), id: orderId }).find();
 
     if (think.isEmpty(orderInfo)) {
       return this.fail('订单不存在');
@@ -88,7 +88,7 @@ module.exports = class extends Base {
     }
     const freightPrice = 0.00;
     // 获取要购买的商品
-    const checkedGoodsList = await this.model('mall_cart').where({ user_id: think.userId, session_id: 1, checked: 1 }).select();
+    const checkedGoodsList = await this.model('mall_cart').where({ user_id: this.getLoginUserId(), session_id: 1, checked: 1 }).select();
     if (think.isEmpty(checkedGoodsList)) {
       return this.fail('请选择商品');
     }
@@ -110,7 +110,7 @@ module.exports = class extends Base {
 
     const orderInfo = {
       order_sn: this.service('mall_order', 'mall').generateOrderNumber(),
-      user_id: think.userId,
+      user_id: this.getLoginUserId(),
       // 收货地址和运费
       consignee: checkedAddress.name,
       mobile: checkedAddress.mobile,

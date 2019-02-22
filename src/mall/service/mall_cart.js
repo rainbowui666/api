@@ -4,7 +4,7 @@ module.exports = class extends think.Service {
    * @returns {Promise.<*>}
    */
   async getGoodsList() {
-    const goodsList = await this.model('mall_cart').where({user_id: think.userId, session_id: 1}).select();
+    const goodsList = await this.model('mall_cart').where({user_id: this.getLoginUserId(), session_id: 1}).select();
     return goodsList;
   }
 
@@ -13,7 +13,7 @@ module.exports = class extends think.Service {
    * @returns {Promise.<*>}
    */
   async getCheckedGoodsList() {
-    const goodsList = await this.model('mall_cart').where({user_id: think.userId, session_id: 1, checked: 1}).select();
+    const goodsList = await this.model('mall_cart').where({user_id: this.getLoginUserId(), session_id: 1, checked: 1}).select();
     return goodsList;
   }
 
@@ -22,7 +22,7 @@ module.exports = class extends think.Service {
    * @returns {Promise.<*>}
    */
   async clearBuyGoods() {
-    const $res = await this.model('mall_cart').where({user_id: think.userId, session_id: 1, checked: 1}).delete();
+    const $res = await this.model('mall_cart').where({user_id: this.getLoginUserId(), session_id: 1, checked: 1}).delete();
     return $res;
   }
 };

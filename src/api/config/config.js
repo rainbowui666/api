@@ -37,6 +37,7 @@ module.exports = {
     'active/getActiveList',
     'location/getChina',
     'location/getProvinces',
-    'information/getSubscriptionList'
+    'information/getSubscriptionList',
+    'information/getInformationById'
   ]
 };

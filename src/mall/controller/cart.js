@@ -65,7 +65,7 @@ module.exports = class extends Base {
     }
 
     // 判断购物车中是否存在此规格商品
-    const cartInfo = await this.model('mall_cart').where({goods_id: goodsId, product_id: productId}).find();
+    const cartInfo = await this.model('mall_cart').where({goods_id: goodsId, product_id: productId, user_id: this.getLoginUserId()}).find();
     if (think.isEmpty(cartInfo)) {
       // 添加操作
 
@@ -95,7 +95,7 @@ module.exports = class extends Base {
         checked: 1
       };
 
-      await this.model('mall_cart').thenAdd(cartData, {product_id: productId});
+      await this.model('mall_cart').add(cartData);
     } else {
       // 如果已经存在购物车中，则数量增加
       if (productInfo.goods_number < (number + cartInfo.number)) {
@@ -231,7 +231,6 @@ module.exports = class extends Base {
   async checkoutAction() {
     const addressId = this.get('addressId'); // 收货地址id
     // const couponId = this.get('couponId'); // 使用的优惠券id
-
     // 选择的收货地址
     let checkedAddress = null;
     if (addressId === 0) {
@@ -245,11 +244,10 @@ module.exports = class extends Base {
         user_id: this.getLoginUserId()
       }).find();
     }
-
     if (!think.isEmpty(checkedAddress)) {
-      checkedAddress.province_name = await this.model('region').getRegionName(checkedAddress.province_id);
-      checkedAddress.city_name = await this.model('region').getRegionName(checkedAddress.city_id);
-      checkedAddress.district_name = await this.model('region').getRegionName(checkedAddress.district_id);
+      checkedAddress.province_name = await this.model('region').where({id: checkedAddress.province_id}).getField('name', true);
+      checkedAddress.city_name = await this.model('region').where({id: checkedAddress.city_id}).getField('name', true);
+      checkedAddress.district_name = await this.model('region').where({id: checkedAddress.district_id}).getField('name', true);
       checkedAddress.full_region = checkedAddress.province_name + checkedAddress.city_name + checkedAddress.district_name;
     } else {
       checkedAddress.id = -1;

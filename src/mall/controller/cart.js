@@ -263,11 +263,26 @@ module.exports = class extends Base {
     });
 
     // 获取可用的优惠券信息，功能还示实现
-    const couponList = await this.model('user_coupon').select();
-    const couponPrice = 0.00; // 使用优惠券减免的金额
+    const couponList = await this.model('user_coupon').where({used: 0, user_id: this.getLoginUserId(), used_time: ['>', new Date().getTime() / 1000]}).select();
+    const model = this.model('user_coupon').alias('u');
+    model.field(['u.*', 'c.name', 'c.tag', 'c.description', 'c.price', 'c.price_condition']).join({
+      table: 'coupon',
+      join: 'inner',
+      as: 'c',
+      on: ['u.coupon_id', 'c.id']
+    });
+    const coupon = await model.where({'u.useing': 1, 'u.used': 0, 'u.user_id': this.getLoginUserId(), 'u.used_time': ['>', new Date().getTime() / 1000]}).find();
+    let couponPrice = 0.00; // 使用优惠券减免的金额
+    const goodsTotalPrice = cartData.cartTotal.checkedGoodsAmount; // 商品总价
+
+    if (!think.isEmpty(coupon)) {
+      const condition = coupon.price_condition || 0;
+      if (goodsTotalPrice >= condition) {
+        couponPrice = coupon.price;
+      }
+    }
 
     // 计算订单的费用
-    const goodsTotalPrice = cartData.cartTotal.checkedGoodsAmount; // 商品总价
     const orderTotalPrice = cartData.cartTotal.checkedGoodsAmount + freightPrice - couponPrice; // 订单的总价
     const actualPrice = orderTotalPrice - 0.00; // 减去其它支付的金额后，要实际支付的金额
 

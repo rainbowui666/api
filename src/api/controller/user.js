@@ -425,4 +425,26 @@ module.exports = class extends Base {
     const userInfo = WXSerivce.decryptUserInfoData(sessionKey, encryptedData, iv);
     this.json(userInfo);
   }
+
+  async getCouponAction() {
+    const model = this.model('user_coupon').alias('u');
+    model.field(['u.*', 'c.name', 'c.tag', 'c.description', 'c.price', 'c.price_condition']).join({
+      table: 'coupon',
+      join: 'inner',
+      as: 'c',
+      on: ['u.coupon_id', 'c.id']
+    });
+    const couponList = await model.where({'u.used': 0, 'u.user_id': this.getLoginUserId(), used_time: ['>', new Date().getTime() / 1000]}).select();
+    for (const c of couponList) {
+      c.time = think.datetime(new Date(c.used_time * 1000), 'YYYY-MM-DD');
+    }
+    this.json(couponList);
+  }
+
+  async useingCouponAction() {
+    const id = this.post('id');
+    await this.model('user_coupon').where({'used': 0, 'user_id': this.getLoginUserId(), used_time: ['>', new Date().getTime() / 1000]}).update({'useing': 0});
+    await this.model('user_coupon').where({id}).update({'useing': 1});
+    this.success('操作成功');
+  }
 };

@@ -31,6 +31,30 @@ module.exports = class extends Base {
     });
   }
 
+  async getGoodsCommentAction() {
+    const goodsId = this.get('id');
+    const commentCount = await this.model('comment').where({value_id: goodsId, type_id: 0}).count();
+    const hotComment = await this.model('comment').where({value_id: goodsId, type_id: 0}).order('id desc').find();
+    let commentInfo = {};
+    if (!think.isEmpty(hotComment)) {
+      const commentUser = await this.model('user').field(['nickname', 'name username', 'headimgurl avatar']).where({id: hotComment.user_id}).find();
+      commentInfo = {
+        content: Buffer.from(hotComment.content, 'base64').toString(),
+        add_time: think.datetime(new Date(hotComment.add_time * 1000)),
+        nickname: commentUser.nickname,
+        avatar: commentUser.avatar,
+        pic_list: await this.model('comment_picture').where({comment_id: hotComment.id}).select()
+      };
+    }
+
+    const comment = {
+      count: commentCount,
+      data: commentInfo
+    };
+
+    this.json(comment);
+  }
+
   /**
    * 商品详情页数据
    * @returns {Promise.<Promise|PreventPromise|void>}
@@ -45,7 +69,7 @@ module.exports = class extends Base {
     const issue = await this.model('mall_goods_issue').select();
     const brand = await this.model('mall_brand').where({id: info.brand_id}).find();
     const commentCount = await this.model('comment').where({value_id: goodsId, type_id: 0}).count();
-    const hotComment = await this.model('comment').where({value_id: goodsId, type_id: 0}).find();
+    const hotComment = await this.model('comment').where({value_id: goodsId, type_id: 0}).order('id desc').find();
     let commentInfo = {};
     if (!think.isEmpty(hotComment)) {
       const commentUser = await this.model('user').field(['nickname', 'name username', 'headimgurl avatar']).where({id: hotComment.user_id}).find();

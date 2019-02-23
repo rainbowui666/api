@@ -1165,7 +1165,8 @@ ALTER TABLE mall_shipper RENAME TO shipper;
 ALTER TABLE mall_category RENAME TO category;
 alter table category add column code varchar(20);
 ALTER TABLE mall_user_coupon RENAME TO user_coupon;
-
+alter table user_coupon add column useing int DEFAULT 0;
+alter table user_coupon add column used int DEFAULT 0;
 --
 -- Dumping events for database 'mall'
 --

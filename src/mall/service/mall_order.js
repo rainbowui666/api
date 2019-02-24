@@ -76,6 +76,15 @@ module.exports = class extends think.Service {
       case 0:
         statusText = '未付款';
         break;
+      case 201:
+        statusText = '已付款';
+        break;
+      case 300:
+        statusText = '未确认';
+        break;
+      case 301:
+        statusText = '已确认';
+        break;
     }
 
     return statusText;
@@ -89,6 +98,10 @@ module.exports = class extends think.Service {
    */
   async updatePayStatus(orderId, payStatus = 0) {
     return this.model('mall_order').where({id: orderId}).limit(1).update({pay_status: parseInt(payStatus)});
+  }
+
+  async updateOrderStatus(orderId, orderStatus = 0) {
+    return this.model('mall_order').where({id: orderId}).limit(1).update({order_status: parseInt(orderStatus)});
   }
 
   /**

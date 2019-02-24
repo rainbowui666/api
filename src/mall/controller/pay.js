@@ -15,7 +15,7 @@ module.exports = class extends Base {
     if (parseInt(orderInfo.pay_status) !== 0) {
       return this.fail(400, '订单已支付，请不要重复操作');
     }
-    const openid = await this.model('user').where({ id: orderInfo.user_id }).getField('weixin_openid', true);
+    const openid = await this.model('user').where({ id: orderInfo.user_id }).getField('openid', true);
     if (think.isEmpty(openid)) {
       return this.fail('微信支付失败');
     }
@@ -48,6 +48,7 @@ module.exports = class extends Base {
     }
 
     if (orderModel.updatePayStatus(orderInfo.id, 2)) {
+      orderModel.updateOrderStatus(orderInfo.id, 201);
     } else {
       return `<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[订单不存在]]></return_msg></xml>`;
     }

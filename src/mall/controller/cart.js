@@ -55,13 +55,13 @@ module.exports = class extends Base {
     // 判断商品是否可以购买
     const goodsInfo = await this.model('mall_goods').where({id: goodsId}).find();
     if (think.isEmpty(goodsInfo) || goodsInfo.is_delete === 1) {
-      return this.fail(400, '商品已下架');
+      return this.fail('商品已下架');
     }
 
     // 取得规格的信息,判断规格库存
     const productInfo = await this.model('mall_product').where({goods_id: goodsId, id: productId}).find();
     if (think.isEmpty(productInfo) || productInfo.goods_number < number) {
-      return this.fail(400, '库存不足');
+      return this.fail('库存不足');
     }
 
     // 判断购物车中是否存在此规格商品
@@ -77,7 +77,6 @@ module.exports = class extends Base {
           id: {'in': productInfo.goods_specification_ids.split('_')}
         }).getField('value');
       }
-
       // 添加到购物车
       const cartData = {
         goods_id: goodsId,
@@ -99,7 +98,7 @@ module.exports = class extends Base {
     } else {
       // 如果已经存在购物车中，则数量增加
       if (productInfo.goods_number < (number + cartInfo.number)) {
-        return this.fail(400, '库存不足');
+        return this.fail('库存不足');
       }
 
       await this.model('mall_cart').where({
@@ -253,9 +252,6 @@ module.exports = class extends Base {
       checkedAddress.id = -1;
     }
 
-    // 根据收货地址计算运费
-    const freightPrice = 0.00;
-
     // 获取要购买的商品
     const cartData = await this.getCart();
     const checkedGoodsList = cartData.cartList.filter(function(v) {
@@ -281,10 +277,15 @@ module.exports = class extends Base {
         couponPrice = coupon.price;
       }
     }
+    // 根据收货地址计算运费
+    let freightPrice = 8.00;
+    if (goodsTotalPrice >= 0.01) {
+      freightPrice = 0.00;
+    }
 
     // 计算订单的费用
     const orderTotalPrice = cartData.cartTotal.checkedGoodsAmount + freightPrice - couponPrice; // 订单的总价
-    const actualPrice = orderTotalPrice - 0.00; // 减去其它支付的金额后，要实际支付的金额
+    const actualPrice = orderTotalPrice <= 0 ? 0.01 : orderTotalPrice;
 
     return this.success({
       checkedAddress: checkedAddress,

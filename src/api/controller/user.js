@@ -447,4 +447,9 @@ module.exports = class extends Base {
     await this.model('user_coupon').where({id}).update({'useing': 1});
     this.success('操作成功');
   }
+
+  async resetCouponAction() {
+    await this.model('user_coupon').where({'useing': 1, 'user_id': this.getLoginUserId(), used_time: ['>', new Date().getTime() / 1000]}).update({'useing': 0});
+    this.success('操作成功');
+  }
 };

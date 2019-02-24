@@ -7,11 +7,14 @@ module.exports = class extends Base {
    * @return {Promise} []
    */
   async listAction() {
-    const orderList = await this.model('mall_order').where({ user_id: this.getLoginUserId() }).page(1, 10).countSelect();
+    const page = this.post('page') || 1;
+    const size = this.post('size') || 10;
+    const status = this.post('status') || 0;
+    const orderList = await this.model('mall_order').where({ order_status: status, user_id: this.getLoginUserId() }).order('id desc').page(page, size).countSelect();
     const newOrderList = [];
     for (const item of orderList.data) {
       // 订单的商品
-      item.goodsList = await this.model('order_goods').where({ order_id: item.id }).select();
+      item.goodsList = await this.model('mall_order_goods').where({ order_id: item.id }).select();
       item.goodsCount = 0;
       item.goodsList.forEach(v => {
         item.goodsCount += v.number;
@@ -50,11 +53,11 @@ module.exports = class extends Base {
     const latestExpressInfo = await this.service('mall_order_express', 'mall').getLatestOrderExpress(orderId);
     orderInfo.express = latestExpressInfo;
 
-    const orderGoods = await this.model('order_goods').where({ order_id: orderId }).select();
+    const orderGoods = await this.model('mall_order_goods').where({ order_id: orderId }).select();
 
     // 订单状态的处理
     orderInfo.order_status_text = await this.service('mall_order', 'mall').getOrderStatusText(orderId);
-    orderInfo.add_time = moment.unix(orderInfo.add_time).format('YYYY-MM-DD HH:mm:ss');
+    orderInfo.add_time = moment.unix(orderInfo.add_time * 1000).format('YYYY-MM-DD HH:mm:ss');
     orderInfo.final_pay_time = moment('001234', 'Hmmss').format('mm:ss');
     // 订单最后支付时间
     if (orderInfo.order_status === 0) {
@@ -86,7 +89,6 @@ module.exports = class extends Base {
     if (think.isEmpty(checkedAddress)) {
       return this.fail('请选择收货地址');
     }
-    const freightPrice = 0.00;
     // 获取要购买的商品
     const checkedGoodsList = await this.model('mall_cart').where({ user_id: this.getLoginUserId(), session_id: 1, checked: 1 }).select();
     if (think.isEmpty(checkedGoodsList)) {
@@ -99,15 +101,30 @@ module.exports = class extends Base {
     }
     // 获取订单使用的优惠券
     const couponId = this.post('couponId');
-    const couponPrice = 0.00;
-    if (!think.isEmpty(couponId)) {
-      //
+    const model = this.model('user_coupon').alias('u');
+    model.field(['u.*', 'c.name', 'c.tag', 'c.description', 'c.price', 'c.price_condition']).join({
+      table: 'coupon',
+      join: 'inner',
+      as: 'c',
+      on: ['u.coupon_id', 'c.id']
+    });
+    const coupon = await model.where({'u.id': couponId}).find();
+    let couponPrice = 0.00;
+    if (!think.isEmpty(couponId) && !think.isEmpty(coupon)) {
+      const condition = coupon.price_condition || 0;
+      if (goodsTotalPrice >= condition) {
+        couponPrice = coupon.price;
+      }
+    }
+    // 根据收货地址计算运费
+    let freightPrice = 8.00;
+    if (goodsTotalPrice >= 0.01) {
+      freightPrice = 0.00;
     }
     // 订单价格计算
     const orderTotalPrice = goodsTotalPrice + freightPrice - couponPrice; // 订单的总价
-    const actualPrice = orderTotalPrice - 0.00; // 减去其它支付的金额后，要实际支付的金额
+    const actualPrice = orderTotalPrice <= 0 ? 0.01 : orderTotalPrice;
     const currentTime = parseInt(this.getTime() / 1000);
-
     const orderInfo = {
       order_sn: this.service('mall_order', 'mall').generateOrderNumber(),
       user_id: this.getLoginUserId(),
@@ -152,8 +169,8 @@ module.exports = class extends Base {
         goods_specifition_ids: goodsItem.goods_specifition_ids
       });
     }
-    await this.model('order_goods').addMany(orderGoodsData);
-    await this.service('mall_cart', 'mall').clearBuyGoods();
+    await this.model('mall_order_goods').addMany(orderGoodsData);
+    await this.model('mall_cart').where({user_id: this.getLoginUserId(), session_id: 1, checked: 1}).delete();
     return this.success({ orderInfo: orderInfo });
   }
 

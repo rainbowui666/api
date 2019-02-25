@@ -135,11 +135,10 @@ module.exports = class extends Base {
       city: checkedAddress.city_id,
       district: checkedAddress.district_id,
       address: checkedAddress.address,
-      freight_price: 0.00,
+      freight_price: freightPrice,
       // 留言
       postscript: this.post('postscript'),
-      // 使用的优惠券
-      coupon_id: 0,
+      coupon_id: couponId,
       coupon_price: couponPrice,
       add_time: currentTime,
       goods_price: goodsTotalPrice,
@@ -185,5 +184,42 @@ module.exports = class extends Base {
     }
     const latestExpressInfo = await this.service('mall_order_express', 'mall').getLatestOrderExpress(orderId);
     return this.success(latestExpressInfo);
+  }
+
+  async cancelAction() {
+    const orderId = this.post('orderId');
+    if (think.isEmpty(orderId)) {
+      return this.fail('订单不存在');
+    }
+    const orderModel = this.service('mall_order', 'mall');
+    if (orderModel.updateOrderStatus(orderId, 101)) {
+      return this.success('操作成功');
+    }
+  }
+
+  async returnAction() {
+    const orderId = this.post('orderId');
+    const description = this.post('description');
+    const orderInfo = await this.model('mall_order').where({ user_id: this.getLoginUserId(), id: orderId }).find();
+    if (think.isEmpty(orderInfo)) {
+      return this.fail('订单不存在');
+    } else {
+      const returnObj = {
+        user_id: this.getLoginUserId(),
+        order_id: orderId,
+        code: 102,
+        description: description
+      };
+      const orderModel = this.service('mall_order', 'mall');
+      if (await orderModel.updateOrderStatus(orderId, 102)) {
+        if (orderInfo.order_status === 201) {
+          returnObj.account = orderInfo.actual_price;
+        } else {
+          returnObj.account = orderInfo.actual_price - orderInfo.freight_price;
+        }
+        await this.model('user_account').add(returnObj);
+        return this.success('操作成功');
+      }
+    }
   }
 };

@@ -467,3 +467,14 @@ create table coupon(
     price_condition int,
     primary key(id)
 );
+
+create table user_account(
+    id int not null auto_increment,
+    user_id int not null,
+	order_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    account double(8,2) not null,
+    code int not null,
+    description  varchar(500), 
+    primary key(id)
+);

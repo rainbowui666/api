@@ -26,7 +26,7 @@ module.exports = class extends Base {
       .field(['f.*', 'g.name', 'g.list_pic_url', 'g.goods_brief', 'g.retail_price'])
       .alias('f')
       .join({
-        table: 'goods',
+        table: 'mall_goods',
         join: 'left',
         as: 'g',
         on: ['f.goods_id', 'g.id']

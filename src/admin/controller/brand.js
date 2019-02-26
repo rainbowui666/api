@@ -1,10 +1,28 @@
 const Base = require('./base.js');
+const fs = require('fs');
 
 module.exports = class extends Base {
   async deleteAction() {
-    await this.model('mall_goods').where({brand_id: this.post('id')}).delete();
-    await this.model('mall_brand').where({id: this.post('id')}).delete();
-    return this.success('操作成功');
+    const goods = await this.model('mall_goods').where({brand_id: this.post('id')}).find();
+    if (think.isEmpty(goods)) {
+      const brand = await this.model('mall_brand').where({id: this.post('id')}).find();
+      const picUrl = brand['pic_url'] ? brand['pic_url'].replace('https://static.huanjiaohu.com/image/brand/', '') : null;
+      const listpicUrl = brand['list_pic_url'] ? brand['list_pic_url'].replace('https://static.huanjiaohu.com/image/brand/', '') : null;
+      const apppicUrl = brand['app_list_pic_url'] ? brand['app_list_pic_url'].replace('https://static.huanjiaohu.com/image/brand/', '') : null;
+      if (picUrl) {
+        fs.unlinkSync(this.config('image.brand') + '/' + picUrl);
+      }
+      if (listpicUrl) {
+        fs.unlinkSync(this.config('image.brand') + '/' + listpicUrl);
+      }
+      if (apppicUrl) {
+        fs.unlinkSync(this.config('image.brand') + '/' + apppicUrl);
+      }
+      await this.model('mall_brand').where({id: this.post('id')}).delete();
+      return this.success('操作成功');
+    } else {
+      return this.fail('请先删除该品牌下的商品');
+    }
   }
   async addAction() {
     const name = this.post('name');
@@ -52,5 +70,56 @@ module.exports = class extends Base {
     } else {
       this.fail('改名字品牌已经入驻');
     }
+  }
+  async uploadPicAction() {
+    const brandId = this.post('brandId');
+    const img = this.file('img');
+    const _name = img.name;
+    const tempName = _name.split('.');
+    let timestamp = Date.parse(new Date());
+    timestamp = timestamp / 1000;
+    const name = timestamp + '-' + brandId + '.' + tempName[1];
+    const thumbUrl = this.config('image.brand') + '/' + name;
+    const brand = await this.model('mall_brand').where({id: brandId}).find();
+    if (!think.isEmpty(brand['pic_url'])) {
+      fs.unlinkSync(this.config('image.brand') + '/' + brand['pic_url'].replace('https://static.huanjiaohu.com/image/brand/', ''));
+    }
+    fs.renameSync(img.path, thumbUrl);
+    await this.model('mall_brand').where({id: brandId}).update({'pic_url': 'https://static.huanjiaohu.com/image/brand/' + name});
+    this.success('操作成功');
+  }
+  async uploadListPicAction() {
+    const brandId = this.post('brandId');
+    const img = this.file('img');
+    const _name = img.name;
+    const tempName = _name.split('.');
+    let timestamp = Date.parse(new Date());
+    timestamp = timestamp / 1000;
+    const name = timestamp + '-' + brandId + '.' + tempName[1];
+    const thumbUrl = this.config('image.brand') + '/' + name;
+    const brand = await this.model('mall_brand').where({id: brandId}).find();
+    if (!think.isEmpty(brand['list_pic_url'])) {
+      fs.unlinkSync(this.config('image.brand') + '/' + brand['list_pic_url'].replace('https://static.huanjiaohu.com/image/brand/', ''));
+    }
+    fs.renameSync(img.path, thumbUrl);
+    await this.model('mall_brand').where({id: brandId}).update({'list_pic_url': 'https://static.huanjiaohu.com/image/brand/' + name});
+    this.success('操作成功');
+  }
+  async uploadAppListPicAction() {
+    const brandId = this.post('brandId');
+    const img = this.file('img');
+    const _name = img.name;
+    const tempName = _name.split('.');
+    let timestamp = Date.parse(new Date());
+    timestamp = timestamp / 1000;
+    const name = timestamp + '-' + brandId + '.' + tempName[1];
+    const thumbUrl = this.config('image.brand') + '/' + name;
+    const brand = await this.model('mall_brand').where({id: brandId}).find();
+    if (!think.isEmpty(brand['app_list_pic_url'])) {
+      fs.unlinkSync(this.config('image.brand') + '/' + brand['app_list_pic_url'].replace('https://static.huanjiaohu.com/image/brand/', ''));
+    }
+    fs.renameSync(img.path, thumbUrl);
+    await this.model('mall_brand').where({id: brandId}).update({'app_list_pic_url': 'https://static.huanjiaohu.com/image/brand/' + name});
+    this.success('操作成功');
   }
 };

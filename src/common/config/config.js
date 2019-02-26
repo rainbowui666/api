@@ -35,7 +35,7 @@ module.exports = {
   image: {
     user: '/usr/local/image/user',
     ad: '/usr/local/image/ad',
-    active: '/usr/local/image/active',
+    brand: '/usr/local/image/brand',
     circle: '/usr/local/image/circle',
     material: '/usr/local/image/material',
     notice: '/usr/local/image/notice',

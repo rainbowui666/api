@@ -38,4 +38,25 @@ module.exports = class extends think.Logic {
       sort_order: {int: true, trim: true}
     };
   }
+  uploadPicAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      brandId: {int: true, required: true, trim: true},
+      img: {method: 'file', required: true}
+    };
+  }
+  uploadListPicAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      brandId: {int: true, required: true, trim: true},
+      img: {method: 'file', required: true}
+    };
+  }
+  uploadAppListPicAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      brandId: {int: true, required: true, trim: true},
+      img: {method: 'file', required: true}
+    };
+  }
 };

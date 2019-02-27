@@ -9,7 +9,7 @@ module.exports = class extends think.Logic {
     this.allowMethods = 'post';
     this.rules = {
       app_list_pic_url: {string: true, trim: true},
-      floor_price: {int: true, trim: true},
+      floor_price: {float: true, trim: true},
       is_new: {int: true, trim: true},
       is_show: {int: true, trim: true},
       list_pic_url: {string: true, trim: true},
@@ -26,7 +26,7 @@ module.exports = class extends think.Logic {
     this.rules = {
       id: {int: true, required: true, trim: true},
       app_list_pic_url: {string: true, trim: true},
-      floor_price: {int: true, trim: true},
+      floor_price: {float: true, trim: true},
       is_new: {int: true, trim: true},
       is_show: {int: true, trim: true},
       list_pic_url: {string: true, trim: true},

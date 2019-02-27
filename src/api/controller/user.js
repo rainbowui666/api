@@ -457,9 +457,6 @@ module.exports = class extends Base {
     let account = 0;
     for (const item of list) {
       account += item.account;
-      const order = await this.model('mall_order').where({ id: item.order_id }).find();
-      order.goodsList = await this.model('mall_order_goods').where({ order_id: order.id }).select();
-      item.order = order;
       item.time = think.datetime(new Date(item.insert_date), 'YYYY-MM-DD HH:mm:ss');
     }
     this.json({account, list});

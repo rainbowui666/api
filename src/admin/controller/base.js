@@ -30,6 +30,9 @@ module.exports = class extends think.Controller {
           if (this.ctx.controller === 'user' && this.ctx.state.user.type.indexOf('yhgly') < 0) {
             return this.fail(401, '无权访问');
           }
+          if (this.ctx.controller === 'circle' && this.ctx.state.user.type.indexOf('yhgly') < 0) {
+            return this.fail(401, '无权访问');
+          }
           if (this.ctx.controller === 'material' && this.ctx.state.user.type.indexOf('bkgly') < 0) {
             return this.fail(401, '无权访问');
           }

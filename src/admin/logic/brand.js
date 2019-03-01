@@ -1,4 +1,16 @@
 module.exports = class extends think.Logic {
+  upAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      id: {int: true, required: true, trim: true}
+    };
+  }
+  downAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      id: {int: true, required: true, trim: true}
+    };
+  }
   deleteAction() {
     this.allowMethods = 'post';
     this.rules = {

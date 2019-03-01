@@ -2,6 +2,16 @@ const Base = require('./base.js');
 const fs = require('fs');
 
 module.exports = class extends Base {
+  async downAction() {
+    const id = this.post('id');
+    await this.model('mall_goods').where({'brand_id': id}).update({'is_on_sale': 0});
+    await this.model('mall_brand').where({id}).update({'is_show': 0});
+  }
+  async upAction() {
+    const id = this.post('id');
+    await this.model('mall_goods').where({'brand_id': id}).update({'is_on_sale': 1});
+    await this.model('mall_brand').where({id}).update({'is_show': 1});
+  }
   async deleteAction() {
     const goods = await this.model('mall_goods').where({brand_id: this.post('id')}).find();
     if (think.isEmpty(goods)) {

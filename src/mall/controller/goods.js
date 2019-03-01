@@ -151,7 +151,7 @@ module.exports = class extends Base {
     const goodsQuery = this.model('mall_goods');
 
     // 查询条件的map
-    const whereMap = {};
+    const whereMap = {is_delete: 0, is_on_sale: 1};
     if (!think.isEmpty(isNew)) {
       whereMap.is_new = isNew;
     }

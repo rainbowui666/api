@@ -117,6 +117,7 @@ module.exports = class extends Base {
     const circle = await this.model('circle').where({ id: circleId }).find();
     if (circle.user_id === userId) {
       await this.model('circle_img').where({ circle_id: circleId }).delete();
+      await this.model('comment').where({ type_id: 2, value_id: circleId }).delete();
       await this.model('circle').where({ id: circleId }).delete();
       const list = await this.model('circle_img').where({ circle_id: circleId }).select();
       for (const c of list) {

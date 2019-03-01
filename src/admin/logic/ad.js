@@ -1,5 +1,5 @@
 module.exports = class extends think.Logic {
-  uploadAppListPicAction() {
+  uploadAction() {
     this.allowMethods = 'post';
     this.rules = {
       province: {string: true, required: true, trim: true},

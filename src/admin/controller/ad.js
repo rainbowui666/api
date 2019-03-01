@@ -6,7 +6,7 @@ module.exports = class extends Base {
     const list = await this.model('mall_ad_position').where('id > 9').select();
     return this.json(list);
   }
-  async uploadAppListPicAction() {
+  async uploadAction() {
     const positionId = this.post('positionId');
     const province = this.post('province');
     const url = this.post('url');

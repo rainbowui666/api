@@ -32,7 +32,7 @@ module.exports = class extends Base {
   }
 
   async currentAction() {
-    const categoryId = this.get('id');
+    const categoryId = this.post('id');
     const model = this.model('category');
 
     let currentCategory = null;

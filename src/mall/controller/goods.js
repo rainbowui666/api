@@ -31,8 +31,8 @@ module.exports = class extends Base {
     });
   }
 
-  async getGoodsCommentAction() {
-    const goodsId = this.get('id');
+  async getGoodsCommentAction(id) {
+    const goodsId = id || this.get('id');
     const commentCount = await this.model('comment').where({value_id: goodsId, type_id: 0}).count();
     const hotComment = await this.model('comment').where({value_id: goodsId, type_id: 0}).order('id desc').find();
     let commentInfo = {};
@@ -52,15 +52,15 @@ module.exports = class extends Base {
       data: commentInfo
     };
 
-    this.json(comment);
+    return this.json(comment);
   }
 
   /**
    * 商品详情页数据
    * @returns {Promise.<Promise|PreventPromise|void>}
    */
-  async detailAction() {
-    const goodsId = this.get('id');
+  async detailAction(id) {
+    const goodsId = id || this.get('id');
     const model = this.model('mall_goods');
 
     const info = await model.where({'id': goodsId}).find();

@@ -72,8 +72,16 @@ module.exports = class extends Base {
   async listAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
+    const name = this.post('name');
+    const whereMap = {'c.status': 1};
+    if (!think.isEmpty(name)) {
+      const user = await this.model('user').where({name}).find();
+      if (!think.isEmpty(user)) {
+        whereMap['c.user_id'] = user.id;
+      }
+    }
     const model = this.buildModel();
-    const list = await model.order('c.insert_date DESC').page(page, size).countSelect();
+    const list = await model.where(whereMap).order('c.insert_date DESC').page(page, size).countSelect();
     for (const c of list.data) {
       await this.handleCircle(c);
     }
@@ -114,11 +122,7 @@ module.exports = class extends Base {
     this.success('操作成功');
   }
   async commentDeleteAction() {
-    const typeId = this.post('typeId');
-    const valueId = this.post('valueId');
     const commentId = this.post('commentId');
     await this.model('comment').where({id: commentId}).delete();
-    const commentList = await this.getCommentList(typeId, valueId);
-    this.json(commentList);
   }
 };

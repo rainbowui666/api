@@ -35,8 +35,6 @@ module.exports = class extends think.Logic {
   commentDeleteAction() {
     this.allowMethods = 'post';
     this.rules = {
-      typeId: {int: true, required: true, trim: true},
-      valueId: {int: true, required: true, trim: true},
       commentId: {int: true, required: true, trim: true}
     };
   }

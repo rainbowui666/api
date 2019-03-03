@@ -40,9 +40,26 @@ module.exports = class extends Base {
     const id = this.post('id');
     const ad = await this.model('mall_ad').where({id}).find();
     if (!think.isEmpty(ad['image_url'])) {
-      fs.unlinkSync(this.config('image.ad') + '/' + ad['image_url'].replace('https://static.huanjiaohu.com/image/brand/', ''));
+      fs.unlinkSync(this.config('image.ad') + '/' + ad['image_url'].replace('https://static.huanjiaohu.com/image/ad/', ''));
     }
     const number = await this.model('mall_ad').where({id}).delete();
     return this.json(number);
+  }
+  async addAction() {
+    const positionId = this.post('positionId');
+    const province = this.post('province');
+    const url = this.post('url');
+    const link = this.post('link');
+    const content = this.post('content');
+    const ad = {
+      ad_position_id: positionId,
+      url,
+      link,
+      province,
+      content
+    };
+    const id = await this.model('mall_ad').add(ad);
+    ad.id = id;
+    return this.json(ad);
   }
 };

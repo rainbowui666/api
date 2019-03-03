@@ -1,122 +1,164 @@
 const Base = require('./base.js');
-
+const fs = require('fs');
+const { loadImage, createCanvas, Image } = require('canvas');
+const _ = require('lodash');
 module.exports = class extends Base {
-  async addAction() {
-    // const categoryId = this.post('categoryId');
-    // const goodsSn = this.post('goodsSn');
-    // const name = this.post('name');
-    // const brandId = this.post('brandId');
-    // const keywords = this.post('keywords');
-    // const goodsBrief = this.post('goodsBrief');
-    // const goodsDesc = this.file('goodsDesc');
-    // const sortOrder = this.sortOrder('sortOrder');
-    // const counterPrice = this.post('counterPrice');
-    // const unitPrice = this.post('unitPrice');
-    // const retailPrice = this.post('retailPrice');
-    // const extraPrice = this.post('extraPrice');
-    // const isNew = this.post('isNew');
-    // const isHot = this.post('isHot');
-    // const goodsUnit = this.post('goodsUnit');
-    // const promotionDesc = this.post('promotionDesc');
-    // const promotionTag = this.post('promotionTag');
-    // const isLimited = this.post('isLimited');
-
-    // const goods = {
-    //   category_id: categoryId,
-    //   goods_sn: goodsSn,
-    //   name: name,
-    //   brand_id: brandId,
-    //   keywords: keywords,
-    //   goods_brief: goodsBrief,
-    //   sort_order: sortOrder,
-    //   counter_price: counterPrice
-    // };
-
-    // category_id 分类
-    // goods_sn  商品号
-    // name     名字
-    // brand_id  品牌
-    // keywords  关键字
-    // goods_brief 简介
-    // goods_desc  描述
-    // sort_order  排序
-    // counter_price 柜台价
-    // unit_price  单价
-    // extra_price 手续费
-    // is_new  是否最新
-    // is_hot 是否人气
-    // goods_unit 单位
-    // retail_price 实际价格
-    // primary_product_id 产品id
-    // promotion_desc 促销描述
-    // promotion_tag 促销标签
-    // is_limited 限购
-    const product = await this.model('mall_product').where({goods_sn: this.post('goodsName')}).find();
-    if (think.isEmpty(product)) {
-      const productObj = {
-        goods_sn: this.post('goodsName'),
-        goods_number: this.post('goodsNumber'),
-        retail_price: this.post('retailPrice'),
-        goods_specificaation_ids: this.post('goodsSpecificaationIds')
-      };
-      const id = await this.model('mall_product').add(productObj);
-      this.success(id);
-    } else {
-      this.fail('该产品已经存在');
+  async buildGoodsDescription(goodsId, img) {
+    const imgPath = this.config('image.goods') + '/' + goodsId;
+    if (fs.existsSync(imgPath)) {
+      fs.rmdirSync(imgPath);
     }
+    fs.mkdirSync(imgPath);
+
+    const _name = img.name;
+    const tempName = _name.split('.');
+    let timestamp = Date.parse(new Date());
+    timestamp = timestamp / 1000;
+    const name = timestamp + '.' + tempName[1];
+    const thumbUrl = imgPath + '/' + name;
+    fs.renameSync(img.path, thumbUrl);
+    const myimg = await loadImage(thumbUrl);
+    const row = Math.ceil(myimg.height / 100);
+    const column = 1;
+    const wpiece = Math.floor(myimg.width / column);
+    const hpiece = Math.floor(myimg.height / row);
+    const canvas = createCanvas(myimg.width, myimg.height);
+    const ctx = canvas.getContext('2d');
+    canvas.width = wpiece;
+    canvas.height = hpiece;
+    let html = '<table  cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate; border-spacing:0px 0px;">';
+    fs.readFile(thumbUrl, (err, squid) => {
+      if (err) throw err;
+      const imges = new Image();
+      imges.onload = () => ctx.drawImage(imges, 0, 0);
+      imges.onerror = err => { throw err };
+      imges.src = squid;
+      for (var i = 0; i < row; i++) {
+        html += '<tr>';
+        for (var j = 0; j < column; j++) {
+          ctx.drawImage(
+            imges,
+            j * wpiece, i * hpiece, wpiece, hpiece,
+            0, 0, wpiece, hpiece
+          );
+          const buf3 = canvas.toBuffer('image/jpeg', { quality: 0.9 });
+          const timestamp = new Date().getTime();
+          const name = _.uniqueId('goods') + timestamp + '.jpg';
+          const path = imgPath + '/' + name;
+          const url = 'https://static.huanjiaohu.com/image/goods/' + goodsId + '/' + name;
+          fs.writeFileSync(path, buf3);
+          html += '<td><img src="' + url + '" /></td>';
+        }
+        html += '</tr>';
+      }
+      html += '</table>';
+      return html;
+    });
+  }
+
+  async uploadDescAction() {
+    const goodsId = this.post('goodsId');
+    const img = this.file('img');
+    const goodsDes = this.buildGoodsDescription(goodsId, img);
+    const number = await this.model('mall_goods').where({id: goodsId}).update({goods_desc: goodsDes});
+    return this.success(number);
+  }
+
+  async addAction() {
+    const name = this.post('name');
+    const goods = await this.model('mall_goods').where({name}).find();
+    if (think.isEmpty(goods)) {
+      const categoryId = this.post('categoryId');
+      const goodsSn = this.post('goodsSn');
+      const brandId = this.post('brandId');
+      const keywords = this.post('keywords');
+      const goodsBrief = this.post('goodsBrief');
+      const sortOrder = this.sortOrder('sortOrder');
+      const counterPrice = this.post('counterPrice');
+      const unitPrice = this.post('unitPrice');
+      const retailPrice = this.post('retailPrice');
+      const extraPrice = this.post('extraPrice');
+      const isNew = this.post('isNew');
+      const isHot = this.post('isHot');
+      const goodsUnit = this.post('goodsUnit');
+      const promotionDesc = this.post('promotionDesc');
+      const promotionTag = this.post('promotionTag');
+      const isLimited = this.post('isLimited');
+
+      const goods = {
+        category_id: categoryId,
+        goods_sn: goodsSn,
+        name: name,
+        brand_id: brandId,
+        keywords: keywords,
+        goods_brief: goodsBrief,
+        sort_order: sortOrder,
+        counter_price: counterPrice,
+        unit_price: unitPrice,
+        extra_price: extraPrice,
+        is_new: isNew,
+        is_hot: isHot,
+        goods_unit: goodsUnit,
+        retail_price: retailPrice,
+        promotion_desc: promotionDesc,
+        promotion_tag: promotionTag,
+        is_limited: isLimited
+      };
+      const id = await this.model('mall_goods').add(goods);
+      goods.id = id;
+      this.json(goods);
+    } else {
+      this.fail('该商品已经存在');
+    }
+  }
+
+  async updateAction() {
+    const id = this.post('goodsId');
+    const categoryId = this.post('categoryId');
+    const name = this.post('name');
+    const goodsSn = this.post('goodsSn');
+    const brandId = this.post('brandId');
+    const keywords = this.post('keywords');
+    const goodsBrief = this.post('goodsBrief');
+    const sortOrder = this.sortOrder('sortOrder');
+    const counterPrice = this.post('counterPrice');
+    const unitPrice = this.post('unitPrice');
+    const retailPrice = this.post('retailPrice');
+    const extraPrice = this.post('extraPrice');
+    const isNew = this.post('isNew');
+    const isHot = this.post('isHot');
+    const goodsUnit = this.post('goodsUnit');
+    const promotionDesc = this.post('promotionDesc');
+    const promotionTag = this.post('promotionTag');
+    const isLimited = this.post('isLimited');
+
+    const goods = {
+      category_id: categoryId,
+      goods_sn: goodsSn,
+      name: name,
+      brand_id: brandId,
+      keywords: keywords,
+      goods_brief: goodsBrief,
+      sort_order: sortOrder,
+      counter_price: counterPrice,
+      unit_price: unitPrice,
+      extra_price: extraPrice,
+      is_new: isNew,
+      is_hot: isHot,
+      goods_unit: goodsUnit,
+      retail_price: retailPrice,
+      promotion_desc: promotionDesc,
+      promotion_tag: promotionTag,
+      is_limited: isLimited
+    };
+    await this.model('mall_goods').where({id}).update(goods);
+    this.json(goods);
   }
 
   async getTypeByCategoryIdAction() {
     const categoryId = this.post('categoryId');
     const types = await this.model('category').where({'parent_id': categoryId}).select();
     this.json(types);
-  }
-
-  async addProductAction() {
-    const product = await this.model('mall_product').where({goods_sn: this.post('goodsName')}).find();
-    if (think.isEmpty(product)) {
-      const productObj = {
-        goods_sn: this.post('goodsName'),
-        goods_number: this.post('goodsNumber'),
-        retail_price: this.post('retailPrice'),
-        goods_specificaation_ids: this.post('goodsSpecificaationIds')
-      };
-      const id = await this.model('mall_product').add(productObj);
-      this.success(id);
-    } else {
-      this.fail('该产品已经存在');
-    }
-  }
-
-  async daleteProductAction() {
-    const productId = this.post('productId');
-    const product = await this.model('mall_product').where({id: productId}).find();
-    const goods = await this.model('mall_goods').where({id: product.goods_id}).find();
-    if (think.isEmpty(goods)) {
-      const id = await this.model('mall_product').where({id: productId}).delete();
-      this.success(id);
-    } else {
-      this.fail('请先删除名为' + goods.name + '的商品');
-    }
-  }
-
-  async listProductAction() {
-    const page = this.post('page') || 1;
-    const size = this.post('size') || 9;
-    const products = await this.model('mall_product').order('id desc').page(page, size).countSelect();
-    this.json(products);
-  }
-
-  async updateProductAction() {
-    const productId = this.post('productId');
-    const productObj = {
-      goods_sn: this.post('goodsName'),
-      goods_number: this.post('goodsNumber'),
-      retail_price: this.post('retailPrice'),
-      goods_specificaation_ids: this.post('goodsSpecificaationIds')
-    };
-    const id = await this.model('mall_product').where({id: productId}).update(productObj);
-    this.success(id);
   }
 
   async getHotGoodsAction() {

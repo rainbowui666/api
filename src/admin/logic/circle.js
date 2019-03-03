@@ -44,4 +44,10 @@ module.exports = class extends think.Logic {
       circleImgId: {int: true, required: true, trim: true}
     };
   }
+  getUserByImageIdAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      circleImgId: {int: true, required: true, trim: true}
+    };
+  }
 };

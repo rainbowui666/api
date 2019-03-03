@@ -95,6 +95,23 @@ module.exports = class extends Base {
     this.json(list);
   }
 
+  async getUserByImageIdAction() {
+    const circleImgId = this.post('circleImgId');
+    const model = this.model('circle_img').alias('cm');
+    const user = await model.where({'cm.id': circleImgId}).field(['u.name', 'u.headimgurl', 'cm.*']).join({
+      table: 'circle',
+      join: 'inner',
+      as: 'c',
+      on: ['c.id', 'cm.circle_id']
+    }).join({
+      table: 'user',
+      join: 'inner',
+      as: 'u',
+      on: ['c.user_id', 'u.id']
+    });
+    this.json(user);
+  }
+
   async deleteAction() {
     const circleId = this.post('circleId');
     await this.model('circle_img').where({ circle_id: circleId }).delete();

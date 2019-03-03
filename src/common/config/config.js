@@ -37,6 +37,7 @@ module.exports = {
     ad: '/usr/local/image/ad',
     brand: '/usr/local/image/brand',
     circle: '/usr/local/image/circle',
+    goods: '/usr/local/image/goods',
     material: '/usr/local/image/material',
     notice: '/usr/local/image/notice',
     bill: '/usr/local/image/bill',

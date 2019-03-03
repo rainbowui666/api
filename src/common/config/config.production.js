@@ -12,6 +12,7 @@ module.exports = {
     ad: '/usr/local/nginx/html/static/image/ad',
     brand: '/usr/local/nginx/html/static/image/brand',
     circle: '/usr/local/nginx/html/static/image/circle',
+    goods: '/usr/local/nginx/html/static/image/goods',
     material: '/usr/local/nginx/html/static/image/material',
     evidence: '/usr/local/nginx/html/static/image/evidence',
     notice: '/usr/local/nginx/html/static/image/notice',

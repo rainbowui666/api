@@ -266,4 +266,209 @@ module.exports = class extends Base {
 
     return this.success(goodsData);
   }
+
+  async getSpecificationAction() {
+    const list = await this.model('mall_specification').select();
+    return this.json(list);
+  }
+  async deleteGoodsSpecificationAction() {
+    const id = this.post('id');
+    const number = await this.model('mall_goods_specification').where({id}).delete();
+    return this.json(number);
+  }
+  async getGoodsSpecificationAction() {
+    const goodsId = this.post('goodsId');
+    const specificationId = this.post('specificationId');
+    const list = await this.model('mall_goods_specification').alias('s').field(['s.*', 'g.name'])
+      .join({
+        table: 'goods',
+        join: 'inner',
+        as: 'g',
+        on: ['g.id', 's.goods_id']
+      }).where({'s.goods_id': goodsId, 's.specification_id': specificationId}).select();
+    return this.json(list);
+  }
+  async addGoodsSpecificationAction() {
+    const goodsId = this.post('goodsId');
+    const specificationId = this.post('specificationId');
+    const value = this.post('value');
+    const obj = {
+      goods_id: goodsId,
+      specification_id: specificationId,
+      value
+    };
+    const id = await this.model('mall_goods_specification').add(obj);
+    obj.id = id;
+    return this.json(obj);
+  }
+  async updateGoodsSpecificationAction() {
+    const id = this.post('id');
+    const value = this.post('value');
+    const number = await this.model('mall_goods_specification').where({id}).update({value});
+    return this.json(number);
+  }
+  async uploadGoodsSpecificationAction() {
+    const id = this.post('id');
+    const goodsId = this.post('goodsId');
+    const img = this.file('img');
+    const imgPath = this.config('image.goods') + '/specification/' + goodsId;
+    if (!fs.existsSync(imgPath)) {
+      fs.mkdirSync(imgPath);
+    }
+    const gs = await this.model('mall_goods_specification').where({id}).find();
+    if (gs['pic_url']) {
+      const filePath = imgPath + '/' + gs['pic_url'].replace('https://static.huanjiaohu.com/image/goods/specification/' + goodsId + '/', '');
+      fs.unlinkSync(filePath);
+    }
+    const _name = img.name;
+    const tempName = _name.split('.');
+    let timestamp = Date.parse(new Date());
+    timestamp = timestamp / 1000;
+    const name = timestamp + '.' + tempName[1];
+    const thumbUrl = imgPath + '/' + name;
+    fs.renameSync(img.path, thumbUrl);
+    const url = 'https://static.huanjiaohu.com/image/goods/specification/' + goodsId + '/' + name;
+    const number = await this.model('mall_goods_specification').where({id}).update({'pic_url': url});
+    return this.json(number);
+  }
+  async addGoodsProductAction() {
+    const goodsId = this.post('goodsId');
+    const goodsSpecificationIds = this.post('goodsSpecificationIds');
+    const goodsNmuber = this.post('goodsNmuber');
+    const retailPrice = this.post('retailPrice');
+    const obj = {
+      goods_id: goodsId,
+      goods_specification_ids: goodsSpecificationIds,
+      goods_nmuber: goodsNmuber,
+      retail_price: retailPrice
+    };
+    const id = await this.model('mall_product').add(obj);
+    obj.id = id;
+    return this.json(obj);
+  }
+
+  async deleteGoodsProductAction() {
+    const id = this.post('id');
+    const number = await this.model('mall_product').where({id}).delete();
+    return this.json(number);
+  }
+
+  async updateGoodsProductAction() {
+    const id = this.post('id');
+    const goodsSpecificationIds = this.post('goodsSpecificationIds');
+    const goodsNmuber = this.post('goodsNmuber');
+    const retailPrice = this.post('retailPrice');
+    const obj = {
+      goods_specification_ids: goodsSpecificationIds,
+      goods_nmuber: goodsNmuber,
+      retail_price: retailPrice
+    };
+    const number = await this.model('mall_product').where({id}).update(obj);
+    return this.json(number);
+  }
+
+  async getGoodsProductAction() {
+    const goodsId = this.post('goodsId');
+    const list = await this.model('mall_product').alias('s').field(['s.*', 'g.name'])
+      .join({
+        table: 'goods',
+        join: 'inner',
+        as: 'g',
+        on: ['g.id', 's.goods_id']
+      }).where({'s.goods_id': goodsId}).select();
+    return this.json(list);
+  }
+
+  async getAttributeCategoryAction() {
+    const list = await this.model('mall_attribute_category').select();
+    return this.json(list);
+  }
+
+  async getAttributeByCategoryIdAction() {
+    const categoryId = this.post('categoryId');
+    const list = await this.model('mall_attribute').where({attribute_category_id: categoryId}).select();
+    return this.json(list);
+  }
+
+  async addGoodsAttributeAction() {
+    const goodsId = this.post('goodsId');
+    const value = this.post('value');
+    const attributeId = this.post('attributeId');
+    const obj = {
+      goods_id: goodsId,
+      value: value,
+      attribute_id: attributeId
+    };
+    const id = await this.model('mall_goods_attribute').add(obj);
+    obj.id = id;
+    return this.json(obj);
+  }
+  async deleteGoodsAttributeAction() {
+    const id = this.post('id');
+    const number = await this.model('mall_goods_attribute').where({id}).delete();
+    return this.json(number);
+  }
+  async updateGoodsAttributeAction() {
+    const id = this.post('id');
+    const value = this.post('value');
+    const attributeId = this.post('attributeId');
+    const obj = {
+      value: value,
+      attribute_id: attributeId
+    };
+    const number = await this.model('mall_goods_attribute').where({id}).update(obj);
+    return this.json(number);
+  }
+  async getGoodsAttributeAction() {
+    const goodsId = this.post('goodsId');
+    const list = await this.model('mall_goods_attribute').alias('s').field(['s.*', 'g.name'])
+      .join({
+        table: 'goods',
+        join: 'inner',
+        as: 'g',
+        on: ['g.id', 's.goods_id']
+      }).where({'s.goods_id': goodsId}).select();
+    return this.json(list);
+  }
+
+  async addGoodsIssueAction() {
+    const goodsId = this.post('goodsId');
+    const question = this.post('question');
+    const answer = this.post('answer');
+    const obj = {
+      goods_id: goodsId,
+      answer: answer,
+      question: question
+    };
+    const id = await this.model('mall_goods_issue').add(obj);
+    obj.id = id;
+    return this.json(obj);
+  }
+  async deleteGoodsIssueAction() {
+    const id = this.post('id');
+    const number = await this.model('mall_goods_issue').where({id}).delete();
+    return this.json(number);
+  }
+  async updateGoodsIssueAction() {
+    const id = this.post('id');
+    const question = this.post('question');
+    const answer = this.post('answer');
+    const obj = {
+      answer: answer,
+      question: question
+    };
+    const number = await this.model('mall_goods_issue').where({id}).update(obj);
+    return this.json(number);
+  }
+  async getGoodsIssueAction() {
+    const goodsId = this.post('goodsId');
+    const list = await this.model('mall_goods_issue').alias('s').field(['s.*', 'g.name'])
+      .join({
+        table: 'goods',
+        join: 'inner',
+        as: 'g',
+        on: ['g.id', 's.goods_id']
+      }).where({'s.goods_id': goodsId}).select();
+    return this.json(list);
+  }
 };

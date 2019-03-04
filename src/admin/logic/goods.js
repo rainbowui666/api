@@ -110,7 +110,8 @@ module.exports = class extends think.Logic {
   getGoodsSpecificationAction() {
     this.allowMethods = 'post';
     this.rules = {
-      goodsId: {int: true, required: true, trim: true}
+      goodsId: {int: true, required: true, trim: true},
+      specificationId: {int: true, required: true, trim: true}
     };
   }
   addGoodsSpecificationAction() {
@@ -138,6 +139,7 @@ module.exports = class extends think.Logic {
     this.allowMethods = 'post';
     this.rules = {
       id: {int: true, required: true, trim: true},
+      goodsId: {int: true, required: true, trim: true},
       img: {file: true, required: true, trim: true}
     };
   }
@@ -211,6 +213,35 @@ module.exports = class extends think.Logic {
     };
   }
 
+  addGoodsIssueAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      goodsId: {int: true, required: true, trim: true},
+      question: {string: true, required: true, trim: true},
+      answer: {string: true, required: true, trim: true}
+    };
+  }
+  deleteGoodsIssueAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      id: {int: true, required: true, trim: true}
+    };
+  }
+  updateGoodsIssueAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      id: {int: true, required: true, trim: true},
+      question: {string: true, required: true, trim: true},
+      answer: {string: true, required: true, trim: true}
+    };
+  }
+  getGoodsIssueAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      goodsId: {int: true, required: true, trim: true}
+    };
+  }
+
   addGoodsGalleryAction() {
     this.allowMethods = 'post';
     this.rules = {
@@ -241,35 +272,6 @@ module.exports = class extends think.Logic {
     };
   }
   getGoodsGalleryAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      goodsId: {int: true, required: true, trim: true}
-    };
-  }
-
-  addGoodsIssueAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      goodsId: {int: true, required: true, trim: true},
-      question: {string: true, required: true, trim: true},
-      answer: {string: true, required: true, trim: true}
-    };
-  }
-  deleteGoodsIssueAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      id: {int: true, required: true, trim: true}
-    };
-  }
-  updateGoodsIssueAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      id: {int: true, required: true, trim: true},
-      question: {string: true, required: true, trim: true},
-      answer: {string: true, required: true, trim: true}
-    };
-  }
-  getGoodsIssueAction() {
     this.allowMethods = 'post';
     this.rules = {
       goodsId: {int: true, required: true, trim: true}

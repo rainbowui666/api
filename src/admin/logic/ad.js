@@ -16,7 +16,7 @@ module.exports = class extends think.Logic {
       positionId: {int: true, required: true, trim: true},
       url: {string: true, trim: true},
       link: {string: true, trim: true},
-      content: {string: true, trim: true}
+      content: {string: true, required: true, trim: true}
     };
   }
   getAdByPositionAction() {

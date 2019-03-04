@@ -39,7 +39,7 @@ module.exports = class extends Base {
   async deleteAction() {
     const id = this.post('id');
     const ad = await this.model('mall_ad').where({id}).find();
-    if (!think.isEmpty(ad['image_url'])) {
+    if (!think.isEmpty(ad['image_url']) && think.isEmpty(ad['content'])) {
       fs.unlinkSync(this.config('image.ad') + '/' + ad['image_url'].replace('https://static.huanjiaohu.com/image/ad/', ''));
     }
     const number = await this.model('mall_ad').where({id}).delete();
@@ -49,14 +49,16 @@ module.exports = class extends Base {
     const positionId = this.post('positionId');
     const province = this.post('province');
     const url = this.post('url');
-    const link = this.post('link');
+    const link = this.post('link') || '/pages/index/main';
     const content = this.post('content');
+    const imageUrl = 'https://static.huanjiaohu.com/image/ad/';
     const ad = {
       ad_position_id: positionId,
       url,
       link,
       province,
-      content
+      content,
+      image_url: imageUrl
     };
     const id = await this.model('mall_ad').add(ad);
     ad.id = id;

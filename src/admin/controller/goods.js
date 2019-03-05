@@ -471,4 +471,69 @@ module.exports = class extends Base {
       }).where({'s.goods_id': goodsId}).select();
     return this.json(list);
   }
+
+  async addGoodsGalleryAction() {
+    const goodsId = this.post('goodsId');
+    const imgDesc = this.post('imgDesc');
+    const sortOrder = this.post('sortOrder');
+    const obj = {
+      goods_id: goodsId,
+      img_desc: imgDesc,
+      sort_order: sortOrder
+    };
+    const id = await this.model('mall_goods_gallery').add(obj);
+    obj.id = id;
+    return this.json(obj);
+  }
+  async uploadGoodsGalleryAction() {
+    const id = this.post('id');
+    const goodsId = this.post('goodsId');
+    const img = this.file('img');
+    const imgPath = this.config('image.goods') + '/gallery/' + goodsId;
+    if (!fs.existsSync(imgPath)) {
+      fs.mkdirSync(imgPath);
+    }
+    const gs = await this.model('mall_goods_gallery').where({id}).find();
+    if (gs['img_url']) {
+      const filePath = imgPath + '/' + gs['img_url'].replace('https://static.huanjiaohu.com/image/goods/gallery/' + goodsId + '/', '');
+      fs.unlinkSync(filePath);
+    }
+    const _name = img.name;
+    const tempName = _name.split('.');
+    let timestamp = Date.parse(new Date());
+    timestamp = timestamp / 1000;
+    const name = timestamp + '.' + tempName[1];
+    const thumbUrl = imgPath + '/' + name;
+    fs.renameSync(img.path, thumbUrl);
+    const url = 'https://static.huanjiaohu.com/image/goods/gallery/' + goodsId + '/' + name;
+    const number = await this.model('mall_goods_gallery').where({id}).update({'img_url': url});
+    return this.json(number);
+  }
+  async deleteGoodsGalleryAction() {
+    const id = this.post('id');
+    const number = await this.model('mall_goods_gallery').where({id}).delete();
+    return this.json(number);
+  }
+  async updateGoodsGalleryAction() {
+    const id = this.post('id');
+    const imgDesc = this.post('imgDesc');
+    const sortOrder = this.post('sortOrder');
+    const obj = {
+      img_desc: imgDesc,
+      sort_order: sortOrder
+    };
+    const number = await this.model('mall_goods_gallery').where({id}).update(obj);
+    return this.json(number);
+  }
+  async getGoodsGalleryAction() {
+    const goodsId = this.post('goodsId');
+    const list = await this.model('mall_goods_gallery').alias('s').field(['s.*', 'g.name'])
+      .join({
+        table: 'goods',
+        join: 'inner',
+        as: 'g',
+        on: ['g.id', 's.goods_id']
+      }).where({'s.goods_id': goodsId}).select();
+    return this.json(list);
+  }
 };

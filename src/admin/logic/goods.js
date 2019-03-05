@@ -254,6 +254,7 @@ module.exports = class extends think.Logic {
     this.allowMethods = 'post';
     this.rules = {
       id: {int: true, required: true, trim: true},
+      goodsId: {int: true, required: true, trim: true},
       img: {file: true, required: true, trim: true}
     };
   }

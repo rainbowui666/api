@@ -486,17 +486,20 @@ module.exports = class extends Base {
     return this.json(obj);
   }
   async uploadGoodsGalleryAction() {
-    const id = this.post('id');
     const goodsId = this.post('goodsId');
+    const imgDesc = this.post('imgDesc');
+    const sortOrder = this.post('sortOrder');
+    const obj = {
+      goods_id: goodsId,
+      img_desc: imgDesc,
+      sort_order: sortOrder
+    };
+    const galleryId = await this.model('mall_goods_gallery').add(obj);
+    obj.id = galleryId;
     const img = this.file('img');
     const imgPath = this.config('image.goods') + '/gallery/' + goodsId;
     if (!fs.existsSync(imgPath)) {
       fs.mkdirSync(imgPath);
-    }
-    const gs = await this.model('mall_goods_gallery').where({id}).find();
-    if (gs['img_url']) {
-      const filePath = imgPath + '/' + gs['img_url'].replace('https://static.huanjiaohu.com/image/goods/gallery/' + goodsId + '/', '');
-      fs.unlinkSync(filePath);
     }
     const _name = img.name;
     const tempName = _name.split('.');
@@ -506,11 +509,20 @@ module.exports = class extends Base {
     const thumbUrl = imgPath + '/' + name;
     fs.renameSync(img.path, thumbUrl);
     const url = 'https://static.huanjiaohu.com/image/goods/gallery/' + goodsId + '/' + name;
-    const number = await this.model('mall_goods_gallery').where({id}).update({'img_url': url});
+    const number = await this.model('mall_goods_gallery').where({id: galleryId}).update({'img_url': url});
     return this.json(number);
   }
   async deleteGoodsGalleryAction() {
     const id = this.post('id');
+    const gs = await this.model('mall_goods_gallery').where({id}).find();
+    const imgPath = this.config('image.goods') + '/gallery/' + gs.goodsId;
+    if (!fs.existsSync(imgPath)) {
+      fs.mkdirSync(imgPath);
+    }
+    if (gs['img_url']) {
+      const filePath = imgPath + '/' + gs['img_url'].replace('https://static.huanjiaohu.com/image/goods/gallery/' + gs.goodsId + '/', '');
+      fs.unlinkSync(filePath);
+    }
     const number = await this.model('mall_goods_gallery').where({id}).delete();
     return this.json(number);
   }

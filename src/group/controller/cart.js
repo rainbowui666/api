@@ -483,4 +483,26 @@ module.exports = class extends Base {
     const list = await model.where({'cd.cart_id': cartId}).order(['cd.id DESC']).page(page, size).countSelect();
     return this.json(list);
   }
+  async listDetailsAction() {
+    const cartId = this.post('cartId');
+    const model = this.model('cart_detail').alias('cd');
+    model.field(['cd.*', 'b.size', 'b.price', 'b.point', 'b.material_id', 'm.name material_name', 'b.numbers', 'b.limits', 'b.recommend', 'b.name']).join({
+      table: 'cart',
+      join: 'inner',
+      as: 'c',
+      on: ['cd.cart_id', 'c.id']
+    }).join({
+      table: 'bill_detail',
+      join: 'inner',
+      as: 'b',
+      on: ['b.id', 'cd.bill_detail_id']
+    }).join({
+      table: 'material',
+      join: 'inner',
+      as: 'm',
+      on: ['m.id', 'b.material_id']
+    });
+    const list = await model.where({'cd.cart_id': cartId}).order(['cd.id DESC']).select();
+    return this.json(list);
+  }
 };

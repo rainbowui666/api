@@ -26,7 +26,7 @@ module.exports = class extends Base {
     const ctx = canvas.getContext('2d');
     canvas.width = wpiece;
     canvas.height = hpiece;
-    let html = '<table  cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate; border-spacing:0px 0px;">';
+    let html = '<table  cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate; border-spacing:0px 0px;font-size: 0">';
     fs.readFile(thumbUrl, (err, squid) => {
       if (err) throw err;
       const imges = new Image();

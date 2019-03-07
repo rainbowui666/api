@@ -273,8 +273,28 @@ module.exports = class extends Base {
   }
   async deleteGoodsSpecificationAction() {
     const id = this.post('id');
-    const number = await this.model('mall_goods_specification').where({id}).delete();
-    return this.json(number);
+    const gs = await this.model('mall_goods_specification').where({id}).find();
+    const list = await this.model('mall_product').where({goods_id: gs.goods_id}).select();
+    const ids = new Set();
+    if (list && list.length > 0) {
+      for (const item of list) {
+        const iids = item.goods_specification_ids.split('_');
+        for (const id of iids) {
+          ids.add(id);
+        }
+      }
+    }
+    if (ids.has(id)) {
+      return this.fail('请先删除改规格的产品定义');
+    } else {
+      const imgPath = this.config('image.goods') + '/specification/' + gs.goods_id;
+      if (gs['pic_url']) {
+        const filePath = imgPath + '/' + gs['pic_url'].replace('https://static.huanjiaohu.com/image/goods/specification/' + gs.goods_id + '/', '');
+        fs.unlinkSync(filePath);
+      }
+      const number = await this.model('mall_goods_specification').where({id}).delete();
+      return this.json(number);
+    }
   }
   async getGoodsSpecificationAction() {
     const goodsId = this.post('goodsId');
@@ -516,9 +536,6 @@ module.exports = class extends Base {
     const id = this.post('id');
     const gs = await this.model('mall_goods_gallery').where({id}).find();
     const imgPath = this.config('image.goods') + '/gallery/' + gs.goodsId;
-    if (!fs.existsSync(imgPath)) {
-      fs.mkdirSync(imgPath);
-    }
     if (gs['img_url']) {
       const filePath = imgPath + '/' + gs['img_url'].replace('https://static.huanjiaohu.com/image/goods/gallery/' + gs.goodsId + '/', '');
       fs.unlinkSync(filePath);

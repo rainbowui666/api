@@ -478,3 +478,5 @@ create table user_account(
     description  varchar(500), 
     primary key(id)
 );
+alter table mall_goods drop primary key;
+alter table mall_goods change column id id int not null primary key auto_increment;

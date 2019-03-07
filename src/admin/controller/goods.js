@@ -102,7 +102,11 @@ module.exports = class extends Base {
         retail_price: retailPrice,
         promotion_desc: promotionDesc,
         promotion_tag: promotionTag,
-        is_limited: isLimited
+        is_limited: isLimited,
+        app_exclusive_price: 0,
+        is_app_exclusive: 0,
+        list_pic_url: 'https://static.huanjiaohu.com/mini/mall/list.png',
+        primary_pic_url: 'https://static.huanjiaohu.com/mini/mall/pic.jpg'
       };
       const id = await this.model('mall_goods').add(goods);
       goods.id = id;
@@ -301,7 +305,7 @@ module.exports = class extends Base {
     const specificationId = this.post('specificationId');
     const list = await this.model('mall_goods_specification').alias('s').field(['s.*', 'g.name'])
       .join({
-        table: 'goods',
+        table: 'mall_goods',
         join: 'inner',
         as: 'g',
         on: ['g.id', 's.goods_id']
@@ -391,7 +395,7 @@ module.exports = class extends Base {
     const goodsId = this.post('goodsId');
     const list = await this.model('mall_product').alias('s').field(['s.*', 'g.name'])
       .join({
-        table: 'goods',
+        table: 'mall_goods',
         join: 'inner',
         as: 'g',
         on: ['g.id', 's.goods_id']
@@ -443,7 +447,7 @@ module.exports = class extends Base {
     const goodsId = this.post('goodsId');
     const list = await this.model('mall_goods_attribute').alias('s').field(['s.*', 'g.name'])
       .join({
-        table: 'goods',
+        table: 'mall_goods',
         join: 'inner',
         as: 'g',
         on: ['g.id', 's.goods_id']
@@ -484,7 +488,7 @@ module.exports = class extends Base {
     const goodsId = this.post('goodsId');
     const list = await this.model('mall_goods_issue').alias('s').field(['s.*', 'g.name'])
       .join({
-        table: 'goods',
+        table: 'mall_goods',
         join: 'inner',
         as: 'g',
         on: ['g.id', 's.goods_id']
@@ -558,7 +562,7 @@ module.exports = class extends Base {
     const goodsId = this.post('goodsId');
     const list = await this.model('mall_goods_gallery').alias('s').field(['s.*', 'g.name'])
       .join({
-        table: 'goods',
+        table: 'mall_goods',
         join: 'inner',
         as: 'g',
         on: ['g.id', 's.goods_id']

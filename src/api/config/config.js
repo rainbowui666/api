@@ -4,6 +4,7 @@ module.exports = {
   publicController: [
     'region',
     'tools',
+    'ad',
     'catalog'
   ],
 

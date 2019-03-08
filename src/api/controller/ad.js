@@ -16,17 +16,25 @@ module.exports = class extends Base {
     this.json({'ad_num': maxId});
   }
   async getIndexAction() {
-    const list = this.model('mall_ad').where('id<10').select();
+    const province = this.post('province');
+    let china = await this.model('mall_ad').where({ad_position_id: ['<', 10], province: 'china'}).select();
+    const provinceList = await this.model('mall_ad').where({ad_position_id: ['<', 10], province}).select() || [];
+    china = china.concat(provinceList);
     const ad = {};
-    for (const item of list) {
-      const adArry = ad[item.ad_position_id] || [];
-      ad[item.ad_position_id] = adArry.push(item);
-    }
+    _.each(china, (item) => {
+      const key = item.ad_position_id + '';
+      const adArry = ad[key];
+      if (adArry && adArry.length > 0) {
+        adArry.push(item);
+      } else {
+        ad[key] = [item];
+      }
+    });
     return this.json(ad);
   }
   async getAdByPositionIdAction() {
     const positionId = this.post('positionId');
-    const list = this.model('mall_ad').where({ad_position_id: positionId}).select();
+    const list = await this.model('mall_ad').where({ad_position_id: positionId}).select();
     return this.json(list);
   }
 };

@@ -47,6 +47,9 @@ module.exports = class extends Base {
   }
   async addAction() {
     const positionId = this.post('positionId');
+    if (positionId === 2 || positionId === 3 || positionId === 4) {
+      await this.model('mall_ad').where({ad_position_id: positionId}).delete();
+    }
     const province = this.post('province');
     const url = this.post('url');
     const link = this.post('link') || '/pages/index/main';

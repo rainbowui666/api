@@ -248,7 +248,7 @@ module.exports = class extends think.Logic {
       goodsId: {int: true, required: true, trim: true},
       imgDesc: {string: true, required: true, trim: true},
       sortOrder: {int: true, required: true, trim: true},
-      img: {file: true, required: true, trim: true}
+      img: {file: true, trim: true}
     };
   }
   deleteGoodsGalleryAction() {

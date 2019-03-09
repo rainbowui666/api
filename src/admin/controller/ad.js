@@ -3,7 +3,7 @@ const Base = require('./base.js');
 const fs = require('fs');
 module.exports = class extends Base {
   async listPositionAction() {
-    const list = await this.model('mall_ad_position').where('id > 9').select();
+    const list = await this.model('mall_ad_position').where('id > 9').order('enabled asc').select();
     return this.json(list);
   }
   async uploadAction() {
@@ -11,6 +11,8 @@ module.exports = class extends Base {
     const province = this.post('province');
     const url = this.post('url');
     const link = this.post('link');
+    const order = this.post('order');
+
     const img = this.file('img');
     const _name = img.name;
     const tempName = _name.split('.');
@@ -24,6 +26,7 @@ module.exports = class extends Base {
       province,
       url,
       link,
+      enabled:order,
       image_url: 'https://static.huanjiaohu.com/image/ad/' + name
     };
     const id = await this.model('mall_ad').add(ad);
@@ -52,7 +55,7 @@ module.exports = class extends Base {
     }
     const province = this.post('province');
     const url = this.post('url');
-    const link = this.post('link') || '/pages/index/main';
+    const link = this.post('link');
     const content = this.post('content');
     const imageUrl = 'https://static.huanjiaohu.com/image/ad/';
     const ad = {
@@ -65,6 +68,23 @@ module.exports = class extends Base {
     };
     const id = await this.model('mall_ad').add(ad);
     ad.id = id;
+    return this.json(ad);
+  }
+  async updateAction() {
+    const id = this.post('id');
+    const url = this.post('url');
+    const province = this.post('province');
+    const link = this.post('link');
+    const content = this.post('content');
+    const order = this.post('order');
+    const ad = {
+      url,
+      link,
+      province,
+      content,
+      enabled:order,
+    };
+     await this.model('mall_ad').where({id}).update(ad);
     return this.json(ad);
   }
 };

@@ -308,13 +308,15 @@ module.exports = class extends Base {
   async getGoodsSpecificationAction() {
     const goodsId = this.post('goodsId');
     const specificationId = this.post('specificationId');
-    const list = await this.model('mall_goods_specification').alias('s').field(['s.*', 'g.name'])
-      .join({
-        table: 'mall_goods',
-        join: 'inner',
-        as: 'g',
-        on: ['g.id', 's.goods_id']
-      }).where({'s.goods_id': goodsId, 's.specification_id': specificationId}).select();
+    const list = await this.model('mall_goods_specification').alias('s')
+      // .field(['s.*', 'g.name'])
+      // .join({
+      //   table: 'mall_goods',
+      //   join: 'inner',
+      //   as: 'g',
+      //   on: ['g.id', 's.goods_id']
+      // })
+      .where({'s.goods_id': goodsId, 's.specification_id': specificationId}).select();
     return this.json(list);
   }
   async addGoodsSpecificationAction() {
@@ -337,17 +339,11 @@ module.exports = class extends Base {
     return this.json(number);
   }
   async uploadGoodsSpecificationAction() {
-    const id = this.post('id');
     const goodsId = this.post('goodsId');
     const img = this.file('img');
     const imgPath = this.config('image.goods') + '/specification/' + goodsId;
     if (!fs.existsSync(imgPath)) {
       fs.mkdirSync(imgPath);
-    }
-    const gs = await this.model('mall_goods_specification').where({id}).find();
-    if (gs['pic_url']) {
-      const filePath = imgPath + '/' + gs['pic_url'].replace('https://static.huanjiaohu.com/image/goods/specification/' + goodsId + '/', '');
-      fs.unlinkSync(filePath);
     }
     const _name = img.name;
     const tempName = _name.split('.');
@@ -363,12 +359,12 @@ module.exports = class extends Base {
   async addGoodsProductAction() {
     const goodsId = this.post('goodsId');
     const goodsSpecificationIds = this.post('goodsSpecificationIds');
-    const goodsNmuber = this.post('goodsNmuber');
+    const goodsNumber = this.post('goodsNumber');
     const retailPrice = this.post('retailPrice');
     const obj = {
       goods_id: goodsId,
       goods_specification_ids: goodsSpecificationIds,
-      goods_nmuber: goodsNmuber,
+      goods_number: goodsNumber,
       retail_price: retailPrice
     };
     const id = await this.model('mall_product').add(obj);
@@ -383,28 +379,43 @@ module.exports = class extends Base {
   }
 
   async updateGoodsProductAction() {
-    const id = this.post('id');
+    const goodsId = this.post('goodsId');
     const goodsSpecificationIds = this.post('goodsSpecificationIds');
-    const goodsNmuber = this.post('goodsNmuber');
+    const goodsNumber = this.post('goodsNumber');
     const retailPrice = this.post('retailPrice');
     const obj = {
       goods_specification_ids: goodsSpecificationIds,
-      goods_nmuber: goodsNmuber,
+      goods_number: goodsNumber,
       retail_price: retailPrice
     };
-    const number = await this.model('mall_product').where({id}).update(obj);
+    const number = await this.model('mall_product').where({goods_id:goodsId,goods_specification_ids:goodsSpecificationIds}).update(obj);
     return this.json(number);
   }
 
   async getGoodsProductAction() {
     const goodsId = this.post('goodsId');
-    const list = await this.model('mall_product').alias('s').field(['s.*', 'g.name'])
-      .join({
-        table: 'mall_goods',
-        join: 'inner',
-        as: 'g',
-        on: ['g.id', 's.goods_id']
-      }).where({'s.goods_id': goodsId}).select();
+    const list = await this.model('mall_product').alias('s')
+    //  .field(['s.*', 'g.name'])
+    //   .join({
+    //     table: 'mall_goods',
+    //     join: 'inner',
+    //     as: 'g',
+    //     on: ['g.id', 's.goods_id']
+    //   })
+      .where({'s.goods_id': goodsId}).select();
+
+    for(const item of list){
+      item.specification = "";
+      if(item.goods_specification_ids){
+        const ids = item.goods_specification_ids.split('_');
+        for (const id of ids){
+          const gs = await this.model('mall_goods_specification').where({id}).find();
+          item.specification = item.specification + gs.value+' ';
+          console.log("eeeee",item.specification)
+        }
+      }
+      console.log("item====",item)
+    }
     return this.json(list);
   }
 
@@ -450,13 +461,15 @@ module.exports = class extends Base {
   }
   async getGoodsAttributeAction() {
     const goodsId = this.post('goodsId');
-    const list = await this.model('mall_goods_attribute').alias('s').field(['s.*', 'g.name'])
-      .join({
-        table: 'mall_goods',
-        join: 'inner',
-        as: 'g',
-        on: ['g.id', 's.goods_id']
-      }).where({'s.goods_id': goodsId}).select();
+    const list = await this.model('mall_goods_attribute').alias('s')
+      // .field(['s.*', 'g.name'])
+      // .join({
+      //   table: 'mall_goods',
+      //   join: 'inner',
+      //   as: 'g',
+      //   on: ['g.id', 's.goods_id']
+      // })
+      .where({'s.goods_id': goodsId}).select();
     return this.json(list);
   }
 
@@ -491,29 +504,18 @@ module.exports = class extends Base {
   }
   async getGoodsIssueAction() {
     const goodsId = this.post('goodsId');
-    const list = await this.model('mall_goods_issue').alias('s').field(['s.*', 'g.name'])
-      .join({
-        table: 'mall_goods',
-        join: 'inner',
-        as: 'g',
-        on: ['g.id', 's.goods_id']
-      }).where({'s.goods_id': goodsId}).select();
+    const list = await this.model('mall_goods_issue').alias('s')
+      // .field(['s.*', 'g.name'])
+      // .join({
+      //   table: 'mall_goods',
+      //   join: 'inner',
+      //   as: 'g',
+      //   on: ['g.id', 's.goods_id']
+      // })
+      .where({'s.goods_id': goodsId}).select();
     return this.json(list);
   }
 
-  async addGoodsGalleryAction() {
-    const goodsId = this.post('goodsId');
-    const imgDesc = this.post('imgDesc');
-    const sortOrder = this.post('sortOrder');
-    const obj = {
-      goods_id: goodsId,
-      img_desc: imgDesc,
-      sort_order: sortOrder
-    };
-    const id = await this.model('mall_goods_gallery').add(obj);
-    obj.id = id;
-    return this.json(obj);
-  }
   async uploadGoodsGalleryAction() {
     const goodsId = this.post('goodsId');
     const imgDesc = this.post('imgDesc');
@@ -565,13 +567,15 @@ module.exports = class extends Base {
   }
   async getGoodsGalleryAction() {
     const goodsId = this.post('goodsId');
-    const list = await this.model('mall_goods_gallery').alias('s').field(['s.*', 'g.name'])
-      .join({
-        table: 'mall_goods',
-        join: 'inner',
-        as: 'g',
-        on: ['g.id', 's.goods_id']
-      }).where({'s.goods_id': goodsId}).select();
+    const list = await this.model('mall_goods_gallery').alias('s')
+    //  .field(['s.*', 'g.name'])
+    //   .join({
+    //     table: 'mall_goods',
+    //     join: 'inner',
+    //     as: 'g',
+    //     on: ['g.id', 's.goods_id']
+    //   })
+      .where({'s.goods_id': goodsId}).select();
     return this.json(list);
   }
 };

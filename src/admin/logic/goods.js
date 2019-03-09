@@ -148,7 +148,7 @@ module.exports = class extends think.Logic {
     this.rules = {
       goodsId: {int: true, required: true, trim: true},
       goodsSpecificationIds: {string: true, required: true, trim: true},
-      goodsNmuber: {int: true, required: true, trim: true},
+      goodsNumber: {int: true, required: true, trim: true},
       retailPrice: {float: true, required: true, trim: true}
     };
   }
@@ -161,9 +161,9 @@ module.exports = class extends think.Logic {
   updateGoodsProductAction() {
     this.allowMethods = 'post';
     this.rules = {
-      id: {int: true, required: true, trim: true},
+      goodsId: {int: true, required: true, trim: true},
       goodsSpecificationIds: {string: true, required: true, trim: true},
-      goodsNmuber: {int: true, required: true, trim: true},
+      goodsNumber: {int: true, required: true, trim: true},
       retailPrice: {float: true, required: true, trim: true}
     };
   }
@@ -242,19 +242,12 @@ module.exports = class extends think.Logic {
     };
   }
 
-  addGoodsGalleryAction() {
+  uploadGoodsGalleryAction() {
     this.allowMethods = 'post';
     this.rules = {
       goodsId: {int: true, required: true, trim: true},
       imgDesc: {string: true, required: true, trim: true},
-      sortOrder: {int: true, required: true, trim: true}
-    };
-  }
-  uploadGoodsGalleryAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      id: {int: true, required: true, trim: true},
-      goodsId: {int: true, required: true, trim: true},
+      sortOrder: {int: true, required: true, trim: true},
       img: {file: true, required: true, trim: true}
     };
   }

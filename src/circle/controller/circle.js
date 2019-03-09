@@ -162,7 +162,7 @@ module.exports = class extends Base {
     fs.renameSync(img.path, thumbUrl);
     images(thumbUrl + '').resize(96).save(thumbSmallUrl);
     const imgObj = await this.model('circle_img').add({ circle_id: circleId, url: 'https://static.huanjiaohu.com/image/circle/small/' + name });
-    this.json(imgObj);
+    return this.json(imgObj);
   }
   async praiseAction() {
     const userId = this.getLoginUserId();

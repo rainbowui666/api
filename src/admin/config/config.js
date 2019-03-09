@@ -7,8 +7,6 @@ module.exports = {
 
   // 可以公开访问的Action
   publicAction: [
-    'notice/handleWxNotify',
-    'group/myGroupList',
-    'group/add'
+    'notice/handleWxNotify'
   ]
 };

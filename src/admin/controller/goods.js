@@ -124,7 +124,7 @@ module.exports = class extends Base {
     const brandId = this.post('brandId');
     const keywords = this.post('keywords');
     const goodsBrief = this.post('goodsBrief');
-    const sortOrder = this.sortOrder('sortOrder');
+    const sortOrder = this.post('sortOrder');
     const counterPrice = this.post('counterPrice');
     const unitPrice = this.post('unitPrice');
     const retailPrice = this.post('retailPrice');
@@ -267,6 +267,11 @@ module.exports = class extends Base {
       return v;
     });
     goodsData.goodsList = goodsData.data;
+
+    for (const goods of goodsData.goodsList) {
+      const parent = await this.model('category').where({id: goods.category_id}).find();
+      goods.parent_id = parent.parent_id;
+    }
 
     return this.success(goodsData);
   }

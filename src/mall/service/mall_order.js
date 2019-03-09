@@ -39,6 +39,13 @@ module.exports = class extends think.Service {
     // 表示订单退换货相关的状态,102没有发货，退款,103已收货，退款退货
     // 如果订单已经取消或是已完成，则可删除和再次购买
     // 如果订单没有被取消，且没有支付，则可支付，可取消
+    // 0   已经支付未发货未收货
+    // 101 未发货已经取消
+    // 201 未发货可以退款
+    // 102 未收货已经退款
+    // 103 已收货已经退款
+    // 202 已发货未收货
+    // 203 已完成的订单
     if (orderInfo.order_status === 0) {
       handleOption.cancel = true;
       handleOption.pay = true;

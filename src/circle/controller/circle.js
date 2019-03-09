@@ -107,8 +107,9 @@ module.exports = class extends Base {
   }
   async addAction() {
     const circleId = this.post('circleId');
+    const category = this.post('category');
     const description = this.post('description');
-    const id = await this.model('circle').where({ id: circleId }).update({ status: 1, description });
+    const id = await this.model('circle').where({ id: circleId }).update({ status: 1, description, category });
     this.json(id);
   }
   async deleteAction() {

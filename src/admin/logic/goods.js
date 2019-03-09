@@ -119,7 +119,7 @@ module.exports = class extends think.Logic {
     this.rules = {
       goodsId: {int: true, required: true, trim: true},
       specificationId: {int: true, required: true, trim: true},
-      value: {string: true, required: true, trim: true}
+      value: {string: true, trim: true}
     };
   }
   deleteGoodsSpecificationAction() {
@@ -140,7 +140,7 @@ module.exports = class extends think.Logic {
     this.rules = {
       id: {int: true, required: true, trim: true},
       goodsId: {int: true, required: true, trim: true},
-      img: {file: true, required: true, trim: true}
+      img: {file: true, trim: true}
     };
   }
   addGoodsProductAction() {

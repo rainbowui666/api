@@ -440,6 +440,8 @@ create table circle(
     description varchar(500),
     primary key(id)
 );
+alter table circle add column category int DEFAULT 0;
+
 create table circle_img(
     id int not null auto_increment,
     circle_id int not null,

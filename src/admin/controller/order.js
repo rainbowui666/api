@@ -9,8 +9,12 @@ module.exports = class extends Base {
   async listAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
-    const status = this.post('status') || 0;
-    const orderList = await this.model('mall_order').where({ order_status: status }).order('id desc').page(page, size).countSelect();
+    const status = this.post('status');
+    const where = {};
+    if (!think.isEmpty(status)) {
+      where.order_status = status;
+    }
+    const orderList = await this.model('mall_order').where(where).order('id desc').page(page, size).countSelect();
     const newOrderList = [];
     for (const item of orderList.data) {
       // 订单的商品
@@ -26,6 +30,10 @@ module.exports = class extends Base {
       // 可操作的选项
       item.handleOption = await this.service('mall_order', 'mall').getOrderHandleOption(item.id);
 
+      item.userInfor = await this.model('user').field(['name', 'headimgurl']).where({id: item.user_id}).find();
+
+      item.add_time_format = moment.unix(item.add_time * 1000).format('YYYY-MM-DD HH:mm:ss');
+
       newOrderList.push(item);
     }
     orderList.data = newOrderList;
@@ -38,7 +46,7 @@ module.exports = class extends Base {
    * @return {Promise} []
    */
   async detailAction() {
-    const orderId = this.get('orderId');
+    const orderId = this.post('orderId');
     const orderInfo = await this.model('mall_order').where({ id: orderId }).find();
 
     if (think.isEmpty(orderInfo)) {
@@ -79,7 +87,7 @@ module.exports = class extends Base {
   }
 
   async expressAction() {
-    const orderId = this.get('orderId');
+    const orderId = this.post('orderId');
     if (think.isEmpty(orderId)) {
       return this.fail('订单不存在');
     }

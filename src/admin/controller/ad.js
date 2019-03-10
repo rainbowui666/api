@@ -3,7 +3,7 @@ const Base = require('./base.js');
 const fs = require('fs');
 module.exports = class extends Base {
   async listPositionAction() {
-    const list = await this.model('mall_ad_position').where('id > 9').order('enabled asc').select();
+    const list = await this.model('mall_ad_position').where('id > 9').select();
     return this.json(list);
   }
   async uploadAction() {
@@ -26,7 +26,7 @@ module.exports = class extends Base {
       province,
       url,
       link,
-      enabled:order,
+      enabled: order,
       image_url: 'https://static.huanjiaohu.com/image/ad/' + name
     };
     const id = await this.model('mall_ad').add(ad);
@@ -36,7 +36,7 @@ module.exports = class extends Base {
   async getAdByPositionAction() {
     const positionId = this.post('positionId');
     const province = this.post('province');
-    const list = await this.model('mall_ad').where({ad_position_id: positionId, province}).select();
+    const list = await this.model('mall_ad').where({ad_position_id: positionId, province}).order('enabled asc').select();
     return this.json(list);
   }
   async deleteAction() {
@@ -82,9 +82,9 @@ module.exports = class extends Base {
       link,
       province,
       content,
-      enabled:order,
+      enabled: order
     };
-     await this.model('mall_ad').where({id}).update(ad);
+    await this.model('mall_ad').where({id}).update(ad);
     return this.json(ad);
   }
 };

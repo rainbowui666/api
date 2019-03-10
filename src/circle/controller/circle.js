@@ -53,18 +53,31 @@ module.exports = class extends Base {
       commentList.push(comment);
     }
     c['insert_date'] = new Date(c['insert_date']).getTime();
-    switch (Number(c['bowlType'])) {
+
+    switch (Number(c['category'])) {
       case 0:
-        c['tag'] = ['SPS缸'];
+        c['tag'] = ['晒缸'];
         break;
       case 1:
-        c['tag'] = ['LPS缸'];
+        c['tag'] = ['二手'];
         break;
       case 2:
-        c['tag'] = ['FOT缸'];
+        c['tag'] = ['广告'];
         break;
       default:
-        c['tag'] = ['青魔'];
+        break;
+    }
+    switch (Number(c['bowlType'])) {
+      case 0:
+        c['tag'].push('SPS缸');
+        break;
+      case 1:
+        c['tag'].push('LPS缸');
+        break;
+      case 2:
+        c['tag'].push('FOT缸');
+        break;
+      default:
         break;
     }
     c['interaction'] = {};
@@ -75,8 +88,40 @@ module.exports = class extends Base {
   async listAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
+    const category = this.post('category');
+    const type = this.post('type');
+    const filter = this.post('filter');
+    const system = this.post('system');
+    const zone = this.post('zone');
+    const dimension = this.post('dimension');
     const model = this.buildModel();
-    const list = await model.where({ 'c.type': 1, 'c.status': 1 }).order('c.insert_date DESC').page(page, size).countSelect();
+    const where = { 'c.type': 1, 'c.status': 1 };
+    if (!think.isEmpty(category)) {
+      where['c.category'] = category;
+    }
+    if (!think.isEmpty(type)) {
+      where['s.bowl_type'] = type;
+    }
+    if (!think.isEmpty(filter)) {
+      where['s.bowl_filter'] = filter;
+    }
+    if (!think.isEmpty(system)) {
+      where['s.bowl_system'] = system;
+    }
+    if (!think.isEmpty(dimension)) {
+      where['s.bowl_size'] = dimension;
+    }
+    if (!think.isEmpty(zone)) {
+      const user = this.getLoginUser();
+      if (zone === 'province') {
+        where['u.province'] = user.province;
+      }
+      if (zone === 'city') {
+        where['u.city'] = user.city;
+      }
+    }
+
+    const list = await model.where(where).order('c.insert_date DESC').page(page, size).countSelect();
     for (const c of list.data) {
       await this.handleCircle(c);
     }

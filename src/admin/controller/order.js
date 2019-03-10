@@ -109,7 +109,7 @@ module.exports = class extends Base {
   async returnAction() {
     const orderId = this.post('orderId');
     const userId = this.post('userId');
-    const description = this.post('description');
+    const description = this.post('description') || '管理员退款';
     const orderInfo = await this.model('mall_order').where({ id: orderId }).find();
     if (think.isEmpty(orderInfo)) {
       return this.fail('订单不存在');

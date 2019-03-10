@@ -4,8 +4,12 @@ const { loadImage, createCanvas, Image } = require('canvas');
 const _ = require('lodash');
 module.exports = class extends Base {
   async buildGoodsDescription(goodsId, img) {
-    const imgPath = this.config('image.goods') + '/' + goodsId;
+    const imgPath = this.config('image.goods') + '/desc/' + goodsId;
     if (fs.existsSync(imgPath)) {
+      fs.readdirSync(imgPath).forEach(function(file) {
+        const curPath = imgPath + '/' + file;
+        fs.unlinkSync(curPath);
+      });
       fs.rmdirSync(imgPath);
     }
     fs.mkdirSync(imgPath);
@@ -26,41 +30,66 @@ module.exports = class extends Base {
     const ctx = canvas.getContext('2d');
     canvas.width = wpiece;
     canvas.height = hpiece;
-    let html = '<table  cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate; border-spacing:0px 0px;font-size: 0">';
-    fs.readFile(thumbUrl, (err, squid) => {
-      if (err) throw err;
-      const imges = new Image();
-      imges.onload = () => ctx.drawImage(imges, 0, 0);
-      imges.onerror = err => { throw err };
-      imges.src = squid;
-      for (var i = 0; i < row; i++) {
-        html += '<tr>';
-        for (var j = 0; j < column; j++) {
-          ctx.drawImage(
-            imges,
-            j * wpiece, i * hpiece, wpiece, hpiece,
-            0, 0, wpiece, hpiece
-          );
-          const buf3 = canvas.toBuffer('image/jpeg', { quality: 0.9 });
-          const timestamp = new Date().getTime();
-          const name = _.uniqueId('goods') + timestamp + '.jpg';
-          const path = imgPath + '/' + name;
-          const url = 'https://static.huanjiaohu.com/image/goods/' + goodsId + '/' + name;
-          fs.writeFileSync(path, buf3);
-          html += '<td><img src="' + url + '" /></td>';
-        }
-        html += '</tr>';
+    let html = '';
+    const squid = fs.readFileSync(thumbUrl);
+    const imges = new Image();
+    imges.onload = () => ctx.drawImage(imges, 0, 0);
+    imges.onerror = err => { throw err };
+    imges.src = squid;
+    for (var i = 0; i < row; i++) {
+      html += '<p>';
+      for (var j = 0; j < column; j++) {
+        ctx.drawImage(
+          imges,
+          j * wpiece, i * hpiece, wpiece, hpiece,
+          0, 0, wpiece, hpiece
+        );
+        const buf3 = canvas.toBuffer('image/jpeg', { quality: 0.9 });
+        const timestamp = new Date().getTime();
+        const name = _.uniqueId('goods') + timestamp + '.jpg';
+        const path = imgPath + '/' + name;
+        const url = 'https://static.huanjiaohu.com/image/goods/desc/' + goodsId + '/' + name;
+        fs.writeFileSync(path, buf3);
+        html += '<img src="' + url + '" _src="' + url + '" style=""/>';
       }
-      html += '</table>';
-      return html;
-    });
+      html += '</p>';
+    }
+
+    return html;
   }
 
   async uploadDescAction() {
     const goodsId = this.post('goodsId');
     const img = this.file('img');
-    const goodsDes = this.buildGoodsDescription(goodsId, img);
+    const goodsDes = await this.buildGoodsDescription(goodsId, img);
     const number = await this.model('mall_goods').where({id: goodsId}).update({goods_desc: goodsDes});
+    return this.success(number);
+  }
+
+  async uploadListPicAction() {
+    const goodsId = this.post('goodsId');
+    const img = this.file('img');
+    const imgPath = this.config('image.goods');
+    const goods = await this.model('mall_goods').where({id: goodsId}).find();
+    if (goods['list_pic_url'] && goods['list_pic_url'].indexOf('https://static.huanjiaohu.com/image/goods/') === 0) {
+      const filePath = imgPath + '/' + goods['list_pic_url'].replace('https://static.huanjiaohu.com/image/goods/', '');
+      fs.unlinkSync(filePath);
+    }
+    const _name = img.name;
+    const tempName = _name.split('.');
+    let timestamp = Date.parse(new Date());
+    timestamp = timestamp / 1000;
+    const name = timestamp + '.' + tempName[1];
+    const thumbUrl = imgPath + '/' + name;
+    fs.renameSync(img.path, thumbUrl);
+    const url = 'https://static.huanjiaohu.com/image/goods/' + name;
+    const number = await this.model('mall_goods').where({id: goodsId}).update({'list_pic_url': url});
+    return this.json(number);
+  }
+
+  async deleteAction() {
+    const id = this.post('id');
+    const number = await this.model('mall_goods').where({id}).update({is_on_sale: 0});
     return this.success(number);
   }
 
@@ -339,12 +368,19 @@ module.exports = class extends Base {
     return this.json(number);
   }
   async uploadGoodsSpecificationAction() {
+    const id = this.post('id');
     const goodsId = this.post('goodsId');
     const img = this.file('img');
     const imgPath = this.config('image.goods') + '/specification/' + goodsId;
     if (!fs.existsSync(imgPath)) {
       fs.mkdirSync(imgPath);
     }
+    const gs = await this.model('mall_goods_specification').where({id}).find();
+    if (gs['pic_url']) {
+      const filePath = imgPath + '/' + gs['pic_url'].replace('https://static.huanjiaohu.com/image/goods/specification/' + goodsId + '/', '');
+      fs.unlinkSync(filePath);
+    }
+
     const _name = img.name;
     const tempName = _name.split('.');
     let timestamp = Date.parse(new Date());
@@ -388,7 +424,7 @@ module.exports = class extends Base {
       goods_number: goodsNumber,
       retail_price: retailPrice
     };
-    const number = await this.model('mall_product').where({goods_id:goodsId,goods_specification_ids:goodsSpecificationIds}).update(obj);
+    const number = await this.model('mall_product').where({goods_id: goodsId, goods_specification_ids: goodsSpecificationIds}).update(obj);
     return this.json(number);
   }
 
@@ -404,17 +440,15 @@ module.exports = class extends Base {
     //   })
       .where({'s.goods_id': goodsId}).select();
 
-    for(const item of list){
-      item.specification = "";
-      if(item.goods_specification_ids){
+    for (const item of list) {
+      item.specification = '';
+      if (item.goods_specification_ids) {
         const ids = item.goods_specification_ids.split('_');
-        for (const id of ids){
+        for (const id of ids) {
           const gs = await this.model('mall_goods_specification').where({id}).find();
-          item.specification = item.specification + gs.value+' ';
-          console.log("eeeee",item.specification)
+          item.specification = item.specification + gs.value + ' ';
         }
       }
-      console.log("item====",item)
     }
     return this.json(list);
   }
@@ -470,6 +504,10 @@ module.exports = class extends Base {
       //   on: ['g.id', 's.goods_id']
       // })
       .where({'s.goods_id': goodsId}).select();
+    for (const item of list) {
+      const attribute = await this.model('mall_attribute').where({id: item.attribute_id}).find();
+      item.attribute_category_id = attribute.attribute_category_id;
+    }
     return this.json(list);
   }
 
@@ -546,9 +584,9 @@ module.exports = class extends Base {
   async deleteGoodsGalleryAction() {
     const id = this.post('id');
     const gs = await this.model('mall_goods_gallery').where({id}).find();
-    const imgPath = this.config('image.goods') + '/gallery/' + gs.goodsId;
+    const imgPath = this.config('image.goods') + '/gallery/' + gs.goods_id;
     if (gs['img_url']) {
-      const filePath = imgPath + '/' + gs['img_url'].replace('https://static.huanjiaohu.com/image/goods/gallery/' + gs.goodsId + '/', '');
+      const filePath = imgPath + '/' + gs['img_url'].replace('https://static.huanjiaohu.com/image/goods/gallery/' + gs.goods_id + '/', '');
       fs.unlinkSync(filePath);
     }
     const number = await this.model('mall_goods_gallery').where({id}).delete();

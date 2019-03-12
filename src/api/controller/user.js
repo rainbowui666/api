@@ -245,6 +245,7 @@ module.exports = class extends Base {
     const tokenSerivce = this.service('token', 'api');
     const sessionKey = await tokenSerivce.create(user);
     user.token = sessionKey;
+    delete user.password;
     return this.json(user);
   }
 

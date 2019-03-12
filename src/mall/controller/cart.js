@@ -279,7 +279,8 @@ module.exports = class extends Base {
     }
     // 根据收货地址计算运费
     let freightPrice = 8.00;
-    if (goodsTotalPrice >= 88) {
+    const freightCfg = Number(this.config('goods.freight'));
+    if (goodsTotalPrice >= freightCfg) {
       freightPrice = 0.00;
     }
 

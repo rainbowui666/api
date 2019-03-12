@@ -19,6 +19,12 @@ module.exports = class extends Base {
     return this.success(addressList);
   }
 
+  async getDefaultAction() {
+    const addressInfo = await this.model('address').where({user_id: this.getLoginUserId(), is_default: 1}).find();
+
+    return this.json(addressInfo);
+  }
+
   /**
    * 获取收货地址的详情
    * @return {Promise} []

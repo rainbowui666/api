@@ -7,6 +7,9 @@
 module.exports = {
   port: 8360,
   workers: 0,
+  goods: {
+    freight: 88
+  },
   image: {
     user: '/usr/local/nginx/html/static/image/user',
     ad: '/usr/local/nginx/html/static/image/ad',

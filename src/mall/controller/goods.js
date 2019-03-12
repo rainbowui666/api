@@ -66,7 +66,7 @@ module.exports = class extends Base {
     const info = await model.where({'id': goodsId}).find();
     const gallery = await this.model('mall_goods_gallery').where({goods_id: goodsId}).limit(4).select();
     const attribute = await this.model('mall_goods_attribute').field('mall_goods_attribute.value, mall_attribute.name').join('mall_attribute ON mall_goods_attribute.attribute_id=mall_attribute.id').order({'mall_goods_attribute.id': 'asc'}).where({'mall_goods_attribute.goods_id': goodsId}).select();
-    const issue = await this.model('mall_goods_issue').select();
+    const issue = await this.model('mall_goods_issue').where({goods_id: ['IN', [0, goodsId]]}).select();
     const brand = await this.model('mall_brand').where({id: info.brand_id}).find();
     const commentCount = await this.model('comment').where({value_id: goodsId, type_id: 0}).count();
     const hotComment = await this.model('comment').where({value_id: goodsId, type_id: 0}).order('id desc').find();

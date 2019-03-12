@@ -313,7 +313,7 @@ module.exports = class extends Base {
     if (think.isEmpty(relatedGoodsIds)) {
       // 查找同分类下的商品
       const goodsCategory = await model.where({id: goodsId}).find();
-      relatedGoods = await model.where({category_id: goodsCategory.category_id}).field(['id', 'name', 'list_pic_url', 'retail_price']).limit(8).select();
+      relatedGoods = await model.where({category_id: goodsCategory.category_id, is_on_sale: 1}).field(['id', 'name', 'list_pic_url', 'retail_price']).limit(8).select();
     } else {
       relatedGoods = await model.where({id: ['IN', relatedGoodsIds]}).field(['id', 'name', 'list_pic_url', 'retail_price']).select();
     }

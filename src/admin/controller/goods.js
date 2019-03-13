@@ -397,9 +397,16 @@ module.exports = class extends Base {
     const goodsSpecificationIds = this.post('goodsSpecificationIds');
     const goodsNumber = this.post('goodsNumber');
     const retailPrice = this.post('retailPrice');
+    const arr = goodsSpecificationIds.split('_');
+    let r = [];
+    if (arr && arr.length > 0) {
+      r = arr.filter((s) => {
+        return s && s.trim();
+      });
+    }
     const obj = {
       goods_id: goodsId,
-      goods_specification_ids: goodsSpecificationIds,
+      goods_specification_ids: r.join('_'),
       goods_number: goodsNumber,
       retail_price: retailPrice
     };
@@ -419,12 +426,19 @@ module.exports = class extends Base {
     const goodsSpecificationIds = this.post('goodsSpecificationIds');
     const goodsNumber = this.post('goodsNumber');
     const retailPrice = this.post('retailPrice');
+    const arr = goodsSpecificationIds.split('_');
+    let r = [];
+    if (arr && arr.length > 0) {
+      r = arr.filter((s) => {
+        return s && s.trim();
+      });
+    }
     const obj = {
-      goods_specification_ids: goodsSpecificationIds,
+      goods_specification_ids: r.join('_'),
       goods_number: goodsNumber,
       retail_price: retailPrice
     };
-    const number = await this.model('mall_product').where({goods_id: goodsId, goods_specification_ids: goodsSpecificationIds}).update(obj);
+    const number = await this.model('mall_product').where({goods_id: goodsId, goods_specification_ids: r.join('_')}).update(obj);
     return this.json(number);
   }
 

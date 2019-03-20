@@ -253,4 +253,31 @@ module.exports = class extends Base {
       }
     }
   }
+
+  async userCouponListAction() {
+    const userId = this.post('userId');
+    const list = await this.model('user_coupon').where({'user_id': userId}).select();
+    return this.json(list);
+  }
+
+  async deleteUserCouponAction() {
+    const id = this.post('id');
+    await this.model('user_coupon').where({id}).delete();
+    return this.success('操作成功');
+  }
+
+  async addUserCouponAction() {
+    const userId = this.post('userId');
+    const couponId = this.post('couponId');
+    const coupon = {
+      coupon_id: couponId,
+      user_id: userId,
+      coupon_number: '1',
+      used_time: new Date(this.post('endDate')).getTime() / 1000,
+      order_id: 0
+    };
+    const id = await this.model('user_coupon').add(coupon);
+    coupon.id = id;
+    return this.json(coupon);
+  }
 };

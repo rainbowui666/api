@@ -74,6 +74,22 @@ module.exports = class extends think.Logic {
     };
   }
 
+  userCouponListAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      userId: {int: true, required: true, trim: true}
+    };
+  }
+
+  addUserCouponAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      userId: {int: true, required: true, trim: true},
+      couponId: {int: true, required: true, trim: true},
+      endDate: {date: true, required: true, trim: true}
+    };
+  }
+
   updateTypeAction() {
     this.allowMethods = 'post';
     this.rules = {

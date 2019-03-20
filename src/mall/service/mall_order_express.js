@@ -1,6 +1,6 @@
 module.exports = class extends think.Service {
   get tableName() {
-    return this.tablePrefix + 'order_express';
+    return 'mall_order_express';
   }
 
   /**

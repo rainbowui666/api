@@ -54,7 +54,7 @@ module.exports = class extends think.Service {
       returnExpressInfo.request_time = think.datetime(nowTime * 1000);
       updateData.is_finish = latestExpressInfo.isFinish;
     }
-    await this.where({ id: orderExpress.id }).update(updateData);
+    await this.model('mall_order_express').where({ id: orderExpress.id }).update(updateData);
     return returnExpressInfo;
   }
 };

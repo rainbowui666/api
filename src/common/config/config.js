@@ -33,7 +33,7 @@ module.exports = {
     // 快递物流信息查询使用的是快递鸟接口，申请地址：http://www.kdniao.com/
     appid: '1454476', // 对应快递鸟用户后台 用户ID
     appkey: '97f8939a-27dc-40f7-b2ac-35aa833c5df5', // 对应快递鸟用户后台 API key
-    request_url: 'http://api.kdniao.cc/Ebusiness/EbusinessOrderHandle.aspx'
+    request_url: 'http://api.kdniao.com/Ebusiness/EbusinessOrderHandle.aspx'
   },
   image: {
     user: '/usr/local/image/user',

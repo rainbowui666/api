@@ -95,6 +95,26 @@ module.exports = class extends Base {
     return this.success(latestExpressInfo);
   }
 
+  async addExpressAction() {
+    const orderId = this.post('orderId');
+    const shipperId = this.post('shipperId');
+    const shipperName = this.post('shipperName');
+    const shipperCode = this.post('shipperCode');
+    const logisticCode = this.post('logisticCode');
+    const nowTime = Number.parseInt(Date.now() / 1000);
+    const express = {
+      order_id: orderId,
+      shipper_id: shipperId,
+      shipper_name: shipperName,
+      shipper_code: shipperCode,
+      logistic_code: logisticCode,
+      add_time: nowTime
+    };
+    const id = this.model('mall_order_express').add(express);
+    express.id = id;
+    return this.json(express);
+  }
+
   async cancelAction() {
     const orderId = this.post('orderId');
     if (think.isEmpty(orderId)) {

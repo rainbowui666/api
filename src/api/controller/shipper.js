@@ -4,7 +4,7 @@ module.exports = class extends think.Model {
    * @param shipperCode
    * @returns {Promise.<*>}
    */
-  async getShipperNameByCode(shipperCode) {
+  async getShipperNameByCodeAction(shipperCode) {
     return this.model('shipper').where({ code: shipperCode }).getField('name', true);
   }
 
@@ -13,7 +13,11 @@ module.exports = class extends think.Model {
    * @param shipperId
    * @returns {Promise.<*>}
    */
-  async getShipperById(shipperId) {
+  async getShipperByIdAction(shipperId) {
     return this.model('shipper').where({ id: shipperId }).find();
+  }
+
+  async shipperListAction() {
+    return this.model('shipper').select();
   }
 };

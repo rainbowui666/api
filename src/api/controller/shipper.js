@@ -5,7 +5,8 @@ module.exports = class extends think.Model {
    * @returns {Promise.<*>}
    */
   async getShipperNameByCodeAction(shipperCode) {
-    return this.model('shipper').where({ code: shipperCode }).getField('name', true);
+    const obj = await this.model('shipper').where({ code: shipperCode }).getField('name', true);
+    return this.json(obj);
   }
 
   /**
@@ -14,10 +15,12 @@ module.exports = class extends think.Model {
    * @returns {Promise.<*>}
    */
   async getShipperByIdAction(shipperId) {
-    return this.model('shipper').where({ id: shipperId }).find();
+    const obj = await this.model('shipper').where({ id: shipperId }).find();
+    return this.json(obj);
   }
 
   async shipperListAction() {
-    return this.model('shipper').select();
+    const obj = await this.model('shipper').select();
+    return this.json(obj);
   }
 };

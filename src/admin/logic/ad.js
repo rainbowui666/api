@@ -2,7 +2,7 @@ module.exports = class extends think.Logic {
   uploadAction() {
     this.allowMethods = 'post';
     this.rules = {
-      province: {string: true, required: true, trim: true},
+      province: {string: true, trim: true, default: 'china'},
       positionId: {int: true, required: true, trim: true},
       url: {string: true, trim: true},
       link: {string: true, trim: true},
@@ -23,7 +23,7 @@ module.exports = class extends think.Logic {
   updateAction() {
     this.allowMethods = 'post';
     this.rules = {
-      province: {string: true,  trim: true},
+      province: {string: true, trim: true},
       id: {int: true, required: true, trim: true},
       order: {int: true, trim: true},
       url: {string: true, trim: true},

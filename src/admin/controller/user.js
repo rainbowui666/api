@@ -256,7 +256,17 @@ module.exports = class extends Base {
 
   async userCouponListAction() {
     const userId = this.post('userId');
-    const list = await this.model('user_coupon').where({'user_id': userId}).select();
+    const model = this.model('user_coupon').alias('u');
+    model.field(['u.*', 'c.name', 'c.tag', 'c.description']).join({
+      table: 'coupon',
+      join: 'inner',
+      as: 'c',
+      on: ['u.coupon_id', 'c.id']
+    });
+    const list = await model.where({'u.user_id': userId}).select();
+    for (const item of list) {
+      item.used_time = think.datetime(new Date(item.used_time * 1000), 'YYYY-MM-DD');
+    }
     return this.json(list);
   }
 

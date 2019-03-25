@@ -102,17 +102,17 @@ module.exports = class extends Base {
       const brandId = this.post('brandId');
       const keywords = this.post('keywords');
       const goodsBrief = this.post('goodsBrief');
-      const sortOrder = this.post('sortOrder');
+      const sortOrder = this.post('sortOrder') || 0;
       const counterPrice = this.post('counterPrice');
-      const unitPrice = this.post('unitPrice');
+      const unitPrice = this.post('unitPrice') || 0;
       const retailPrice = this.post('retailPrice');
-      const extraPrice = this.post('extraPrice');
-      const isNew = this.post('isNew');
-      const isHot = this.post('isHot');
+      const extraPrice = this.post('extraPrice') || 0;
+      const isNew = this.post('isNew') || 0;
+      const isHot = this.post('isHot') || 0;
       const goodsUnit = this.post('goodsUnit');
       const promotionDesc = this.post('promotionDesc');
       const promotionTag = this.post('promotionTag');
-      const isLimited = this.post('isLimited');
+      const isLimited = this.post('isLimited') || 0;
 
       const goods = {
         category_id: categoryId,

@@ -480,5 +480,13 @@ create table user_account(
     description  varchar(500), 
     primary key(id)
 );
-alter table mall_goods drop primary key;
-alter table mall_goods change column id id int not null primary key auto_increment;
+
+create table user_point(
+    id int not null auto_increment,
+    user_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    point int not null,
+    type varchar(10),
+    description  varchar(500), 
+    primary key(id)
+);

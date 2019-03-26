@@ -1169,7 +1169,8 @@ alter table user_coupon add column useing int DEFAULT 0;
 alter table user_coupon add column used int DEFAULT 0;
 alter table mall_ad add column url varchar(500);
 alter table mall_ad add column province varchar(20);
-
+alter table mall_goods drop primary key;
+alter table mall_goods change column id id int not null primary key auto_increment;
 --
 -- Dumping events for database 'mall'
 --

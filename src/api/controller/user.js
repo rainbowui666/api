@@ -462,4 +462,59 @@ module.exports = class extends Base {
     }
     this.json({account, list});
   }
+  async signinAction() {
+    const point = await this.model('user').getPoint(this.getLoginUserId());
+    if (think.isEmpty(point)) {
+      await this.model('user_point').add({
+        user_id: this.getLoginUserId(),
+        point: 10,
+        type: 'qd',
+        description: '签到'
+      });
+      return this.success('签到成功');
+    } else {
+      return this.success('今日以签到');
+    }
+  }
+
+  async pointListAction() {
+    const list = await this.model('user_point').where({'user_id': this.getLoginUserId()}).select();
+    let point = 0;
+    for (const item of list) {
+      point += item.point;
+      item.time = think.datetime(new Date(item.insert_date), 'YYYY-MM-DD HH:mm:ss');
+    }
+    this.json({point, list});
+  }
+
+  async chnageCouponAction() {
+    const point = this.post('point');
+    const re = /^[0-9]*[0-9]$/i;
+    if (re.test(point) && point % 100 === 0) {
+      const sum = await this.model('user_point').where({'user_id': this.getLoginUserId()}).sum('point');
+      if (sum > point) {
+        await this.model('user_point').add({
+          user_id: this.getLoginUserId(),
+          point: -point,
+          type: 'dhyhq',
+          description: '兑换优惠券'
+        });
+        const end = new Date(new Date().getTime() + 31 * 24 * 3600 * 1000);
+
+        const coupon = {
+          coupon_id: 10,
+          user_id: this.getLoginUserId(),
+          coupon_number: '1',
+          used_time: end.getTime() / 1000,
+          order_id: 0
+        };
+        await this.model('user_coupon').add(coupon);
+        return this.success('兑换成功');
+      } else {
+        return this.fail('积分不足');
+      }
+    } else {
+      return this.fail('积分不是1000的倍数');
+    }
+  }
 };

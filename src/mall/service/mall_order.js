@@ -80,9 +80,8 @@ module.exports = class extends think.Service {
 
     // 如果订单已经支付，且已经收货，则可完成交易、评论和再次购买
     if (orderInfo.order_status === 203) {
-      handleOption.return = true;
       handleOption.comment = true;
-      handleOption.buy = true;
+      handleOption.help = true;
     }
 
     return handleOption;

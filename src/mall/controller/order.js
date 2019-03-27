@@ -186,6 +186,15 @@ module.exports = class extends Base {
     const latestExpressInfo = await this.service('mall_order_express', 'mall').getLatestOrderExpress(orderId);
     return this.success(latestExpressInfo);
   }
+  async deliveryAction() {
+    const orderId = this.post('orderId');
+    if (think.isEmpty(orderId)) {
+      return this.fail('订单不存在');
+    }
+    const orderModel = this.service('mall_order', 'mall');
+    orderModel.updateOrderStatus(orderId, 203);
+    return this.success('操作成功');
+  }
 
   async cancelAction() {
     const orderId = this.post('orderId');

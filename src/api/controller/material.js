@@ -3,8 +3,10 @@ const _ = require('lodash');
 const fs = require('fs');
 module.exports = class extends Base {
   async countAction() {
-    const count = await this.model('material').count('1');
-    this.json(count);
+    const count1 = await this.model('material').count('1');
+    const count2 = await this.model('mall_goods').count('1');
+    const count = count1 + count2;
+    return this.json(count);
   }
   async categoryAction() {
     const list = await this.model('category').where({'level': 'L1', 'type': 0}).select();

@@ -3,9 +3,9 @@ const Base = require('./base.js');
 module.exports = class extends Base {
   async indexAction() {
     // 取出输入框默认的关键词
-    const defaultKeyword = await this.model('mall_keywords').where({ is_default: 1 }).limit(1).find();
+    const defaultKeyword = await this.model('mall_search_history').where({ is_default: 1 }).limit(1).find();
     // 取出热闹关键词
-    const hotKeywordList = await this.model('mall_keywords').distinct('keyword').field(['keyword', 'is_hot']).limit(10).select();
+    const hotKeywordList = await this.model('mall_search_history').distinct('keyword').field(['keyword', 'is_hot']).limit(10).select();
     const historyKeywordList = await this.model('mall_search_history').distinct('keyword').where({ user_id: this.getLoginUserId() }).limit(10).getField('keyword');
 
     return this.success({
@@ -17,7 +17,7 @@ module.exports = class extends Base {
 
   async helperAction() {
     const keyword = this.get('keyword');
-    const keywords = await this.model('mall_keywords').distinct('keyword').where({ keyword: ['like', keyword + '%'] }).getField('keyword', 10);
+    const keywords = await this.model('mall_search_history').distinct('keyword').where({ keyword: ['like', keyword + '%'] }).getField('keyword', 10);
     return this.success(keywords);
   }
 

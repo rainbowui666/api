@@ -131,6 +131,9 @@ module.exports = class extends think.Service {
     return this.model('mall_order').where({id: orderId}).limit(1).update({order_status: parseInt(orderStatus)});
   }
 
+  async updateCouponStatus(couponId) {
+    return this.model('user_coupon').where({id: couponId}).limit(1).update({useing: 0, used: 1});
+  }
   /**
    * 根据订单编号查找订单信息
    * @param orderSn

@@ -478,7 +478,7 @@ module.exports = class extends Base {
   }
 
   async pointListAction() {
-    const list = await this.model('user_point').where({'user_id': this.getLoginUserId()}).select();
+    const list = await this.model('user_point').where({'user_id': this.getLoginUserId()}).order('id desc').select();
     let point = 0;
     for (const item of list) {
       point += item.point;

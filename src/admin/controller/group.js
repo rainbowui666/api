@@ -285,7 +285,16 @@ module.exports = class extends Base {
       returnDataWithfreight.push([]);
     });
     const name = 'coral123-' + group.id + '.xlsx';
-    const buffer = xlsx.build([{name: '总单(不含运费)', data: totleReturnData}, {name: '明细(不含运费)', data: returnData}, {name: '总单(含运费)', data: totleReturnDataWithfreight}, {name: '明细(含运费)', data: returnDataWithfreight}]);
+    // const buffer = xlsx.build([
+    //   {name: '总单(不含运费)', data: totleReturnData},
+    //   {name: '明细(不含运费)', data: returnData},
+    //   {name: '总单(含运费)', data: totleReturnDataWithfreight},
+    //   {name: '明细(含运费)', data: returnDataWithfreight}
+    // ]);
+    const buffer = xlsx.build([
+      {name: '明细(不含运费)', data: returnData},
+      {name: '总单(不含运费)', data: totleReturnData}
+    ]);
     this.type = 'application/vnd.ms-excel';
     this.ctx.attachment(name);
     this.body = buffer;

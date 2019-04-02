@@ -9,12 +9,12 @@ module.exports = class extends Base {
   }
 
   async getHotGoodsAction() {
-    const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where({is_hot: 1}).limit(4).select();
+    const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where({is_hot: 1, is_on_sale: 1}).limit(4).select();
     this.json(hotGoods);
   }
 
   async getNewGoodsAction() {
-    const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1}).limit(4).select();
+    const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1, is_on_sale: 1}).limit(4).select();
     this.json(newGoods);
   }
   /**
@@ -219,6 +219,11 @@ module.exports = class extends Base {
       return v;
     });
     goodsData.goodsList = goodsData.data;
+
+    if (this.get('search') && !think.isEmpty(keyword)) {
+      const materialList = await this.model('material').field(['id', 'name']).where({name: ['like', `%${keyword}%`], tag: ['like', `%${keyword}%`]}).order(['id DESC']).page(page, size).countSelect();
+      goodsData.goodsList = goodsData.goodsList.concat(materialList.data);
+    }
 
     return this.success(goodsData);
   }

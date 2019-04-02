@@ -49,6 +49,7 @@ module.exports = class extends Base {
 
     if (orderModel.updatePayStatus(orderInfo.id, 2)) {
       orderModel.updateOrderStatus(orderInfo.id, 201);
+      orderModel.updateCouponStatus(orderInfo.coupon_id);
     } else {
       return `<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[订单不存在]]></return_msg></xml>`;
     }

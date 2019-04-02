@@ -1,11 +1,13 @@
-module.exports = class extends think.Model {
+const Base = require('./base.js');
+module.exports = class extends Base {
   /**
    * 根据快递公司编码获取名称
    * @param shipperCode
    * @returns {Promise.<*>}
    */
-  async getShipperNameByCodeAction(shipperCode) {
-    const obj = await this.model('shipper').where({ code: shipperCode }).getField('name', true);
+  async getShipperNameByCodeAction() {
+    const shipperCode = this.post('shipperCode');
+    const obj = await this.model('shipper').where({ code: shipperCode }).find();
     return this.json(obj);
   }
 
@@ -14,7 +16,8 @@ module.exports = class extends think.Model {
    * @param shipperId
    * @returns {Promise.<*>}
    */
-  async getShipperByIdAction(shipperId) {
+  async getShipperByIdAction() {
+    const shipperId = this.post('shipperId');
     const obj = await this.model('shipper').where({ id: shipperId }).find();
     return this.json(obj);
   }

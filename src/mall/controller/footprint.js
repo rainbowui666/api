@@ -30,7 +30,7 @@ module.exports = class extends Base {
         join: 'left',
         as: 'g',
         on: ['f.goods_id', 'g.id']
-      }).where({user_id: this.getLoginUserId()})
+      }).where({user_id: this.getLoginUserId(), 'g.is_on_sale': 1})
       .order({id: 'desc'})
       .countSelect();
 

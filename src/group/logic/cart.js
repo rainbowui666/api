@@ -62,17 +62,15 @@ module.exports = class extends think.Logic {
   listAction() {
     this.allowMethods = 'post';
     this.rules = {
-      page: {int: true, required: true, trim: true},
-      size: {int: true, required: true, trim: true},
+      page: {int: true, trim: true},
+      size: {int: true, trim: true},
       userId: {int: true, trim: true}
     };
   }
   listByGroupIdAction() {
     this.allowMethods = 'post';
     this.rules = {
-      groupId: {int: true, required: true, trim: true},
-      page: {int: true, required: true, trim: true},
-      size: {int: true, required: true, trim: true}
+      groupId: {int: true, required: true, trim: true}
     };
   }
   getAction() {

@@ -261,6 +261,53 @@ module.exports = class extends Base {
       }
     }
   }
+  async listByStatusAction() {
+    const page = this.post('page') || 1;
+    const size = this.post('size') || 10;
+    const isConfirm = this.post('isConfirm');
+    const isPay = this.post('isPay');
+    const status = this.post('status');
+    const userId = this.getLoginUserId();
+    const model = this.model('cart').alias('c');
+    model.field(['c.*', 'u.type group_user_type', 'g.id group_id', 'u.city_name', 'g.activity_code', 'date_format(g.end_date, \'%m-%d %H:%i\') end_date_format', 'date_format(c.insert_date, \'%m-%d %H:%i\') insert_date_format', 'g.name group_name', 'g.status group_status', 'g.contacts group_user_name', 'g.user_id group_user_id'])
+      .join({
+        table: 'group_bill',
+        join: 'inner',
+        as: 'g',
+        on: ['c.group_bill_id', 'g.id']
+      })
+      .join({
+        table: 'user',
+        join: 'inner',
+        as: 'u',
+        on: ['g.user_id', 'u.id']
+      });
+    const list = await model.where({'g.status': status, 'c.user_id': userId, 'is_pay': isPay, 'is_confirm': isConfirm, 'sum': ['!=', 0]}).order(['g.end_date asc']).page(page, size).countSelect();
+    _.each(list.data, (group) => {
+      group['total'] = Number(group['sum']) + Number(group['freight']) - Number(group['lost_back']) - Number(group['damage_back']);
+      if (group['group_user_type'] === 'lss') {
+        group['is_group'] = false;
+      } else {
+        group['is_group'] = true;
+      }
+      group.headimgurl = 'https://api2.huanjiaohu.com/user/getAvatar?userId=' + group.group_user_id;
+      group.navigator_url = '/pages/group/buy?id=' + group.group_id;
+      if (group.group_status === 0) {
+        group.tag = ['已结束'];
+      } else {
+        group.tag = group.activity_code ? [group.activity_code] : ['热团中'];
+      }
+      group.time = group.end_date_format;
+      group.title = group.group_name;
+      group.name = group.group_user_name;
+      group.city_name = group.city_name;
+      group.price = group.total;
+      delete group.description;
+    });
+    this.json(list);
+    return list;
+  }
+
   async listAction(_userId) {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
@@ -293,8 +340,6 @@ module.exports = class extends Base {
   }
 
   async listByGroupIdAction() {
-    const page = this.post('page') || 1;
-    const size = this.post('size') || 10;
     const groupId = this.post('groupId');
     const model = this.model('cart').alias('c');
     model.field(['c.*', 'g.name group_name', 'g.status group_status', 'u.name user_name', 'u.type user_type']).join({
@@ -308,8 +353,8 @@ module.exports = class extends Base {
       as: 'u',
       on: ['c.user_id', 'u.id']
     });
-    const list = await model.where({'c.group_bill_id': groupId, 'c.is_confirm': 1, 'c.sum': ['!=', 0]}).order(['c.id DESC']).page(page, size).countSelect();
-    _.each(list.data, (item) => {
+    const list = await model.where({'c.group_bill_id': groupId, 'c.is_confirm': 1, 'c.sum': ['!=', 0]}).order(['c.id DESC']).select();
+    _.each(list, (item) => {
       item['total'] = Number(item['sum']) + Number(item['freight']) - Number(item['lost_back']) - Number(item['damage_back']);
       if (item['user_type'] === 'lss' || item['user_type'] === 'lss') {
         item['is_group'] = false;
@@ -486,7 +531,7 @@ module.exports = class extends Base {
   async listDetailsAction() {
     const cartId = this.post('cartId');
     const model = this.model('cart_detail').alias('cd');
-    model.field(['cd.*', 'b.size', 'b.price', 'b.point', 'b.material_id', 'm.name material_name', 'b.numbers', 'b.limits', 'b.recommend', 'b.name']).join({
+    model.field(['cd.*', 'b.size', 'b.price', 'b.point', 'b.material_id', 'm.name material_name', 'm.tag', 'b.numbers', 'b.limits', 'b.recommend', 'b.name']).join({
       table: 'cart',
       join: 'inner',
       as: 'c',
@@ -503,6 +548,8 @@ module.exports = class extends Base {
       on: ['m.id', 'b.material_id']
     });
     const list = await model.where({'cd.cart_id': cartId}).order(['cd.id DESC']).select();
-    return this.json(list);
+    const cart = await this.model('cart').where({id: cartId}).find();
+    const group = await this.model('group_bill').where({id: cart.group_bill_id}).find();
+    return this.json({list, cart, group});
   }
 };

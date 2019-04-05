@@ -201,6 +201,7 @@ module.exports = class extends Base {
         _.each(userList, (item) => {
           wexinService.sendOpenGroupMessage(_.values(token)[0], item, group);
         });
+        return this.json(group);
       }
     }
   }
@@ -251,6 +252,72 @@ module.exports = class extends Base {
     const groupId = this.post('groupId');
     const list = await this.model('damage_evidence').where({group_id: groupId}).select();
     this.json(list);
+  }
+
+  async getGroupListAction() {
+    const model = this.model('group_bill').alias('gb');
+    const whereMap = {};
+    whereMap['gb.user_id'] = this.getLoginUserId();
+    const status = this.post('status');
+    const list = await model.field(['gb.*', '(select type from user where id=gb.user_id) user_type', 'date_format(gb.end_date, \'%m-%d %H:%i\') end_date_format', 'gb.bill_id billId', 'b.name bill_name', 'c.name city_name', 'p.name province_name', 'u.name supplier_name'])
+      .join({
+        table: 'citys',
+        join: 'inner',
+        as: 'c',
+        on: ['gb.city', 'c.mark']
+      })
+      .join({
+        table: 'provinces',
+        join: 'inner',
+        as: 'p',
+        on: ['gb.province', 'p.code']
+      })
+      .join({
+        table: 'bill',
+        join: 'inner',
+        as: 'b',
+        on: ['gb.bill_id', 'b.id']
+      })
+      .join({
+        table: 'user',
+        join: 'inner',
+        as: 'u',
+        on: ['b.supplier_id', 'u.id']
+      }).where(whereMap).order(['gb.status DESC', 'gb.id DESC', 'gb.end_date DESC']).select();
+
+    for (const item of list) {
+      if (item['status'] !== 0) {
+        if (moment(item['end_date']).isAfter(moment())) {
+          item['status'] = 1;
+        } else {
+          item['status'] = 0;
+          await this.model('group_bill').where({'id': item['id']}).update({'status': 0});
+        }
+      }
+      const sumObj = await this.model('cart').field(['sum(sum) sum', 'sum(freight) freight', 'sum(lost_back) lost_back', 'sum(damage_back) damage_back']).where({'group_bill_id': item['id'], 'is_confirm': 1}).find();
+      item['total'] = Number(sumObj['sum']) + Number(sumObj['freight']) - Number(sumObj['lost_back']) - Number(sumObj['damage_back']);
+      item.headimgurl = 'https://api2.huanjiaohu.com/user/getAvatar?userId=' + this.getLoginUserId();
+      if (item.status === 0) {
+        item.tag = ['已结束'];
+      } else {
+        item.tag = item.activity_code ? [item.activity_code] : ['热团中'];
+      }
+      item.time = item.end_date_format;
+      item.title = item.name;
+      item.name = item.contacts;
+      item.city_name = item.city_name;
+      item.price = item.total;
+      delete item.description;
+    }
+
+    if (list && list.length > 0) {
+      const returnList = list.filter((item) => {
+        return item.status === status;
+      });
+      return this.json(returnList);
+    } else {
+      return this.json(list);
+    }
   }
 
   async imageAction() {

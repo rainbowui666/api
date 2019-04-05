@@ -23,6 +23,12 @@ module.exports = class extends think.Logic {
       groupId: {int: true, trim: true}
     };
   }
+  getGroupListAction() {
+    this.allowMethods = 'post';
+    this.rules = {
+      status: {int: true, required: true, trim: true}
+    };
+  }
   myGroupListAction() {
     this.allowMethods = 'post';
     this.rules = {

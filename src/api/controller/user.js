@@ -242,11 +242,12 @@ module.exports = class extends Base {
       user.tag = ['青魔'];
     }
     await this.model('user').where({ 'id': user.id }).update(user);
+    const types = await this.model('user_type_relation').where({ 'user_id': user.id }).select();
     const tokenSerivce = this.service('token', 'api');
     const sessionKey = await tokenSerivce.create(user);
     user.token = sessionKey;
     delete user.password;
-    return this.json(user);
+    return this.json({user, types});
   }
 
   async getAvatarAction(_userId) {

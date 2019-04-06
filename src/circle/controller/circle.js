@@ -53,6 +53,7 @@ module.exports = class extends Base {
       commentList.push(comment);
     }
     c['insert_date'] = new Date(c['insert_date']).getTime();
+    c['time'] = think.datetime(new Date(c['insert_date']), 'YYYY-MM-DD');
 
     switch (Number(c['category'])) {
       case 0:

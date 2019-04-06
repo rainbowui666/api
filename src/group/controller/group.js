@@ -7,6 +7,24 @@ const fs = require('fs');
 const images = require('images');
 
 module.exports = class extends Base {
+  async updateAction() {
+    const group = this.model('group_bill').where({'id': this.post('groupId')}).find();
+    const effortDate = this.service('date', 'api').convertWebDateToSubmitDateTime(this.post('endDate'));
+    if (this.post('endDate') && !moment(effortDate).isAfter(moment())) {
+      this.fail('结束日期必须大于今天');
+    } else if (Number(group.status) === 0) {
+      this.fail('已经结束的团购单不能更新');
+    } else {
+      await this.model('group_bill').where({id: this.post('groupId')}).update({
+        name: this.post('name'),
+        end_date: this.service('date', 'api').convertWebDateToSubmitDateTime(this.post('endDate')),
+        description: this.post('description'),
+        contacts: this.post('contacts'),
+        phone: this.post('phone')
+      });
+      this.success(true);
+    }
+  }
   async listByLocationAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;

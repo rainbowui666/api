@@ -264,8 +264,8 @@ module.exports = class extends Base {
   async listByStatusAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
-    const isConfirm = this.post('isConfirm');
-    const isPay = this.post('isPay');
+    // const isConfirm = this.post('isConfirm');
+    // const isPay = this.post('isPay');
     const status = this.post('status');
     const userId = this.getLoginUserId();
     const model = this.model('cart').alias('c');
@@ -282,7 +282,7 @@ module.exports = class extends Base {
         as: 'u',
         on: ['g.user_id', 'u.id']
       });
-    const list = await model.where({'g.status': status, 'c.user_id': userId, 'is_pay': isPay, 'is_confirm': isConfirm, 'sum': ['!=', 0]}).order(['g.end_date asc']).page(page, size).countSelect();
+    const list = await model.where({'g.status': status, 'c.user_id': userId, 'sum': ['!=', 0]}).order(['g.end_date asc']).page(page, size).countSelect();
     _.each(list.data, (group) => {
       group['total'] = Number(group['sum']) + Number(group['freight']) - Number(group['lost_back']) - Number(group['damage_back']);
       if (group['group_user_type'] === 'lss') {
@@ -295,8 +295,13 @@ module.exports = class extends Base {
       if (group.group_status === 0) {
         group.tag = ['已结束'];
       } else {
-        group.tag = group.activity_code ? [group.activity_code] : ['热团中'];
+        if (group.is_pay === 0) {
+          group.tag = ['未付款'];
+        } else {
+          group.tag = ['已付款'];
+        }
       }
+
       group.time = group.end_date_format;
       group.title = group.group_name;
       group.name = group.group_user_name;

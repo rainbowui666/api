@@ -98,6 +98,10 @@ module.exports = class extends Base {
     const where = { 'c.type': 1, 'c.status': 1 };
     if (!think.isEmpty(category)) {
       where['c.category'] = category;
+    } else if (category === 0) {
+      where['c.category'] = category;
+    } else {
+      where['c.category'] = 0;
     }
     if (!think.isEmpty(type)) {
       where['s.bowl_type'] = type;

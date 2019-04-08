@@ -347,7 +347,7 @@ module.exports = class extends Base {
   async listByGroupIdAction() {
     const groupId = this.post('groupId');
     const model = this.model('cart').alias('c');
-    model.field(['c.*', 'g.name group_name', 'g.status group_status', 'u.name user_name', 'u.type user_type']).join({
+    model.field(['c.*', 'g.name group_name', 'g.status group_status', 'g.activity_code', 'u.name user_name', 'u.city_name', 'u.type user_type']).join({
       table: 'group_bill',
       join: 'inner',
       as: 'g',
@@ -366,7 +366,21 @@ module.exports = class extends Base {
       } else {
         item['is_group'] = true;
       }
+
+      item.headimgurl = 'https://api2.huanjiaohu.com/user/getAvatar?userId=' + item.user_id;
+      if (item.is_pay === 0) {
+        item.tag = ['未付款'];
+      } else {
+        item.tag = ['已付款'];
+      }
+      item.time = think.datetime(new Date(item.insert_date), 'MM-DD HH:mm');
+      item.title = item.description;
+      item.name = item.user_name;
+      item.city_name = item.city_name;
+      item.price = item.total;
+      delete item.description;
     });
+
     this.json(list);
   }
   async updateDetailAction() {

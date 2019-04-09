@@ -20,7 +20,8 @@ module.exports = class extends Base {
         end_date: this.service('date', 'api').convertWebDateToSubmitDateTime(this.post('endDate')),
         description: this.post('description'),
         contacts: this.post('contacts'),
-        phone: this.post('phone')
+        phone: this.post('phone'),
+        status: this.post('status')
       });
       this.success(true);
     }

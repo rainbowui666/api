@@ -262,8 +262,8 @@ module.exports = class extends Base {
     }
   }
   async listByStatusAction() {
-    const page = this.post('page') || 1;
-    const size = this.post('size') || 10;
+    // const page = this.post('page') || 1;
+    // const size = this.post('size') || 10;
     // const isConfirm = this.post('isConfirm');
     // const isPay = this.post('isPay');
     const status = this.post('status');
@@ -282,8 +282,8 @@ module.exports = class extends Base {
         as: 'u',
         on: ['g.user_id', 'u.id']
       });
-    const list = await model.where({'g.status': status, 'c.user_id': userId, 'sum': ['!=', 0]}).order(['g.end_date asc']).page(page, size).countSelect();
-    _.each(list.data, (group) => {
+    const list = await model.where({'g.status': status, 'c.user_id': userId, 'sum': ['!=', 0]}).order(['g.end_date desc']).select();
+    _.each(list, (group) => {
       group['total'] = Number(group['sum']) + Number(group['freight']) - Number(group['lost_back']) - Number(group['damage_back']);
       if (group['group_user_type'] === 'lss') {
         group['is_group'] = false;

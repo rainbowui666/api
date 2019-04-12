@@ -94,6 +94,7 @@ module.exports = class extends Base {
     if (think.isEmpty(checkedGoodsList)) {
       return this.fail('请选择商品');
     }
+
     // 统计商品总价
     let goodsTotalPrice = 0.00;
     for (const cartItem of checkedGoodsList) {
@@ -122,8 +123,9 @@ module.exports = class extends Base {
     if (goodsTotalPrice >= freightCfg) {
       freightPrice = 0.00;
     }
+    const accountPrice = this.post('accountPrice') || 0.00;
     // 订单价格计算
-    const orderTotalPrice = goodsTotalPrice + freightPrice - couponPrice; // 订单的总价
+    const orderTotalPrice = goodsTotalPrice + freightPrice - couponPrice - accountPrice; // 订单的总价
     const actualPrice = orderTotalPrice <= 0 ? 0.01 : orderTotalPrice;
     const currentTime = parseInt(this.getTime() / 1000);
     const orderInfo = {
@@ -171,6 +173,17 @@ module.exports = class extends Base {
     }
     await this.model('mall_order_goods').addMany(orderGoodsData);
     await this.model('mall_cart').where({user_id: this.getLoginUserId(), session_id: 1, checked: 1}).delete();
+    if (accountPrice > 0) {
+      const returnObj = {
+        user_id: this.getLoginUserId(),
+        order_id: orderId,
+        code: 501,
+        account: -accountPrice,
+        description: '订单编号:' + orderInfo.order_sn
+      };
+      await this.model('user_account').add(returnObj);
+    }
+
     return this.success({ orderInfo: orderInfo });
   }
 

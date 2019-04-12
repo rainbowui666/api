@@ -1173,7 +1173,7 @@ alter table mall_goods drop primary key;
 alter table mall_goods change column id id int not null primary key auto_increment;
 alter table mall_search_history add column is_default int;
 alter table mall_search_history add column is_hot int;
-
+alter table mall_goods_issue modify column answer varchar(255);
 --
 -- Dumping events for database 'mall'
 --

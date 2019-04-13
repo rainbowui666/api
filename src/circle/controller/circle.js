@@ -165,8 +165,8 @@ module.exports = class extends Base {
   async deleteAction() {
     const circleId = this.post('circleId');
     const userId = this.getLoginUserId();
-    const circle = await this.model('circle').where({ id: circleId }).find();
-    if (circle.user_id === userId) {
+    const circle = await this.model('circle').where({ id: circleId, user_id: userId }).find();
+    if (!think.isEmpty(circle)) {
       await this.model('circle_img').where({ circle_id: circleId }).delete();
       await this.model('comment').where({ type_id: 2, value_id: circleId }).delete();
       await this.model('circle').where({ id: circleId }).delete();
@@ -179,8 +179,6 @@ module.exports = class extends Base {
         fs.unlinkSync(smallPath);
       }
       this.success('操作成功');
-    } else {
-      this.fail('没有权限');
     }
   }
   async deleteImageAction() {

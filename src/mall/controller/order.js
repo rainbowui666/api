@@ -216,6 +216,19 @@ module.exports = class extends Base {
     }
     const orderModel = this.service('mall_order', 'mall');
     if (orderModel.updateOrderStatus(orderId, 101)) {
+      const userAccount = await this.model('user_account').where({order_id: orderId, code: 501}).find();
+      if (!think.isEmpty(userAccount)) {
+        const account = Math.abs(userAccount.account);
+        const returnObj = {
+          user_id: this.getLoginUserId(),
+          order_id: orderId,
+          code: 502,
+          account,
+          description: userAccount.description + '退款'
+        };
+        await this.model('user_account').add(returnObj);
+      }
+
       return this.success('操作成功');
     }
   }
@@ -241,6 +254,18 @@ module.exports = class extends Base {
           returnObj.account = orderInfo.actual_price - orderInfo.freight_price;
         }
         await this.model('user_account').add(returnObj);
+        const userAccount = await this.model('user_account').where({order_id: orderId, code: 501}).find();
+        if (!think.isEmpty(userAccount)) {
+          const account = Math.abs(userAccount.account);
+          const returnObj = {
+            user_id: this.getLoginUserId(),
+            order_id: orderId,
+            code: 502,
+            account,
+            description: userAccount.description + '退款'
+          };
+          await this.model('user_account').add(returnObj);
+        }
         return this.success('操作成功');
       }
     }

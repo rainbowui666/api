@@ -198,12 +198,21 @@ module.exports = class extends Base {
       this.fail('没有权限');
     }
   }
+  generateMixed(an) {
+    const chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+    let res = '';
+    for (let ia = 0; ia < an; ia++) {
+      const id = Math.ceil(Math.random() * 35);
+      res += chars[id];
+    }
+    return res;
+  }
   async uploadAction() {
     const circleId = this.post('circleId');
     const img = this.file('file');
     const _name = img.name;
     const tempName = _name.split('.');
-    const timestamp = _.uniqueId('circle');
+    const timestamp = this.generateMixed(9);
     const name = timestamp + '-' + circleId + '.' + tempName[tempName.length - 1];
     const thumbUrl = this.config('image.circle') + '/' + name;
     const thumbSmallUrl = this.config('image.circle') + '/small/' + name;

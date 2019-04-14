@@ -5,8 +5,12 @@ module.exports = class extends Base {
    * 获取购物车中的数据
    * @returns {Promise.<{cartList: *, cartTotal: {goodsCount: number, goodsAmount: number, checkedGoodsCount: number, checkedGoodsAmount: number}}>}
    */
-  async getCart() {
-    const cartList = await this.model('mall_cart').where({user_id: this.getLoginUserId(), session_id: 1}).select();
+  async getCart(immediatelyToBuy) {
+    const where = {user_id: this.getLoginUserId(), session_id: 1};
+    if (immediatelyToBuy) {
+      where.immediately_buy = immediatelyToBuy;
+    }
+    const cartList = await this.model('mall_cart').where(where).select();
     // 获取购物车统计信息
     let goodsCount = 0;
     let goodsAmount = 0.00;
@@ -51,6 +55,7 @@ module.exports = class extends Base {
     const goodsId = this.post('goodsId');
     const productId = this.post('productId');
     const number = this.post('number');
+    const immediatelyBuy = this.post('immediatelyBuy');
 
     // 判断商品是否可以购买
     const goodsInfo = await this.model('mall_goods').where({id: goodsId}).find();
@@ -65,6 +70,8 @@ module.exports = class extends Base {
     }
 
     // 判断购物车中是否存在此规格商品
+    await this.model('mall_cart').where({immediately_buy: 1, user_id: this.getLoginUserId()}).delete();
+
     const cartInfo = await this.model('mall_cart').where({goods_id: goodsId, product_id: productId, user_id: this.getLoginUserId()}).find();
     if (think.isEmpty(cartInfo)) {
       // 添加操作
@@ -93,7 +100,9 @@ module.exports = class extends Base {
         goods_specifition_ids: productInfo.goods_specification_ids,
         checked: 1
       };
-
+      if (immediatelyBuy === 1) {
+        cartData.immediately_buy = immediatelyBuy;
+      }
       await this.model('mall_cart').add(cartData);
     } else {
       // 如果已经存在购物车中，则数量增加
@@ -222,6 +231,9 @@ module.exports = class extends Base {
       }
     });
   }
+  async deleteImmediatelyBuyAction() {
+    await this.model('mall_cart').where({immediately_buy: 1, user_id: this.getLoginUserId()}).delete();
+  }
 
   /**
    * 订单提交前的检验和填写相关订单信息
@@ -253,7 +265,8 @@ module.exports = class extends Base {
     }
 
     // 获取要购买的商品
-    const cartData = await this.getCart();
+    const immediatelyToBuy = this.get('immediatelyToBuy');
+    const cartData = await this.getCart(immediatelyToBuy);
     const checkedGoodsList = cartData.cartList.filter(function(v) {
       return v.checked === 1;
     });

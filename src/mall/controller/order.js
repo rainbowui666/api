@@ -90,7 +90,12 @@ module.exports = class extends Base {
       return this.fail('请选择收货地址');
     }
     // 获取要购买的商品
-    const checkedGoodsList = await this.model('mall_cart').where({ user_id: this.getLoginUserId(), session_id: 1, checked: 1 }).select();
+    const immediatelyToBuy = this.post('immediatelyToBuy');
+    const where = { user_id: this.getLoginUserId(), session_id: 1, checked: 1 };
+    if (immediatelyToBuy) {
+      where.immediately_buy = immediatelyToBuy;
+    }
+    const checkedGoodsList = await this.model('mall_cart').where(where).select();
     if (think.isEmpty(checkedGoodsList)) {
       return this.fail('请选择商品');
     }
@@ -172,7 +177,7 @@ module.exports = class extends Base {
       });
     }
     await this.model('mall_order_goods').addMany(orderGoodsData);
-    await this.model('mall_cart').where({user_id: this.getLoginUserId(), session_id: 1, checked: 1}).delete();
+    await this.model('mall_cart').where(where).delete();
     if (accountPrice > 0) {
       const returnObj = {
         user_id: this.getLoginUserId(),

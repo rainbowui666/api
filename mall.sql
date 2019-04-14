@@ -1174,6 +1174,8 @@ alter table mall_goods change column id id int not null primary key auto_increme
 alter table mall_search_history add column is_default int;
 alter table mall_search_history add column is_hot int;
 alter table mall_goods_issue modify column answer varchar(255);
+alter table mall_cart add column immediately_buy int;
+
 --
 -- Dumping events for database 'mall'
 --

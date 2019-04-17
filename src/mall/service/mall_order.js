@@ -143,6 +143,7 @@ module.exports = class extends think.Service {
     if (think.isEmpty(orderSn)) {
       return {};
     }
-    return this.model('mall_order').where({order_sn: orderSn}).find();
+    const order = await this.model('mall_order').where({order_sn: orderSn}).find();
+    return order;
   }
 };

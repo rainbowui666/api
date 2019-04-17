@@ -28,6 +28,9 @@ module.exports = class extends Base {
         total_fee: parseInt(orderInfo.actual_price * 100),
         spbill_create_ip: ''
       });
+
+      const perpayId = returnParams.package.split('=')[1];
+      await this.model('mall_order').where({ id: orderId }).update({'prepay_id': perpayId});
       return this.success(returnParams);
     } catch (err) {
       return this.fail('微信支付失败');
@@ -42,18 +45,20 @@ module.exports = class extends Base {
     }
 
     const orderModel = this.service('mall_order', 'mall');
+
     const orderInfo = await orderModel.getOrderByOrderSn(result.out_trade_no);
     if (think.isEmpty(orderInfo)) {
       return `<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[订单不存在]]></return_msg></xml>`;
     }
 
     if (orderModel.updatePayStatus(orderInfo.id, 2)) {
-      orderModel.updateOrderStatus(orderInfo.id, 201);
-      orderModel.updateCouponStatus(orderInfo.coupon_id);
+      if (orderInfo.order_status === 101) {
+        orderModel.updateOrderStatus(orderInfo.id, 201);
+        orderModel.updateCouponStatus(orderInfo.coupon_id);
+      }
+      return `<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>`;
     } else {
       return `<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[订单不存在]]></return_msg></xml>`;
     }
-
-    return `<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>`;
   }
 };

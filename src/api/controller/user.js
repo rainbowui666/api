@@ -463,31 +463,42 @@ module.exports = class extends Base {
     }
     this.json({account, list});
   }
-  async signinAction() {
-    const point = await this.model('user').getPoint(this.getLoginUserId());
-    if (think.isEmpty(point)) {
-      await this.model('user_point').add({
-        user_id: this.getLoginUserId(),
-        point: 10,
-        type: 'qd',
-        description: '签到'
-      });
-      return this.success('签到成功');
-    } else {
-      return this.success('今日以签到');
+  async pointAction() {
+    const code = this.post('code');
+    const pointObj = await this.model('user').getPoint(this.getLoginUserId(), code);
+    let message = null;
+    switch (code) {
+      case 'qd':
+        if (pointObj[0].point >= 10) {
+          message = '今日已签到';
+        } else {
+          await this.model('user_point').add({
+            user_id: this.getLoginUserId(),
+            point: 10,
+            type: 'qd',
+            description: '签到'
+          });
+          message = '+10分';
+        }
+        break;
+
+      default:
+        break;
     }
+    return this.success(message);
   }
 
   async pointListAction() {
-    const list = await this.model('user_point').where({'user_id': this.getLoginUserId()}).order('id desc').select();
+    const page = this.post('page') || 1;
+    const size = this.post('size') || 100;
+    const list = await this.model('user_point').where({'user_id': this.getLoginUserId()}).order('id desc').page(page, size).countSelect();
     let point = 0;
-    for (const item of list) {
+    for (const item of list.data) {
       point += item.point;
       item.time = think.datetime(new Date(item.insert_date), 'YYYY-MM-DD HH:mm:ss');
     }
     this.json({point, list});
   }
-
   async chnageCouponAction() {
     const point = this.post('point');
     const re = /^[0-9]*[0-9]$/i;

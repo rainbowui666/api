@@ -15,7 +15,7 @@ module.exports = {
     // mini_appid: 'wx6689f1d6479c5425', // 小程序 appid
     // mini_secret: '43f4cbef1445051cbbd4edb6c23b0fa2', // 小程序密钥
     mini_appid: 'wx9f635f06da7360d7', // 小程序 appid
-    mini_secret: 'ef11fda091769b57be6226beb2ba0294', // 小程序密钥
+    mini_secret: '29de62df9e6f3ef98119f30fcf90b1fd', // 小程序密钥
     public_appid: 'wx6edb9c7695fb8375', // 公众号 appid
     public_secret: '3e7b1b2235b7fdeed18afbb299a64683',
     subscribe_appid: 'wxac9b09c7abcca26e', // 公众号 appid

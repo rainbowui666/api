@@ -185,43 +185,51 @@ module.exports = class extends Base {
 
   async addAction() {
     const user = this.getLoginUser();
-    if (user.phone && user.phone === '18888888888') {
-      this.fail('请在我的设置里修改正确的手机号');
-    } else {
-      const effortDate = this.service('date', 'api').convertWebDateToSubmitDateTime(this.post('endDate'));
-      if (!moment(effortDate).isAfter(moment())) {
-        this.fail('结束日期必须大于今天');
+    const userTypes = await this.model('user_type_relation').where({user_id: user.id}).select();
+    const type = _.filter(userTypes, (userType) => {
+      return userType.type_id === 2 || userType.type_id === 3;
+    });
+    if (type && type.length > 0) {
+      if (user.phone && user.phone === '18888888888') {
+        this.fail('请在我的设置里修改正确的手机号');
       } else {
-        const group = {
-          name: this.post('name'),
-          contacts: user.name,
-          phone: user.phone,
-          end_date: moment(effortDate).format(this.config('date_format')),
-          pickup_address: '',
-          pickup_date: new Date(),
-          pay_type: 0,
-          pay_name: '',
-          freight: this.post('freight'),
-          description: this.post('description'),
-          bill_id: this.post('billId'),
-          user_id: user.id,
-          city: this.post('city'),
-          province: this.post('province'),
-          private: this.post('private'),
-          top_freight: this.post('topFreight')
-        };
-        const groupId = await this.model('group_bill').add(group);
-        const city = await this.model('citys').where({'mark': this.post('city')}).find();
-        group['id'] = groupId;
-        group['city_name'] = city.name;
-        const wexinService = this.service('weixin', 'api');
-        const userList = await this.model('user').where({province: group.province, openid: ['!=', null]}).select();
-        const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
-        _.each(userList, (item) => {
-          wexinService.sendOpenGroupMessage(_.values(token)[0], item, group);
-        });
-        return this.json(group);
+        const effortDate = this.service('date', 'api').convertWebDateToSubmitDateTime(this.post('endDate'));
+        if (!moment(effortDate).isAfter(moment())) {
+          this.fail('结束日期必须大于今天');
+        } else {
+          const group = {
+            name: this.post('name'),
+            contacts: user.name,
+            phone: user.phone,
+            end_date: moment(effortDate).format(this.config('date_format')),
+            pickup_address: '',
+            pickup_date: new Date(),
+            pay_type: 0,
+            pay_name: '',
+            freight: this.post('freight'),
+            description: this.post('description'),
+            bill_id: this.post('billId'),
+            user_id: user.id,
+            city: this.post('city'),
+            province: this.post('province'),
+            private: this.post('private'),
+            top_freight: this.post('topFreight')
+          };
+          const groupId = await this.model('group_bill').add(group);
+          const city = await this.model('citys').where({'mark': this.post('city')}).find();
+          group['id'] = groupId;
+          group['city_name'] = city.name;
+          const wexinService = this.service('weixin', 'api');
+          const userList = await this.model('user').where({province: group.province, openid: ['!=', null]}).select();
+          const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
+          _.each(userList, (item) => {
+            wexinService.sendOpenGroupMessage(_.values(token)[0], item, group);
+          });
+          return this.json(group);
+        }
       }
+    } else {
+      return this.fail('只有团长能开团');
     }
   }
 

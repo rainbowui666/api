@@ -7,6 +7,28 @@ const rp = require('request-promise');
 // const WXBizDataCrypt = require('../util/WXBizDataCrypt');
 
 module.exports = class extends think.Service {
+  async getMiniToken(appid, secret) {
+    const token = await think.cache('miniappid' + appid);
+    if (token) {
+      return JSON.parse(token);
+    } else {
+      const options = {
+        method: 'GET',
+        url: 'https://api.weixin.qq.com/cgi-bin/token',
+        qs: {
+          grant_type: 'client_credential',
+          secret: secret,
+          appid: appid
+        }
+      };
+
+      const sessionData = await rp(options);
+      // think.cache('miniappid' + appid, sessionData, {
+      //   timeout: 60 * 60 * 2 * 1000
+      // });
+      return JSON.parse(sessionData);
+    }
+  }
   async getToken(appid, secret) {
     const token = await think.cache(appid);
     if (token) {
@@ -68,6 +90,29 @@ module.exports = class extends think.Service {
       json: true
     };
     rp(options);
+  }
+  async sendExpressMessage(token, message) {
+    const options = {
+      method: 'POST',
+      url: 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + token,
+      body: {
+        touser: message.openid,
+        template_id: 'BAMzPd6-kf1XO4bqEB4ZVYTG8qnxTqmGsVoxUlYowKU',
+        page: 'pages/center/orderDetail/main?id=' + message.order_id,
+        form_id: message.prepay_id,
+        data: {
+          'keyword1': {'value': message.order_sn},
+          'keyword2': {'value': message.goods_name},
+          'keyword3': {'value': message.shipper_name},
+          'keyword4': {'value': message.logistic_code},
+          'keyword5': {'value': message.address},
+          'keyword6': {'value': message.phone},
+          'keyword7': {'value': message.node}
+        }
+      },
+      json: true
+    };
+    await rp(options);
   }
 
   async sendOpenGroupMessage(token, user, group) {

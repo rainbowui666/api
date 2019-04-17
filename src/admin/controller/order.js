@@ -1,6 +1,6 @@
 const Base = require('./base.js');
 const moment = require('moment');
-
+const _ = require('lodash');
 module.exports = class extends Base {
   /**
    * 获取订单列表
@@ -110,8 +110,32 @@ module.exports = class extends Base {
       logistic_code: logisticCode,
       add_time: nowTime
     };
-    const id = this.model('mall_order_express').add(express);
+    const id = await this.model('mall_order_express').add(express);
     express.id = id;
+    if (id > 0) {
+      await this.model('mall_order').where({id: orderId}).limit(1).update({order_status: 202});
+      const order = await this.model('mall_order').where({id: orderId}).find();
+      const goods = await this.model('mall_order_goods').where({order_id: orderId}).select();
+      const names = goods.map((good) => {
+        return good.goods_name;
+      });
+      const user = await this.model('user').where({id: order.user_id}).find();
+      const message = {
+        order_id: order.id,
+        order_sn: order.order_sn,
+        goods_name: names.join(' '),
+        shipper_name: shipperName,
+        logistic_code: logisticCode,
+        address: order.address,
+        phone: '13918961783',
+        prepay_id: order.prepay_id,
+        node: '请前往礁岩海水小程序我的-订单管理-待收货 查看物流信息',
+        openid: user.openid
+      };
+      const wexinService = this.service('weixin', 'api');
+      const token = await wexinService.getMiniToken(think.config('weixin.mini_appid'), think.config('weixin.mini_secret'));
+      wexinService.sendExpressMessage(_.values(token)[0], message);
+    }
     return this.json(express);
   }
 

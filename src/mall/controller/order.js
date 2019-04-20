@@ -1,6 +1,6 @@
 const Base = require('./base.js');
 const moment = require('moment');
-
+const _ = require('lodash');
 module.exports = class extends Base {
   /**
    * 获取订单列表
@@ -238,6 +238,47 @@ module.exports = class extends Base {
     }
   }
 
+  async returnSubmitAction() {
+    const orderId = this.post('orderId');
+    const description = this.post('description');
+    const order = await this.model('mall_order').where({ user_id: this.getLoginUserId(), id: orderId }).find();
+    if (think.isEmpty(order)) {
+      return this.fail('订单不存在');
+    } else {
+      const goods = await this.model('mall_order_goods').where({order_id: orderId}).select();
+      const names = goods.map((good) => {
+        return good.goods_name;
+      });
+      const wexinService = this.service('weixin', 'api');
+      const token = await wexinService.getMiniToken(think.config('weixin.mini_appid'), think.config('weixin.mini_secret'));
+      const model = this.model('user').alias('u');
+      const list = await model.field(['distinct  u.openid', 'u.phone'])
+        .join({
+          table: 'user_type_relation',
+          join: 'inner',
+          as: 'r',
+          on: ['r.user_id', 'u.id']
+        })
+        .where({'r.type_id': 11}).select();
+
+      for (const user of list) {
+        const message = {
+          order_id: order.id,
+          order_sn: order.order_sn,
+          goods_name: names.join(' '),
+          address: order.address,
+          account: order.actual_price,
+          phone: user.phone,
+          prepay_id: order.prepay_id,
+          description: description,
+          openid: user.openid
+        };
+        wexinService.sendReturnSubmitMessage(_.values(token)[0], message);
+      }
+      await this.model('mall_order').where({id: orderId}).limit(1).update({order_status: 104});
+      return this.success(true);
+    }
+  }
   async returnAction() {
     const orderId = this.post('orderId');
     const description = this.post('description');

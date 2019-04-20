@@ -68,6 +68,11 @@ module.exports = class extends think.Service {
       handleOption.buy = true;
     }
 
+    // 如果订单已经支付，未发货，发生退款申请
+    if (orderInfo.order_status === 104) {
+      handleOption.help = true;
+    }
+
     // 如果订单已付款，没有发货，则可退款操作
     if (orderInfo.order_status === 201) {
       handleOption.return = true;
@@ -111,6 +116,9 @@ module.exports = class extends think.Service {
         break;
       case 103:
         statusText = '协商退款中';
+        break;
+      case 104:
+        statusText = '退款中';
         break;
     }
 

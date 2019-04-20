@@ -23,9 +23,9 @@ module.exports = class extends think.Service {
       };
 
       const sessionData = await rp(options);
-      // think.cache('miniappid' + appid, sessionData, {
-      //   timeout: 60 * 60 * 2 * 1000
-      // });
+      think.cache('miniappid' + appid, sessionData, {
+        timeout: 60 * 60 * 2 * 1000
+      });
       return JSON.parse(sessionData);
     }
   }
@@ -108,6 +108,28 @@ module.exports = class extends think.Service {
           'keyword5': {'value': message.address},
           'keyword6': {'value': message.phone},
           'keyword7': {'value': message.node}
+        }
+      },
+      json: true
+    };
+    await rp(options);
+  }
+  async sendReturnSubmitMessage(token, message) {
+    const options = {
+      method: 'POST',
+      url: 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + token,
+      body: {
+        touser: message.openid,
+        template_id: 'lvKWGiLDJTdz3n1GsbtUt8FY3nj2xVMRRkK3ee4XXug',
+        page: 'pages/center/orderDetail/main?returnSubmit=yes&id=' + message.order_id,
+        form_id: message.prepay_id,
+        data: {
+          'keyword1': {'value': message.order_sn},
+          'keyword2': {'value': message.goods_name},
+          'keyword3': {'value': message.account},
+          'keyword4': {'value': message.address},
+          'keyword5': {'value': message.description},
+          'keyword6': {'value': message.phone}
         }
       },
       json: true

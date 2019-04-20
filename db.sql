@@ -355,7 +355,7 @@ INSERT INTO `user_type` (name,code) VALUES ('器材商','qcs');
 INSERT INTO `user_type` (name,code) VALUES ('团购管理员','tggly');
 INSERT INTO `user_type` (name,code) VALUES ('超级管理员','admin');
 INSERT INTO `user_type` (name,code) VALUES ('用户管理员','yhgly');
-INSERT INTO `user_type` (name,code) VALUES ('交易管理员','jygly');
+INSERT INTO `user_type` (name,code) VALUES ('商城管理员','jygly');
 INSERT INTO `user_type` (name,code) VALUES ('活动管理员','hdgly');
 INSERT INTO `user_type` (name,code) VALUES ('百科管理员','bkgly');
 
@@ -371,7 +371,7 @@ insert into user_type_relation (user_id,type_id) select id,7 from user where typ
 insert into user_type_relation (user_id,type_id) select id,8 from user where type like '%tggly%';
 insert into user_type_relation (user_id,type_id) select id,9 from user where type like '%admin%';
 insert into user_type_relation (user_id,type_id) select id,10 from user where type like '%yhgly%';
-insert into user_type_relation (user_id,type_id) select id,11 from user where type like '%jygly%';
+insert into user_type_relation (user_id,type_id) select id,11 from user where type like '%scgly%';
 insert into user_type_relation (user_id,type_id) select id,12 from user where type like '%hdgly%';
 insert into user_type_relation (user_id,type_id) select id,13 from user where type like '%bkgly%';
 

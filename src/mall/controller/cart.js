@@ -1,5 +1,5 @@
 const Base = require('./base.js');
-
+const _ = require('lodash');
 module.exports = class extends Base {
   /**
    * 获取购物车中的数据
@@ -222,6 +222,22 @@ module.exports = class extends Base {
     return this.success(await this.getCart());
   }
 
+  async deleteCartAction() {
+    const cartId = this.post('cartId');
+    const id = this.getLoginUserId();
+    const userTypes = await this.model('user_type_relation').where({user_id: id}).select();
+    const type = _.filter(userTypes, (userType) => {
+      return userType.type_id === 2 || userType.type_id === 3;
+    });
+    if (type && type.length > 0) {
+      await this.model('cart_detail').where({cart_id: cartId}).delete();
+      await this.model('cart').where({id: cartId}).delete();
+      return this.success(true);
+    } else {
+      return this.fail('只有团长能操作');
+    }
+  }
+
   // 获取购物车商品的总件件数
   async goodscountAction() {
     const cartData = await this.getCart();
@@ -294,7 +310,7 @@ module.exports = class extends Base {
       return !c.price_condition;
     }) || [];
     const couponList = couponListNoCondition.concat(couponListCondition);
-    if (coupon || coupon.length > 0) {
+    if (coupon && coupon.length > 0) {
       const condition = coupon[0].price_condition || 0;
       if (goodsTotalPrice >= condition) {
         couponPrice = coupon[0].price;

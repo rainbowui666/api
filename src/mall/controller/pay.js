@@ -52,7 +52,7 @@ module.exports = class extends Base {
     }
 
     if (orderModel.updatePayStatus(orderInfo.id, 2)) {
-      if (orderInfo.order_status === 101) {
+      if (orderInfo.order_status === 101 || orderInfo.order_status === 0) {
         orderModel.updateOrderStatus(orderInfo.id, 201);
         orderModel.updateCouponStatus(orderInfo.coupon_id);
       }

@@ -285,6 +285,8 @@ module.exports = class extends Base {
     const orderInfo = await this.model('mall_order').where({ user_id: this.getLoginUserId(), id: orderId }).find();
     if (think.isEmpty(orderInfo)) {
       return this.fail('订单不存在');
+    } else if (orderInfo.order_status !== 104) {
+      return this.fail('订单已退款');
     } else {
       const returnObj = {
         user_id: this.getLoginUserId(),
@@ -312,6 +314,24 @@ module.exports = class extends Base {
           };
           await this.model('user_account').add(returnObj);
         }
+        const wexinService = this.service('weixin', 'api');
+        const token = await wexinService.getMiniToken(think.config('weixin.mini_appid'), think.config('weixin.mini_secret'));
+        const goods = await this.model('mall_order_goods').where({order_id: orderId}).select();
+        const names = goods.map((good) => {
+          return good.goods_name;
+        });
+        const user = await this.model('user').where({id: this.getLoginUserId()}).find();
+        const message = {
+          order_id: orderInfo.id,
+          order_sn: orderInfo.order_sn,
+          goods_name: names.join(' '),
+          address: orderInfo.address,
+          account: orderInfo.actual_price,
+          phone: '13918961783',
+          prepay_id: orderInfo.prepay_id,
+          openid: user.openid
+        };
+        wexinService.sendReturnMessage(_.values(token)[0], message);
         return this.success('操作成功');
       }
     }

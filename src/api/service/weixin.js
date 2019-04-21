@@ -137,6 +137,48 @@ module.exports = class extends think.Service {
     await rp(options);
   }
 
+  async sendReturnMessage(token, message) {
+    const options = {
+      method: 'POST',
+      url: 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + token,
+      body: {
+        touser: message.openid,
+        template_id: 'DLdCfno-5_qF1miAOJpA6xRw3ElzPvw-69ugxPtb5Bs',
+        page: 'pages/center/account/main',
+        form_id: message.prepay_id,
+        data: {
+          'keyword1': {'value': message.goods_name},
+          'keyword2': {'value': message.account},
+          'keyword3': {'value': '退款到 【我的】- 【我的余额】您可以在下次购买商品时使用'},
+          'keyword4': {'value': message.phone}
+        }
+      },
+      json: true
+    };
+    await rp(options);
+  }
+
+  async sendCancelMessage(token, message) {
+    const options = {
+      method: 'POST',
+      url: 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + token,
+      body: {
+        touser: message.openid,
+        template_id: 'Z9Y3MaWj5co0in3lCzA6b7U0k8h0By7699rizwPnUjM',
+        page: 'pages/center/order/main?status=101',
+        form_id: message.prepay_id,
+        data: {
+          'keyword1': {'value': message.order_sn},
+          'keyword2': {'value': message.goods_name},
+          'keyword3': {'value': message.account},
+          'keyword4': {'value': '真不好意思商品已售罄，欢迎您下次选购'}
+        }
+      },
+      json: true
+    };
+    await rp(options);
+  }
+
   async sendOpenGroupMessage(token, user, group) {
     let description = '这个团长很懒什么描述都没有';
     if (!think.isEmpty(group.description)) {

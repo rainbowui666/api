@@ -129,7 +129,7 @@ module.exports = class extends Base {
         address: order.address,
         phone: '13918961783',
         prepay_id: order.prepay_id,
-        node: '请前往礁岩海水小程序我的-订单管理-待收货 查看物流信息',
+        node: '请前往礁岩海水小程序【我的】- 【订单管理】- 【待收货】 查看物流信息',
         openid: user.openid
       };
       const wexinService = this.service('weixin', 'api');
@@ -146,6 +146,24 @@ module.exports = class extends Base {
     }
     const orderModel = this.service('mall_order', 'mall');
     if (orderModel.updateOrderStatus(orderId, 101)) {
+      const wexinService = this.service('weixin', 'api');
+      const token = await wexinService.getMiniToken(think.config('weixin.mini_appid'), think.config('weixin.mini_secret'));
+      const goods = await this.model('mall_order_goods').where({order_id: orderId}).select();
+      const names = goods.map((good) => {
+        return good.goods_name;
+      });
+      const orderInfo = await this.model('mall_order').where({id: orderId}).find();
+      const user = await this.model('user').where({id: orderInfo.user_id}).find();
+      const message = {
+        order_id: orderInfo.id,
+        order_sn: orderInfo.order_sn,
+        goods_name: names.join(' '),
+        address: orderInfo.address,
+        account: orderInfo.actual_price,
+        prepay_id: orderInfo.prepay_id,
+        openid: user.openid
+      };
+      wexinService.sendCancelMessage(_.values(token)[0], message);
       return this.success('操作成功');
     }
   }

@@ -213,7 +213,7 @@ module.exports = class extends Base {
     const phone = this.post('phone');
     const code = this.post('code');
     const result = await this.service('weixin', 'api').getSessionKeyByCode(code);
-    let user = await this.model('user').where({ unionid: result.unionid }).find();
+    let user = await this.model('user').where({ openid: result.openid }).find();
     user = think.isEmpty(user) ? await this.model('user').where({phone}).find() : user;
     if (think.isEmpty(user)) {
       user = {

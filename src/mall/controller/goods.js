@@ -221,7 +221,7 @@ module.exports = class extends Base {
     goodsData.goodsList = goodsData.data;
 
     if (this.get('search') && !think.isEmpty(keyword)) {
-      const materialList = await this.model('material').field(['id', 'name']).where({name: ['like', `%${keyword}%`], tag: ['like', `%${keyword}%`]}).order(['id DESC']).page(page, size).countSelect();
+      const materialList = await this.model('material').field(['id', 'name']).where({'name|tag|ename|sname': ['like', `%${keyword}%`]}).order(['id DESC']).page(page, size).countSelect();
       goodsData.goodsList = goodsData.goodsList.concat(materialList.data);
     }
 

@@ -44,6 +44,12 @@ module.exports = class extends Base {
     });
   }
 
+  async deleteAction() {
+    const id = this.post('id');
+    await this.model('comment').where({id, user_id: this.getLoginUserId()}).delete();
+    return this.success(true);
+  }
+
   async listAction() {
     const typeId = this.post('typeId');
     const valueId = this.post('valueId');

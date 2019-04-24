@@ -9,6 +9,12 @@ module.exports = class extends Base {
     };
     const game = await this.model('game').getScore(this.getLoginUserId());
     if (think.isEmpty(game)) {
+      await this.model('user_point').add({
+        user_id: this.getLoginUserId(),
+        point: 50,
+        type: 'game',
+        description: '礁岩荣耀奖励'
+      });
       await this.model('game').add(userObj);
       this.success('ok');
     } else {

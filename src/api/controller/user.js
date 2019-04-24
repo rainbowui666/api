@@ -481,7 +481,58 @@ module.exports = class extends Base {
           message = '+10分';
         }
         break;
-
+      case 'share':
+        if (pointObj[0].point >= 100) {
+          message = '今日分享上限';
+        } else {
+          await this.model('user_point').add({
+            user_id: this.getLoginUserId(),
+            point: 10,
+            type: 'share',
+            description: '分享成功奖励'
+          });
+          message = '+10分';
+        }
+        break;
+      case 'circle':
+        if (pointObj[0].point >= 100) {
+          message = '今日发表积分上限';
+        } else {
+          await this.model('user_point').add({
+            user_id: this.getLoginUserId(),
+            point: 10,
+            type: 'circle',
+            description: '鱼圈发表成功奖励'
+          });
+          message = '+10分';
+        }
+        break;
+      case 'comment':
+        if (pointObj[0].point >= 100) {
+          message = '今日评论积分上限';
+        } else {
+          await this.model('user_point').add({
+            user_id: this.getLoginUserId(),
+            point: 10,
+            type: 'comment',
+            description: '鱼圈评论成功奖励'
+          });
+          message = '+10分';
+        }
+        break;
+      case 'material':
+        if (pointObj[0].point >= 50) {
+          message = '今日评论积分上限';
+        } else {
+          await this.model('user_point').add({
+            user_id: this.getLoginUserId(),
+            point: 10,
+            type: 'material',
+            description: '百科评论成功奖励'
+          });
+          message = '+10分';
+        }
+        break;
       default:
         break;
     }

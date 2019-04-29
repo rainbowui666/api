@@ -6,6 +6,22 @@ module.exports = class extends Base {
    * 获取订单列表
    * @return {Promise} []
    */
+  async deliveryAction() {
+    if (this.isCli) {
+      const orderList = await this.model('order').deliveryOrderList();
+      for (const order of orderList) {
+        const orderModel = this.service('mall_order', 'mall');
+        orderModel.updateOrderStatus(order.id, 203);
+        await this.model('user_point').add({
+          user_id: this.getLoginUserId(),
+          point: 200,
+          type: 'mall',
+          description: '商城购物奖励'
+        });
+        return this.success('操作成功');
+      }
+    }
+  }
   async listAction() {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;

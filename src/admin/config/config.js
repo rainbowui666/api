@@ -8,6 +8,7 @@ module.exports = {
   // 可以公开访问的Action
   publicAction: [
     'notice/handleWxNotify',
-    'group/download'
+    'group/download',
+    'order/delivery'
   ]
 };

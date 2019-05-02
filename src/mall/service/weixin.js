@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const md5 = require('md5');
+const rp = require('request-promise');
 
 module.exports = class extends think.Service {
   /**
@@ -35,11 +36,35 @@ module.exports = class extends think.Service {
     return decoded;
   }
 
-  /**
-   * 统一下单
-   * @param payInfo
-   * @returns {Promise}
-   */
+  async createMeituanUnifiedOrder(payInfo) {
+    const param = {
+      'appId': 31291,
+      'body': payInfo.body,
+      'channel': 'wx_scan_pay',
+      'merchantId': 193802965,
+      'notifyUrl': think.config('weixin.mei_notify_url'),
+      'openId': payInfo.openid,
+      'outTradeNo': payInfo.out_trade_no,
+      'random': 'jyhs' + Date.now(),
+      'subject': '礁岩海水订单',
+      'totalFee': payInfo.total_fee,
+      'tradeType': 'JSAPI',
+      'wxSubAppId': 'wx9f635f06da7360d7'
+    };
+    const paramStr = `appId=${param.appId}&body=${param.body}&channel=${param.channel}&merchantId=${param.merchantId}&notifyUrl=${param.notifyUrl}&openId=${param.openId}&outTradeNo=${param.outTradeNo}&random=${param.random}&subject=${param.subject}&totalFee=${param.totalFee}&tradeType=${param.tradeType}&key=b055410a3e5e4ca18f03c75963be37f4`;
+    param.sign = crypto.createHash('SHA256').update(paramStr).digest('hex');
+    const options = {
+      method: 'POST',
+      url: 'https://payfront-zc.st.meituan.com/api/precreate',
+      body: param,
+      json: true
+    };
+    const sessionData = await rp(options);
+    const perpayId = sessionData.prepayId;
+    sessionData['package'] = 'prepay_id=' + perpayId;
+    return sessionData;
+  }
+
   createUnifiedOrder(payInfo) {
     const WeiXinPay = require('weixinpay');
     const weixinpay = new WeiXinPay({

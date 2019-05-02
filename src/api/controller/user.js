@@ -7,7 +7,7 @@ const url = require('url');
 const fs = require('fs');
 const _ = require('lodash');
 const images = require('images');
-
+const qr = require('qr-image');
 module.exports = class extends Base {
   async login() {
     const name = this.post('name');
@@ -212,9 +212,12 @@ module.exports = class extends Base {
     const name = this.post('name');
     const phone = this.post('phone');
     const code = this.post('code');
+    const recommend = this.post('recommend');
+
     const result = await this.service('weixin', 'api').getSessionKeyByCode(code);
     let user = await this.model('user').where({ openid: result.openid }).find();
     user = think.isEmpty(user) ? await this.model('user').where({phone}).find() : user;
+
     if (think.isEmpty(user)) {
       user = {
         name: name,
@@ -223,9 +226,13 @@ module.exports = class extends Base {
         phone: phone,
         type: 'yy'
       };
+      if (recommend) {
+        user['recommend'] = recommend;
+      }
       user.id = await this.model('user').add(user);
       await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
     }
+
     user.headimgurl = avatarUrl;
     user.unionid = result.unionid;
     user.openid = result.openid;
@@ -247,6 +254,20 @@ module.exports = class extends Base {
     const sessionKey = await tokenSerivce.create(user);
     user.token = sessionKey;
     delete user.password;
+
+    if (recommend) {
+      const count = await this.model('user').where({recommend}).count('id');
+      if (count === 3) {
+        await this.controller('cart', 'mall').addAction(1181039, 492, 1, recommend, 'gift');
+      }
+      if (count === 6) {
+        await this.controller('cart', 'mall').addAction(1181029, 397, 1, recommend, 'gift');
+      }
+      if (count === 9) {
+        await this.controller('cart', 'mall').addAction(1181023, 356, 1, recommend, 'gift');
+      }
+    }
+
     return this.json({user, types});
   }
 
@@ -579,5 +600,29 @@ module.exports = class extends Base {
     } else {
       return this.fail('积分不是1000的倍数');
     }
+  }
+
+  shareImgAction() {
+    const id = this.get('userId');
+    const qrSvg = qr.imageSync(`https://group.huanjiaohu.com?recommend=${id}`, { type: 'png' });
+    const savePath = `/usr/local/nginx/html/static/image/user/share/${id}.jpg`;
+    images('/usr/local/nginx/html/static/mini/index/active.jpg').draw(images(qrSvg).resize(240), 374, 520).save(savePath);
+    const image = fs.readFileSync(savePath);
+    const decodeImg = Buffer.from(image.toString('base64'), 'base64');
+    this.type = 'image/jpg';
+    this.body = decodeImg;
+  }
+
+  async checkRecommendAction() {
+    const id = this.getLoginUserId();
+    const user = await this.model('user').where({recommend: id}).select() || [];
+    const recommend = user.length ? user[0].recommend : null;
+    return this.json({recommend});
+  }
+
+  async getRecommendListAction() {
+    const id = this.getLoginUserId();
+    const userList = await this.model('user').where({recommend: id}).select();
+    return this.json(userList);
   }
 };

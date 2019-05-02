@@ -17,8 +17,8 @@ module.exports = class extends Base {
   }
   async getIndexAction() {
     const province = this.post('province');
-    let china = await this.model('mall_ad').where({ad_position_id: ['<', 10], province: 'china'}).select();
-    const provinceList = await this.model('mall_ad').where({ad_position_id: ['<', 10], province}).select() || [];
+    let china = await this.model('mall_ad').where({ad_position_id: ['<', 10], province: 'china'}).order('enabled asc').select();
+    const provinceList = await this.model('mall_ad').where({ad_position_id: ['<', 10], province}).order('enabled asc').select() || [];
     china = china.concat(provinceList);
     const ad = {};
     _.each(china, (item) => {

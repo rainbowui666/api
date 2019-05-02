@@ -279,7 +279,7 @@ module.exports = class extends Base {
           description: description,
           openid: user.openid
         };
-        wexinService.sendReturnSubmitMessage(_.values(token)[0], message);
+        await wexinService.sendReturnSubmitMessage(_.values(token)[0], message);
       }
       await this.model('mall_order').where({id: orderId}).limit(1).update({order_status: 104});
       return this.success(true);

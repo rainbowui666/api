@@ -24,6 +24,7 @@ module.exports = {
     mch_id: '1510134221', // 商户帐号ID
     partner_key: '3e7b1b2235b7fdeed18afbb299a64683', // 微信支付密钥
     notify_url: 'https://api2.huanjiaohu.com/mall/pay/notify', // 微信异步通知，
+    mei_notify_url: 'https://api2.huanjiaohu.com/mall/pay/meinotify', // 微信异步通知，
     accessKeyId: '1400101084', // 短信key
     secretAccessKey: '7c1e62752a6cd88719ef61cbf3b93ccb', // 短信key
     mapKey: 'KKJBZ-PPXA4-WDYUI-XF4IJ-XCIGF-UOFNQ',

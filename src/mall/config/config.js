@@ -13,6 +13,7 @@ module.exports = {
 
   // 可以公开访问的Action
   publicAction: [
-    'pay/notify'
+    'pay/notify',
+    'pay/meinotify'
   ]
 };

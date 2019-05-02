@@ -17,6 +17,8 @@ module.exports = {
     'user/loginByPassword',
     'user/loginByMiniProgram',
     'user/checkName',
+    'user/shareImg',
+    'user/checkRecommend',
     'user/forgetPassword',
     'user/register',
     'user/getAvatar',

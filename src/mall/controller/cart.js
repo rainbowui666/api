@@ -51,10 +51,10 @@ module.exports = class extends Base {
    * 添加商品到购物车
    * @returns {Promise.<*>}
    */
-  async addAction() {
-    const goodsId = this.post('goodsId');
-    const productId = this.post('productId');
-    const number = this.post('number');
+  async addAction(_goodsId, _productId, _number, userId, type) {
+    const goodsId = this.post('goodsId') || _goodsId;
+    const productId = this.post('productId') || _productId;
+    const number = this.post('number') || _number;
     const immediatelyBuy = this.post('immediatelyBuy');
 
     // 判断商品是否可以购买
@@ -85,6 +85,9 @@ module.exports = class extends Base {
         }).getField('value');
       }
       // 添加到购物车
+      if (type === 'gift') {
+        productInfo.retail_price = 0;
+      }
       const cartData = {
         goods_id: goodsId,
         product_id: productId,
@@ -93,7 +96,7 @@ module.exports = class extends Base {
         list_pic_url: goodsInfo.list_pic_url,
         number: number,
         session_id: 1,
-        user_id: this.getLoginUserId(),
+        user_id: this.getLoginUserId() || userId,
         retail_price: productInfo.retail_price,
         market_price: productInfo.retail_price,
         goods_specifition_name_value: goodsSepcifitionValue.join(';'),

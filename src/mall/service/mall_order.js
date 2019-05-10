@@ -81,6 +81,7 @@ module.exports = class extends think.Service {
     // 如果订单已经发货，没有收货，则可收货操作和退款、退货操作
     if (orderInfo.order_status === 202) {
       handleOption.delivery = true;
+      handleOption.help = true;
     }
 
     // 如果订单已经支付，且已经收货，则可完成交易、评论和再次购买

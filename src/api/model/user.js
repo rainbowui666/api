@@ -14,4 +14,9 @@ module.exports = class extends think.Model {
     const point = await this.query(sql);
     return point;
   }
+  async getTask(userId) {
+    const sql = `select type,count(1) count from user_point where user_id=${userId} and to_days(insert_date)=to_days(now()) group by type`;
+    const tasks = await this.query(sql);
+    return tasks;
+  }
 };

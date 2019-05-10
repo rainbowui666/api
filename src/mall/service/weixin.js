@@ -37,11 +37,12 @@ module.exports = class extends think.Service {
   }
 
   async createMeituanUnifiedOrder(payInfo) {
+    // 'merchantId': 193802965,测试
     const param = {
       'appId': 31291,
       'body': payInfo.body,
       'channel': 'wx_scan_pay',
-      'merchantId': 193802965,
+      'merchantId': 193806838,
       'notifyUrl': think.config('weixin.mei_notify_url'),
       'openId': payInfo.openid,
       'outTradeNo': payInfo.out_trade_no,
@@ -55,7 +56,7 @@ module.exports = class extends think.Service {
     param.sign = crypto.createHash('SHA256').update(paramStr).digest('hex');
     const options = {
       method: 'POST',
-      url: 'https://payfront-zc.st.meituan.com/api/precreate',
+      url: 'https://openpay.meituan.com/api/precreate',
       body: param,
       json: true
     };

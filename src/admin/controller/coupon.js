@@ -51,6 +51,9 @@ module.exports = class extends Base {
   }
   async listAction() {
     const couponObj = await this.model('coupon').select();
+    for (const c of couponObj) {
+      c['priceCondition'] = c['price_condition'];
+    }
     this.json(couponObj);
   }
 };

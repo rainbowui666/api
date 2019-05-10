@@ -4,8 +4,8 @@ module.exports = class extends Base {
   async indexAction() {
     const banner = await this.model('mall_ad').where({ad_position_id: 1}).select();
     // const channel = await this.model('mall_channel').order({sort_order: 'asc'}).select();
-    const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1, is_on_sale: 1}).limit(4).select();
-    const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where({is_hot: 1, is_on_sale: 1}).limit(3).select();
+    const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1, is_on_sale: 1}).limit(4).order('sort_order desc').select();
+    const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where({is_hot: 1, is_on_sale: 1}).limit(3).order('sort_order desc').select();
     const brandList = await this.model('mall_brand').where({is_new: 1}).order({new_sort_order: 'asc'}).limit(4).select();
     // const topicList = await this.model('mall_topic').limit(3).select();
 
@@ -13,7 +13,7 @@ module.exports = class extends Base {
     const newCategoryList = [];
     for (const categoryItem of categoryList) {
       const childCategoryIds = await this.model('category').where({parent_id: categoryItem.id}).getField('id', 100);
-      const categoryGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({category_id: ['IN', childCategoryIds], is_on_sale: 1}).limit(7).select();
+      const categoryGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({category_id: ['IN', childCategoryIds], is_on_sale: 1}).order('sort_order desc').limit(7).select();
       newCategoryList.push({
         id: categoryItem.id,
         name: categoryItem.name,

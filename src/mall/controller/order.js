@@ -188,7 +188,12 @@ module.exports = class extends Base {
       };
       await this.model('user_account').add(returnObj);
     }
-
+    await this.model('user_point').add({
+      user_id: this.getLoginUserId(),
+      point: 200,
+      type: 'mall',
+      description: '购物积分奖励'
+    });
     return this.success({ orderInfo: orderInfo });
   }
 
@@ -256,9 +261,9 @@ module.exports = class extends Base {
         return good.goods_name;
       });
       const wexinService = this.service('weixin', 'api');
-      const token = await wexinService.getMiniToken(think.config('weixin.mini_appid'), think.config('weixin.mini_secret'));
+      const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
       const model = this.model('user').alias('u');
-      const list = await model.field(['distinct  u.openid', 'u.phone'])
+      const list = await model.field(['u.public_openid', 'u.phone'])
         .join({
           table: 'user_type_relation',
           join: 'inner',
@@ -277,9 +282,11 @@ module.exports = class extends Base {
           phone: user.phone,
           prepay_id: order.prepay_id,
           description: description,
-          openid: user.openid
+          openid: user.public_openid
         };
-        await wexinService.sendReturnSubmitMessage(_.values(token)[0], message);
+        if (user.public_openid) {
+          await wexinService.sendAdminReturnMessage(_.values(token)[0], message);
+        }
       }
       await this.model('mall_order').where({id: orderId}).limit(1).update({order_status: 104});
       return this.success(true);

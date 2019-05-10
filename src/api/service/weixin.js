@@ -66,30 +66,30 @@ module.exports = class extends think.Service {
     return JSON.parse(sessionData);
   }
 
-  async sendSubscribeMessage() {
-    const token = await this.service('weixin').getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
+  async sendAdminReturnMessage(token, message) {
     const options = {
       method: 'POST',
-      url: 'https://api.weixin.qq.com/cgi-bin/message/template/subscribe?access_token=' + _.values(token)[0],
+      url: 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
       body: {
-        touser: this.post('openId'),
-        template_id: 'MBKFHUw6G4vVktlxqxu4BGRzH8u9xSBRaMDL0dUBJfU',
+        touser: message.openid,
+        template_id: 'QIDPaomrFHFpx4gbyFsoaayYnp5Xy0FZhOGJl316kkY',
         miniprogram: {
           'appid': 'wx9f635f06da7360d7',
-          'pagepath': 'pages/index/index?type=group&id=1597'
+          'path': 'pages/center/orderDetail/main?returnSubmit=yes&id=' + message.order_id
         },
-        scene: 1000,
-        title: '测试title',
         data: {
-          content: {
-            value: '测试value',
-            color: '#ff0000'
-          }
+          'first': {'value': `${message.goods_name} 要退款了`, 'color': '#2d8cf0'},
+          'keyword1': {'value': message.order_sn, 'color': '#17233d'},
+          'keyword2': {'value': message.account, 'color': '#17233d'},
+          'keyword3': {'value': message.address, 'color': '#17233d'},
+          'keyword4': {'value': message.description, 'color': '#17233d'},
+          'remark': {'value': message.description, 'color': '#ff9900'}
         }
       },
       json: true
     };
-    rp(options);
+    const a = await rp(options);
+    console.log(a);
   }
   async sendExpressMessage(token, message) {
     const options = {

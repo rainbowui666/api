@@ -5,7 +5,7 @@ module.exports = {
   validateDefaultErrno: 406,
   workers: 0,
   goods: {
-    freight: 88
+    freight: 128
   },
   date_format: 'YYYY-MM-DD HH:mm:ss',
   jhsj: {
@@ -23,7 +23,7 @@ module.exports = {
     book_url: 'https://mp.weixin.qq.com/mp/subscribemsg?action=get_confirm&appid=wx6edb9c7695fb8375&scene=1000&template_id=MBKFHUw6G4vVktlxqxu4BGRzH8u9xSBRaMDL0dUBJfU&redirect_url=http%3a%2f%2fgroup.huanjiaohu.com&book=done#wechat_redirect',
     mch_id: '1510134221', // 商户帐号ID
     partner_key: '3e7b1b2235b7fdeed18afbb299a64683', // 微信支付密钥
-    notify_url: 'https://api2.huanjiaohu.com/mall/pay/notify', // 微信异步通知，
+    notify_url: 'https://api2.huanjiaohu.com/mall/pay/notify', // 微信异步通知
     mei_notify_url: 'https://api2.huanjiaohu.com/mall/pay/meinotify', // 微信异步通知，
     accessKeyId: '1400101084', // 短信key
     secretAccessKey: '7c1e62752a6cd88719ef61cbf3b93ccb', // 短信key
@@ -40,8 +40,6 @@ module.exports = {
     user: '/usr/local/image/user',
     ad: '/usr/local/image/ad',
     brand: '/usr/local/image/brand',
-    circle: '/usr/local/image/circle',
-    goods: '/usr/local/image/goods',
     material: '/usr/local/image/material',
     notice: '/usr/local/image/notice',
     bill: '/usr/local/image/bill',

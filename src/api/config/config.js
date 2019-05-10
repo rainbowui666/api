@@ -19,6 +19,7 @@ module.exports = {
     'user/checkName',
     'user/shareImg',
     'user/checkRecommend',
+    'user/userEntry',
     'user/forgetPassword',
     'user/register',
     'user/getAvatar',

@@ -56,6 +56,32 @@ module.exports = class extends Base {
       await this.controller('user').login();
     }
   }
+  async userEntryAction() {
+    const code = this.post('code');
+    const appid = think.config('weixin.public_appid');
+    const secret = think.config('weixin.public_secret');
+    // 获取unionid
+    const options = {
+      method: 'GET',
+      url: 'https://api.weixin.qq.com/sns/oauth2/access_token',
+      qs: {
+        grant_type: 'authorization_code',
+        code: code,
+        secret: secret,
+        appid: appid
+      }
+    };
+
+    let sessionData = await rp(options);
+    sessionData = JSON.parse(sessionData);
+    const user = await this.model('user').where({ unionid: sessionData.unionid }).find();
+    await this.model('user').where({ id: user.id }).update({
+      insert_date: moment().format('YYYYMMDD'),
+      headimgurl: sessionData.headimgurl,
+      public_openid: sessionData.openid
+    });
+    return this.success(true);
+  }
   async loginByCodeAction() {
     const code = this.post('code');
     const from = this.post('from');
@@ -106,7 +132,6 @@ module.exports = class extends Base {
           type: 'yy',
           province: 'sh',
           country: userInfo.country,
-          openid: userInfo.openid,
           headimgurl: userInfo.headimgurl || '',
           sex: userInfo.sex || 1, // 性别 0：未知、1：男、2：女
           province_name: userInfo.province,
@@ -130,6 +155,7 @@ module.exports = class extends Base {
       return this.fail('登录失败');
     }
     user.token = sessionKey;
+    delete user['password'];
     return this.json(user);
   }
 
@@ -231,6 +257,43 @@ module.exports = class extends Base {
       }
       user.id = await this.model('user').add(user);
       await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
+
+      if (recommend) {
+        const count = await this.model('user').where({recommend}).count('id');
+        if (count === 3) {
+          await this.controller('cart', 'mall').addAction(1181039, 492, 1, recommend, 'gift');
+        }
+        if (count === 6) {
+          await this.controller('cart', 'mall').addAction(1181029, 397, 1, recommend, 'gift');
+        }
+        if (count === 9) {
+          await this.controller('cart', 'mall').addAction(1181023, 356, 1, recommend, 'gift');
+        }
+        const coupon = {
+          coupon_id: 4,
+          user_id: user.id,
+          coupon_number: '1',
+          used_time: new Date(this.post('endDate')).getTime() / 1000,
+          order_id: 0
+        };
+        await this.model('user_coupon').add(coupon);
+        const coupon1 = {
+          coupon_id: 13,
+          user_id: user.id,
+          coupon_number: '1',
+          used_time: new Date(this.post('endDate')).getTime() / 1000,
+          order_id: 0
+        };
+        await this.model('user_coupon').add(coupon1);
+        const coupon2 = {
+          coupon_id: 14,
+          user_id: user.id,
+          coupon_number: '1',
+          used_time: new Date(this.post('endDate')).getTime() / 1000,
+          order_id: 0
+        };
+        await this.model('user_coupon').add(coupon2);
+      }
     }
 
     user.headimgurl = avatarUrl;
@@ -254,19 +317,6 @@ module.exports = class extends Base {
     const sessionKey = await tokenSerivce.create(user);
     user.token = sessionKey;
     delete user.password;
-
-    if (recommend) {
-      const count = await this.model('user').where({recommend}).count('id');
-      if (count === 3) {
-        await this.controller('cart', 'mall').addAction(1181039, 492, 1, recommend, 'gift');
-      }
-      if (count === 6) {
-        await this.controller('cart', 'mall').addAction(1181029, 397, 1, recommend, 'gift');
-      }
-      if (count === 9) {
-        await this.controller('cart', 'mall').addAction(1181023, 356, 1, recommend, 'gift');
-      }
-    }
 
     return this.json({user, types});
   }
@@ -476,7 +526,7 @@ module.exports = class extends Base {
     this.success('操作成功');
   }
   async getAccountListAction() {
-    const list = await this.model('user_account').where({'user_id': this.getLoginUserId()}).select();
+    const list = await this.model('user_account').where({'user_id': this.getLoginUserId()}).order('id desc').select();
     let account = 0;
     for (const item of list) {
       account += item.account;
@@ -558,6 +608,11 @@ module.exports = class extends Base {
         break;
     }
     return this.success(message);
+  }
+
+  async taskListAction() {
+    const pointObj = await this.model('user').getTask(this.getLoginUserId());
+    return this.json(pointObj);
   }
 
   async pointListAction() {

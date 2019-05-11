@@ -269,11 +269,17 @@ module.exports = class extends Base {
         if (count === 9) {
           await this.controller('cart', 'mall').addAction(1181023, 356, 1, recommend, 'gift');
         }
+        var t = new Date();
+        var iToDay = t.getDate();
+        var iToMon = t.getMonth();
+        var iToYear = t.getFullYear();
+        var newDay = new Date(iToYear, iToMon, (iToDay + 30));
+
         const coupon = {
           coupon_id: 4,
           user_id: user.id,
           coupon_number: '1',
-          used_time: new Date(this.post('endDate')).getTime() / 1000,
+          used_time: newDay.getTime() / 1000,
           order_id: 0
         };
         await this.model('user_coupon').add(coupon);
@@ -281,7 +287,7 @@ module.exports = class extends Base {
           coupon_id: 13,
           user_id: user.id,
           coupon_number: '1',
-          used_time: new Date(this.post('endDate')).getTime() / 1000,
+          used_time: newDay.getTime() / 1000,
           order_id: 0
         };
         await this.model('user_coupon').add(coupon1);
@@ -289,7 +295,7 @@ module.exports = class extends Base {
           coupon_id: 14,
           user_id: user.id,
           coupon_number: '1',
-          used_time: new Date(this.post('endDate')).getTime() / 1000,
+          used_time: newDay.getTime() / 1000,
           order_id: 0
         };
         await this.model('user_coupon').add(coupon2);

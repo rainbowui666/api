@@ -178,6 +178,9 @@ module.exports = class extends Base {
     }
     await this.model('mall_order_goods').addMany(orderGoodsData);
     await this.model('mall_cart').where(where).delete();
+    if (couponPrice > 0) {
+      await this.model('user_coupon').where({id: couponId}).update({useing: 0, used: 1});
+    }
     if (accountPrice > 0) {
       const returnObj = {
         user_id: this.getLoginUserId(),

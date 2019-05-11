@@ -7,7 +7,7 @@ module.exports = class extends Base {
    */
   async getCart(immediatelyToBuy) {
     const where = {user_id: this.getLoginUserId(), session_id: 1};
-    if (immediatelyToBuy) {
+    if (!immediatelyToBuy && typeof (immediatelyToBuy) !== 'undefined') {
       where.immediately_buy = immediatelyToBuy;
     }
     const cartList = await this.model('mall_cart').where(where).select();
@@ -284,7 +284,7 @@ module.exports = class extends Base {
     }
 
     // 获取要购买的商品
-    const immediatelyToBuy = this.get('immediatelyToBuy');
+    const immediatelyToBuy = this.get('immediatelyToBuy') || null;
     const cartData = await this.getCart(immediatelyToBuy);
     const checkedGoodsList = cartData.cartList.filter(function(v) {
       return v.checked === 1;

@@ -8,6 +8,7 @@ module.exports = class extends Base {
    */
   async prepayAction() {
     const orderId = this.get('orderId');
+    const renew = this.get('renew');
     const orderInfo = await this.model('mall_order').where({ id: orderId }).find();
     if (think.isEmpty(orderInfo)) {
       return this.fail(400, '订单已取消');
@@ -20,6 +21,10 @@ module.exports = class extends Base {
       return this.fail('微信支付失败');
     }
     const WeixinSerivce = this.service('weixin', 'mall');
+    if (renew === 'renew') {
+      orderInfo.order_sn = this.service('mall_order', 'mall').generateOrderNumber();
+    }
+
     try {
       const returnParams = await WeixinSerivce.createMeituanUnifiedOrder({
         openid: openid,
@@ -29,7 +34,7 @@ module.exports = class extends Base {
         spbill_create_ip: ''
       });
       const perpayId = returnParams.package.split('=')[1];
-      await this.model('mall_order').where({ id: orderId }).update({'prepay_id': perpayId});
+      await this.model('mall_order').where({ id: orderId }).update({'prepay_id': perpayId, order_sn: orderInfo.order_sn});
       return this.success(returnParams);
     } catch (err) {
       return this.fail('微信支付失败');

@@ -524,7 +524,7 @@ module.exports = class extends Base {
   }
   async listDetailAction() {
     const page = this.post('page') || 1;
-    const size = this.post('size') || 10;
+    const size = this.post('size') || 50;
     const cartId = this.post('cartId');
 
     const model = this.model('cart_detail').alias('cd');
@@ -540,7 +540,7 @@ module.exports = class extends Base {
       on: ['b.id', 'cd.bill_detail_id']
     }).join({
       table: 'material',
-      join: 'inner',
+      join: 'left',
       as: 'm',
       on: ['m.id', 'b.material_id']
     });
@@ -562,7 +562,7 @@ module.exports = class extends Base {
       on: ['b.id', 'cd.bill_detail_id']
     }).join({
       table: 'material',
-      join: 'inner',
+      join: 'left',
       as: 'm',
       on: ['m.id', 'b.material_id']
     });

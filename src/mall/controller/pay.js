@@ -30,7 +30,7 @@ module.exports = class extends Base {
         openid: openid,
         body: '订单编号：' + orderInfo.order_sn,
         out_trade_no: orderInfo.order_sn,
-        total_fee: parseInt(orderInfo.actual_price * 100),
+        total_fee: orderInfo.actual_price > 0 ? parseInt(orderInfo.actual_price * 100) : 1,
         spbill_create_ip: ''
       });
       const perpayId = returnParams.package.split('=')[1];

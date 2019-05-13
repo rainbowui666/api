@@ -83,12 +83,13 @@ module.exports = class extends think.Logic {
   updateAction() {
     this.allowMethods = 'post';
     this.rules = {
-      userId: {int: true, required: true, trim: true},
       city: {string: true, trim: true},
       province: {string: true, trim: true},
       phone: {mobile: 'zh-CN', trim: true},
       code: {string: true, trim: true},
       address: {string: true, trim: true},
+      latitude: {string: true, trim: true},
+      longitude: {string: true, trim: true},
       description: {string: true, trim: true},
       contacts: {string: true, trim: true},
       status: {int: true, trim: true},
@@ -100,14 +101,6 @@ module.exports = class extends think.Logic {
     this.allowMethods = 'post';
     this.rules = {
       avatar: {method: 'file', required: true}
-    };
-  }
-
-  changPasswordAction() {
-    this.allowMethods = 'post';
-    this.rules = {
-      userId: { required: true, int: true, trim: true },
-      password: {string: true, required: true, trim: true, length: {min: 1, max: 20}}
     };
   }
 

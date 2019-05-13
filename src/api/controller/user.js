@@ -398,10 +398,12 @@ module.exports = class extends Base {
     user.focusNo = focus || 0;
     delete user.password;
     delete user.phone;
+    delete user.latitude;
+    delete user.longitude;
     this.json(user);
   }
   async updateAction() {
-    const userId = this.post('userId');
+    const userId = this.getLoginUserId();
     const user = {
       city: this.post('city'),
       province: this.post('province'),
@@ -411,6 +413,8 @@ module.exports = class extends Base {
       description: this.post('description'),
       contacts: this.post('contacts'),
       status: this.post('status'),
+      latitude: this.post('latitude'),
+      longitude: this.post('longitude'),
       point: this.post('point') || 0
     };
     await this.model('user').where({id: userId}).update(user);
@@ -441,12 +445,6 @@ module.exports = class extends Base {
     fs.renameSync(avatar.path, tempPath);
     await this.cache('getAvatarAction' + id, null);
     images(tempPath + '').resize(150).save(this.config('image.user') + '/' + name);
-  }
-
-  async changPasswordAction() {
-    await this.model('user').where({ id: this.post('userId') }).update({
-      password: md5(this.post('password'))
-    });
   }
 
   async getByTypeAction() {

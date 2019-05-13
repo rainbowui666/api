@@ -276,6 +276,7 @@ module.exports = class extends Base {
     }
     if (!think.isEmpty(checkedAddress)) {
       checkedAddress.province_name = await this.model('region').where({id: checkedAddress.province_id}).getField('name', true);
+      checkedAddress.freight = await this.model('region').where({id: checkedAddress.province_id}).getField('freight', true);
       checkedAddress.city_name = await this.model('region').where({id: checkedAddress.city_id}).getField('name', true);
       checkedAddress.district_name = await this.model('region').where({id: checkedAddress.district_id}).getField('name', true);
       checkedAddress.full_region = checkedAddress.province_name + checkedAddress.city_name + checkedAddress.district_name;
@@ -292,7 +293,7 @@ module.exports = class extends Base {
 
     // 获取可用的优惠券信息，功能还示实现
     let couponPrice = 0.00; // 使用优惠券减免的金额
-    const goodsTotalPrice = cartData.cartTotal.checkedGoodsAmount; // 商品总价
+    let goodsTotalPrice = cartData.cartTotal.checkedGoodsAmount; // 商品总价
     // const couponListALL = await this.model('user_coupon').where({used: 0, user_id: this.getLoginUserId(), used_time: ['>', new Date().getTime() / 1000]}).select() || [];
 
     const model = this.model('user_coupon').alias('u');
@@ -320,17 +321,37 @@ module.exports = class extends Base {
       }
     }
     // 根据收货地址计算运费
-    let freightPrice = 8.00;
+    let freightPrice = checkedAddress.freight;
     const freightCfg = Number(this.config('goods.freight'));
     if (goodsTotalPrice >= freightCfg) {
       freightPrice = 0.00;
     }
 
     // 计算订单的费用
-    const orderTotalPrice = cartData.cartTotal.checkedGoodsAmount + freightPrice - couponPrice; // 订单的总价
+    let orderTotalPrice = cartData.cartTotal.checkedGoodsAmount + freightPrice - couponPrice; // 订单的总价
 
-    const actualPrice = orderTotalPrice <= 0 ? 0.01 : orderTotalPrice;
+    let actualPrice = orderTotalPrice <= 0 ? 0.01 : orderTotalPrice;
 
+    let account = await this.model('user_account').where({'user_id': this.getLoginUserId()}).sum('account') || 0;
+
+    let discount = 0.00;
+
+    if (actualPrice >= account) {
+      actualPrice = actualPrice - account;
+      discount = account;
+      account = 0.00;
+    } else {
+      account = account - actualPrice;
+      discount = actualPrice;
+      actualPrice = 0.01;
+    }
+
+    const orderService = this.service('mall_order', 'mall');
+    account = orderService.toFixed(account, 2);
+    discount = orderService.toFixed(discount, 2);
+    actualPrice = orderService.toFixed(actualPrice, 2);
+    orderTotalPrice = orderService.toFixed(orderTotalPrice, 2);
+    goodsTotalPrice = orderService.toFixed(goodsTotalPrice, 2);
     return this.success({
       checkedAddress: checkedAddress,
       freightPrice: freightPrice,
@@ -340,7 +361,9 @@ module.exports = class extends Base {
       checkedGoodsList: checkedGoodsList,
       goodsTotalPrice: goodsTotalPrice,
       orderTotalPrice: orderTotalPrice,
-      actualPrice: actualPrice
+      actualPrice: actualPrice,
+      account: account,
+      discount: discount
     });
   }
 };

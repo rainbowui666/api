@@ -155,4 +155,15 @@ module.exports = class extends think.Service {
     const order = await this.model('mall_order').where({order_sn: orderSn}).find();
     return order;
   }
+  round(num, decimal) {
+    if (isNaN(num)) {
+      return 0;
+    }
+    const p1 = Math.pow(10, decimal + 1);
+    const p2 = Math.pow(10, decimal);
+    return Math.round(num * p1 / 10) / p2;
+  }
+  toFixed(num, decimal) {
+    return this.round(num, decimal).toFixed(decimal);
+  }
 };

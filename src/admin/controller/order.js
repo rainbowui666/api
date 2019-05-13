@@ -162,6 +162,22 @@ module.exports = class extends Base {
     }
     const orderModel = this.service('mall_order', 'mall');
     if (orderModel.updateOrderStatus(orderId, 101)) {
+      const userAccount = await this.model('user_account').where({order_id: orderId, code: 501}).find();
+      if (!think.isEmpty(userAccount)) {
+        const account = Math.abs(userAccount.account);
+        const returnObj = {
+          user_id: this.getLoginUserId(),
+          order_id: orderId,
+          code: 502,
+          account,
+          description: userAccount.description + '退款'
+        };
+        await this.model('user_account').add(returnObj);
+      }
+      // const userCoupon = await this.model('user_coupon').where({order_id: orderId}).find();
+      // if (!think.isEmpty(userCoupon)) {
+      //   await this.model('user_coupon').where({id: userCoupon.id}).update({useing: 0, used: 0, order_id: 0});
+      // }
       const wexinService = this.service('weixin', 'api');
       const token = await wexinService.getMiniToken(think.config('weixin.mini_appid'), think.config('weixin.mini_secret'));
       const goods = await this.model('mall_order_goods').where({order_id: orderId}).select();
@@ -199,13 +215,55 @@ module.exports = class extends Base {
         description: description
       };
       const orderModel = this.service('mall_order', 'mall');
-      if (await orderModel.updateOrderStatus(orderId, 102)) {
-        if (orderInfo.order_status === 201) {
-          returnObj.account = orderInfo.actual_price;
-        } else {
+      const userAccount = await this.model('user_account').where({order_id: orderId, code: 501}).find() || {account: 0};
+      let account = Math.abs(userAccount.account);
+      const express = await this.model('mall_order_express').where({order_id: orderId}).find() || {};
+      if (express.logistic_code) {
+        if (orderInfo.actual_price > orderInfo.freight_price) {
           returnObj.account = orderInfo.actual_price - orderInfo.freight_price;
+        } else if (account > orderInfo.freight_price) {
+          returnObj.account = orderInfo.actual_price;
+          account = account - orderInfo.freight_price;
+        } else {
+          returnObj.account = orderInfo.actual_price;
         }
+      } else {
+        returnObj.account = orderInfo.actual_price;
+      }
+      if (await orderModel.updateOrderStatus(orderId, 102)) {
         await this.model('user_account').add(returnObj);
+        if (!think.isEmpty(userAccount)) {
+          const returnObj = {
+            user_id: this.getLoginUserId(),
+            order_id: orderId,
+            code: 502,
+            account,
+            description: userAccount.description + '退款'
+          };
+          await this.model('user_account').add(returnObj);
+        }
+        // const userCoupon = await this.model('user_coupon').where({order_id: orderId}).find();
+        // if (!think.isEmpty(userCoupon)) {
+        //   await this.model('user_coupon').where({id: userCoupon.id}).update({useing: 0, used: 0, order_id: 0});
+        // }
+        const wexinService = this.service('weixin', 'api');
+        const token = await wexinService.getMiniToken(think.config('weixin.mini_appid'), think.config('weixin.mini_secret'));
+        const goods = await this.model('mall_order_goods').where({order_id: orderId}).select();
+        const names = goods.map((good) => {
+          return good.goods_name;
+        });
+        const user = await this.model('user').where({id: userId}).find();
+        const message = {
+          order_id: orderInfo.id,
+          order_sn: orderInfo.order_sn,
+          goods_name: names.join(' '),
+          address: orderInfo.address,
+          account: returnObj.account,
+          phone: '13918961783',
+          prepay_id: orderInfo.prepay_id,
+          openid: user.openid
+        };
+        wexinService.sendReturnMessage(_.values(token)[0], message);
         return this.success('操作成功');
       }
     }

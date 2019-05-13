@@ -1176,6 +1176,7 @@ alter table mall_search_history add column is_hot int;
 alter table mall_goods_issue modify column answer varchar(255);
 alter table mall_cart add column immediately_buy int;
 alter table mall_order add column prepay_id varchar(200);
+alter table region add column freight int;
 
 --
 -- Dumping events for database 'mall'

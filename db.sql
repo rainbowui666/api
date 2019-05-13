@@ -34,6 +34,8 @@ alter table user add column tag varchar(20);
 alter table user add column discount double(3,2);
 alter table user add column recommend int;
 alter table user add column public_openid varchar(100);
+alter table user add column latitude varchar(100);
+alter table user add column longitude varchar(100);
 
  
 

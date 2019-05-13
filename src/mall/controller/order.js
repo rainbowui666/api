@@ -10,7 +10,11 @@ module.exports = class extends Base {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const status = this.post('status') || 0;
-    const orderList = await this.model('mall_order').where({ order_status: status, user_id: this.getLoginUserId() }).order('id desc').page(page, size).countSelect();
+    const where = { user_id: this.getLoginUserId() };
+    if (status !== 'all') {
+      where.order_status = status;
+    }
+    const orderList = await this.model('mall_order').where(where).order('id desc').page(page, size).countSelect();
     const newOrderList = [];
     for (const item of orderList.data) {
       // 订单的商品
@@ -123,14 +127,15 @@ module.exports = class extends Base {
       }
     }
     // 根据收货地址计算运费
-    let freightPrice = 8.00;
+    let freightPrice = await this.model('region').where({id: checkedAddress.province_id}).getField('freight', true);
+
     const freightCfg = Number(this.config('goods.freight'));
     if (goodsTotalPrice >= freightCfg) {
       freightPrice = 0.00;
     }
-    const accountPrice = this.post('accountPrice') || 0.00;
+    const orderTotalPrice = this.post('accountPrice') || 0.01;
     // 订单价格计算
-    const orderTotalPrice = goodsTotalPrice + freightPrice - couponPrice - accountPrice; // 订单的总价
+    // const orderTotalPrice = goodsTotalPrice + freightPrice - couponPrice - accountPrice; // 订单的总价
     const actualPrice = orderTotalPrice <= 0 ? 0.01 : orderTotalPrice;
     const currentTime = parseInt(this.getTime() / 1000);
     const orderInfo = {
@@ -179,15 +184,17 @@ module.exports = class extends Base {
     await this.model('mall_order_goods').addMany(orderGoodsData);
     await this.model('mall_cart').where(where).delete();
     if (couponPrice > 0) {
-      await this.model('user_coupon').where({id: couponId}).update({useing: 0, used: 1});
+      await this.model('user_coupon').where({id: couponId}).update({useing: 0, used: 1, order_id: orderId});
     }
-    if (accountPrice > 0) {
+    const discount = this.post('discount') || 0.00;
+
+    if (discount > 0) {
       const returnObj = {
         user_id: this.getLoginUserId(),
         order_id: orderId,
         code: 501,
-        account: -accountPrice,
-        description: '订单编号:' + orderInfo.order_sn
+        account: -discount,
+        description: '购买商品使用'
       };
       await this.model('user_account').add(returnObj);
     }
@@ -247,7 +254,10 @@ module.exports = class extends Base {
         };
         await this.model('user_account').add(returnObj);
       }
-
+      // const userCoupon = await this.model('user_coupon').where({order_id: orderId}).find();
+      // if (!think.isEmpty(userCoupon)) {
+      //   await this.model('user_coupon').where({id: userCoupon.id}).update({useing: 0, used: 0, order_id: 0});
+      // }
       return this.success('操作成功');
     }
   }
@@ -310,15 +320,27 @@ module.exports = class extends Base {
         code: 102,
         description: description
       };
+
       const orderModel = this.service('mall_order', 'mall');
-      if (await orderModel.updateOrderStatus(orderId, 102)) {
-        if (orderInfo.order_status === 201) {
-          returnObj.account = orderInfo.actual_price;
-        } else {
+      const userAccount = await this.model('user_account').where({order_id: orderId, code: 501}).find() || {account: 0};
+      let account = Math.abs(userAccount.account);
+      const express = await this.model('mall_order_express').where({order_id: orderId}).find() || {};
+      if (express.logistic_code) {
+        if (orderInfo.actual_price > orderInfo.freight_price) {
           returnObj.account = orderInfo.actual_price - orderInfo.freight_price;
+        } else if (account > orderInfo.freight_price) {
+          returnObj.account = orderInfo.actual_price;
+          account = account - orderInfo.freight_price;
+        } else {
+          returnObj.account = orderInfo.actual_price;
         }
+      } else {
+        returnObj.account = orderInfo.actual_price;
+      }
+
+      if (await orderModel.updateOrderStatus(orderId, 102)) {
         await this.model('user_account').add(returnObj);
-        const userAccount = await this.model('user_account').where({order_id: orderId, code: 501}).find();
+
         if (!think.isEmpty(userAccount)) {
           const account = Math.abs(userAccount.account);
           const returnObj = {
@@ -330,6 +352,11 @@ module.exports = class extends Base {
           };
           await this.model('user_account').add(returnObj);
         }
+        // const userCoupon = await this.model('user_coupon').where({order_id: orderId}).find();
+        // if (!think.isEmpty(userCoupon)) {
+        //   await this.model('user_coupon').where({id: userCoupon.id}).update({useing: 0, used: 0, order_id: 0});
+        // }
+
         const wexinService = this.service('weixin', 'api');
         const token = await wexinService.getMiniToken(think.config('weixin.mini_appid'), think.config('weixin.mini_secret'));
         const goods = await this.model('mall_order_goods').where({order_id: orderId}).select();

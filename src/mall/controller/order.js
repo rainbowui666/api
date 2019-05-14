@@ -325,7 +325,9 @@ module.exports = class extends Base {
       const userAccount = await this.model('user_account').where({order_id: orderId, code: 501}).find() || {account: 0};
       let account = Math.abs(userAccount.account);
       const express = await this.model('mall_order_express').where({order_id: orderId}).find() || {};
+      let orderStatus = 102;
       if (express.logistic_code) {
+        orderStatus = 103;
         if (orderInfo.actual_price > orderInfo.freight_price) {
           returnObj.account = orderInfo.actual_price - orderInfo.freight_price;
         } else if (account > orderInfo.freight_price) {
@@ -338,7 +340,7 @@ module.exports = class extends Base {
         returnObj.account = orderInfo.actual_price;
       }
 
-      if (await orderModel.updateOrderStatus(orderId, 102)) {
+      if (await orderModel.updateOrderStatus(orderId, orderStatus)) {
         await this.model('user_account').add(returnObj);
 
         if (!think.isEmpty(userAccount)) {

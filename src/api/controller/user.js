@@ -259,14 +259,14 @@ module.exports = class extends Base {
       await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
 
       if (recommend) {
-        const count = await this.model('user').where({recommend}).count('id');
-        if (count === 3) {
+        const counts = await this.model('user').where({recommend}).select() || [];
+        if (counts.length === 3) {
           await this.controller('cart', 'mall').addAction(1181039, 492, 1, recommend, 'gift');
         }
-        if (count === 6) {
+        if (counts.length === 6) {
           await this.controller('cart', 'mall').addAction(1181029, 397, 1, recommend, 'gift');
         }
-        if (count === 9) {
+        if (counts.length === 9) {
           await this.controller('cart', 'mall').addAction(1181023, 356, 1, recommend, 'gift');
         }
         var t = new Date();

@@ -198,12 +198,6 @@ module.exports = class extends Base {
       };
       await this.model('user_account').add(returnObj);
     }
-    await this.model('user_point').add({
-      user_id: this.getLoginUserId(),
-      point: 200,
-      type: 'mall',
-      description: '购物积分奖励'
-    });
     return this.success({ orderInfo: orderInfo });
   }
 

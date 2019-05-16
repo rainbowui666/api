@@ -306,6 +306,7 @@ module.exports = class extends Base {
     user.unionid = result.unionid;
     user.openid = result.openid;
     user.nickname = name;
+    user.name = name;
     user.phone = phone;
     const cityObj = await this.controller('tools').getCityByPhoneAction(phone);
     if (cityObj) {

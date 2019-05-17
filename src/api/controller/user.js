@@ -634,7 +634,7 @@ module.exports = class extends Base {
   async chnageCouponAction() {
     const point = this.post('point');
     const re = /^[0-9]*[0-9]$/i;
-    if (re.test(point) && point % 100 === 0) {
+    if (re.test(point) && point >= 1000 && point % 100 === 0) {
       const sum = await this.model('user_point').where({'user_id': this.getLoginUserId()}).sum('point');
       if (sum > point) {
         await this.model('user_point').add({
@@ -645,14 +645,19 @@ module.exports = class extends Base {
         });
         const end = new Date(new Date().getTime() + 31 * 24 * 3600 * 1000);
 
-        const coupon = {
-          coupon_id: 10,
-          user_id: this.getLoginUserId(),
-          coupon_number: '1',
-          used_time: end.getTime() / 1000,
-          order_id: 0
-        };
-        await this.model('user_coupon').add(coupon);
+        const page = point / 1000;
+
+        for (let i = 0; i < page; i++) {
+          const coupon = {
+            coupon_id: 10,
+            user_id: this.getLoginUserId(),
+            coupon_number: '1',
+            used_time: end.getTime() / 1000,
+            order_id: 0
+          };
+          await this.model('user_coupon').add(coupon);
+        }
+
         return this.success('兑换成功');
       } else {
         return this.fail('积分不足');

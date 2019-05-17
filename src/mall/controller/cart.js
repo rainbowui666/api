@@ -281,6 +281,8 @@ module.exports = class extends Base {
       checkedAddress.district_name = await this.model('region').where({id: checkedAddress.district_id}).getField('name', true);
       checkedAddress.full_region = checkedAddress.province_name + checkedAddress.city_name + checkedAddress.district_name;
     } else {
+      const province = await this.model('user').where({id: this.getLoginUserId()}).getField('province', true);
+      checkedAddress.freight = await this.model('region').where({code: province}).getField('freight', true);
       checkedAddress.id = -1;
     }
 

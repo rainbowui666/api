@@ -487,24 +487,19 @@ module.exports = class extends Base {
             'sum': Number(billDetail.price) * billDetailNum
           });
         }
-
-        const sumObj = await this.model('cart_detail').field(['sum(sum) sum', 'sum(freight) freight', 'sum(bill_detail_num) cartCount']).where({'cart_id': cart.id}).find();
-        if (!think.isEmpty(sumObj.cartCount)) {
-          await this.model('cart').where({'id': cart.id}).update({
-            sum: sumObj.sum,
-            freight: sumObj.freight
-          });
-        } else {
-          await this.model('cart').where({'id': cart.id}).update({
-            sum: 0,
-            freight: 0
-          });
-        }
-        // await this.model('cart').where({id: cartId}).update({
-        //   sum: this.post('sum'),
-        //   freight: this.post('freight')
-        // });
       }
+    }
+    const sumObj = await this.model('cart_detail').field(['sum(sum) sum', 'sum(freight) freight', 'sum(bill_detail_num) cartCount']).where({'cart_id': cart.id}).find();
+    if (!think.isEmpty(sumObj.cartCount)) {
+      await this.model('cart').where({'id': cart.id}).update({
+        sum: sumObj.sum,
+        freight: sumObj.freight
+      });
+    } else {
+      await this.model('cart').where({'id': cart.id}).update({
+        sum: 0,
+        freight: 0
+      });
     }
   }
   async addDetailAction() {

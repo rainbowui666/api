@@ -177,7 +177,31 @@ module.exports = class extends Base {
     const userId = this.getLoginUserId();
     const groupBillId = this.post('groupId');
     const cart = await this.model('cart').where({'group_bill_id': groupBillId, 'user_id': userId}).find();
-    this.json(cart);
+    if (think.isEmpty(cart)) {
+      const user = await this.model('user').where({id: userId}).find();
+      const cartId = await this.model('cart').add({
+        group_bill_id: groupBillId,
+        user_id: userId,
+        phone: user.phone,
+        status: 1
+      });
+      cart.id = cartId;
+    }
+    const sumObj = await this.model('cart_detail').field(['sum(sum) sum', 'sum(freight) freight', 'sum(bill_detail_num) cartCount']).where({'cart_id': cart.id}).find();
+    if (!think.isEmpty(sumObj.cartCount)) {
+      await this.model('cart').where({'id': cart.id}).update({
+        sum: sumObj.sum,
+        freight: sumObj.freight
+      });
+      cart.cartCount = sumObj.cartCount;
+      cart.sum = sumObj.sum;
+      cart.freight = sumObj.freight;
+    } else {
+      cart.cartCount = 0;
+      cart.sum = 0;
+      cart.freight = 0;
+    }
+    return this.json(cart);
   }
   async getByGroupIdAction() {
     const page = this.post('page') || 1;
@@ -290,7 +314,7 @@ module.exports = class extends Base {
       } else {
         group['is_group'] = true;
       }
-      group.headimgurl = 'https://api2.huanjiaohu.com/user/getAvatar?userId=' + group.group_user_id;
+      group.headimgurl = think.config('root_api') + '/user/getAvatar?userId=' + group.group_user_id;
       group.navigator_url = '/pages/group/buy?id=' + group.group_id;
       if (group.group_status === 0) {
         group.tag = ['已结束'];
@@ -367,7 +391,7 @@ module.exports = class extends Base {
         item['is_group'] = true;
       }
 
-      item.headimgurl = 'https://api2.huanjiaohu.com/user/getAvatar?userId=' + item.user_id;
+      item.headimgurl = think.config('root_api') + '/user/getAvatar?userId=' + item.user_id;
       if (item.is_pay === 0) {
         item.tag = ['未付款'];
       } else {
@@ -425,7 +449,9 @@ module.exports = class extends Base {
     const billDetailId = this.post('billDetailId');
     const billDetailNum = this.post('billDetailNum');
     const cart = await this.model('cart').where({id: this.post('cartId')}).find();
-    if (think.isEmpty(cart)) {
+    if (Number(billDetailNum) === 0) {
+      await this.model('cart_detail').where({bill_detail_id: billDetailId, cart_id: cartId}).delete();
+    } else if (think.isEmpty(cart)) {
       this.fail('请先创建购物车');
     } else {
       const group = await this.model('group_bill').where({id: cart.group_bill_id}).find();
@@ -450,18 +476,34 @@ module.exports = class extends Base {
             'cart_id': cartId,
             'bill_detail_id': billDetailId,
             'bill_detail_num': billDetailNum,
-            'freight': freight
+            'freight': freight,
+            'price': billDetail.price,
+            'sum': Number(billDetail.price) * billDetailNum
           });
         } else {
           await this.model('cart_detail').where({bill_detail_id: billDetailId, cart_id: cartId}).update({
             'freight': freight,
-            'bill_detail_num': billDetailNum
+            'bill_detail_num': billDetailNum,
+            'sum': Number(billDetail.price) * billDetailNum
           });
         }
-        await this.model('cart').where({id: cartId}).update({
-          sum: this.post('sum'),
-          freight: this.post('freight')
-        });
+
+        const sumObj = await this.model('cart_detail').field(['sum(sum) sum', 'sum(freight) freight', 'sum(bill_detail_num) cartCount']).where({'cart_id': cart.id}).find();
+        if (!think.isEmpty(sumObj.cartCount)) {
+          await this.model('cart').where({'id': cart.id}).update({
+            sum: sumObj.sum,
+            freight: sumObj.freight
+          });
+        } else {
+          await this.model('cart').where({'id': cart.id}).update({
+            sum: 0,
+            freight: 0
+          });
+        }
+        // await this.model('cart').where({id: cartId}).update({
+        //   sum: this.post('sum'),
+        //   freight: this.post('freight')
+        // });
       }
     }
   }
@@ -495,6 +537,12 @@ module.exports = class extends Base {
     const id = this.post('cartId');
     const cart = await this.model('cart').where({id: id}).find();
     return this.json(cart);
+  }
+  async getCartDetailAction() {
+    const cartId = this.post('cartId');
+    const billDetailId = this.post('billDetailId');
+    const cartDetail = await this.model('cart_detail').where({bill_detail_id: billDetailId, cart_id: cartId}).find();
+    return this.json(cartDetail);
   }
   async createOrderAction() {
     const user = this.getLoginUser();

@@ -323,7 +323,7 @@ module.exports = class extends Base {
       }
       const sumObj = await this.model('cart').field(['sum(sum) sum', 'sum(freight) freight', 'sum(lost_back) lost_back', 'sum(damage_back) damage_back']).where({'group_bill_id': item['id'], 'is_confirm': 1}).find();
       item['total'] = Number(sumObj['sum']) + Number(sumObj['freight']) - Number(sumObj['lost_back']) - Number(sumObj['damage_back']);
-      item.headimgurl = 'https://api2.huanjiaohu.com/user/getAvatar?userId=' + this.getLoginUserId();
+      item.headimgurl = think.config('root_api') + '/user/getAvatar?userId=' + this.getLoginUserId();
       if (item.status === 0) {
         item.tag = ['已结束'];
       } else {

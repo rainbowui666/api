@@ -643,7 +643,7 @@ module.exports = class extends Base {
           type: 'dhyhq',
           description: '兑换优惠券'
         });
-        const end = new Date(new Date().getTime() + 31 * 24 * 3600 * 1000);
+        const end = new Date(new Date().getTime() + 7 * 24 * 3600 * 1000);
 
         const page = point / 1000;
 
@@ -663,7 +663,7 @@ module.exports = class extends Base {
         return this.fail('积分不足');
       }
     } else {
-      return this.fail('积分不是1000的倍数');
+      return this.fail('需要1000的倍数');
     }
   }
 
@@ -689,5 +689,42 @@ module.exports = class extends Base {
     const id = this.getLoginUserId();
     const userList = await this.model('user').where({recommend: id}).select();
     return this.json(userList);
+  }
+  async publishCouponListAction() {
+    const couponObj = await this.model('coupon').where({isPublish: 1}).select();
+
+    const t = new Date();
+    const d = t.getDate();
+    const month = t.getMonth() + 1;
+    const effort = t.getFullYear() + '-' + (month > 9 ? month : '0' + month) + '-' + (d > 9 ? d + 7 : '0' + d + 7);
+    for (const c of couponObj) {
+      c['priceCondition'] = c['price_condition'];
+      c['effortDate'] = effort;
+      c['userCoupon'] = await this.model('user_coupon').where({coupon_id: c.id, user_id: this.getLoginUserId(), used_time: ['>', t.getTime() / 1000]}).find() || null;
+    }
+    this.json(couponObj);
+  }
+
+  async getACouponAction() {
+    const couponId = this.post('couponId');
+    const t = new Date();
+    const c = await this.model('user_coupon').where({coupon_id: couponId, user_id: this.getLoginUserId(), used_time: ['>', t.getTime() / 1000]}).find() || {};
+    if (think.isEmpty(c)) {
+      const iToDay = t.getDate();
+      const iToMon = t.getMonth();
+      const iToYear = t.getFullYear();
+      const newDay = new Date(iToYear, iToMon, (iToDay + 7));
+      const coupon = {
+        coupon_id: couponId,
+        user_id: this.getLoginUserId(),
+        coupon_number: '1',
+        used_time: newDay.getTime() / 1000,
+        order_id: 0
+      };
+      await this.model('user_coupon').add(coupon);
+      return this.json({msg: '领取成功'});
+    } else {
+      return this.json({msg: '已经领了'});
+    }
   }
 };

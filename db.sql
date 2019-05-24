@@ -93,11 +93,11 @@ create table bill(
     primary key(id)
 );
 alter table bill change `name` `name` varchar(100) character set utf8 not null ;
-alter table bill change `contacts` `contacts` varchar(20) character set utf8 not null ;
 alter table bill change `description` `description` varchar(4000) character set utf8 not null ;
-alter table bill add column effort_date TIMESTAMP;
 alter table bill add column supplier_id int not null;
 alter table bill add column is_one_step int  default 0;
+alter table bill modify effort_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+alter table bill modify contacts varchar(20) character set utf8mb4 not null ;
 
 
 
@@ -197,6 +197,8 @@ alter table cart_detail add column lost_num int default 0;
 alter table cart_detail add column damage_num int default 0;
 alter table cart_detail add column lost_back_freight int default 0;
 alter table cart_detail add column freight double(7,2) not null default 0.00;
+alter table cart_detail add column price double(7,2) not null default 0.00;
+alter table cart_detail add column sum double(7,2) not null default 0.00;
 
 create table citys(
  mark varchar(15) not null,
@@ -473,6 +475,8 @@ create table coupon(
     price_condition int,
     primary key(id)
 );
+alter table coupon add column type int ;
+alter table coupon add column isPublish varchar(10) ;
 
 create table user_account(
     id int not null auto_increment,

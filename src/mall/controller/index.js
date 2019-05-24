@@ -4,8 +4,15 @@ module.exports = class extends Base {
   async indexAction() {
     const banner = await this.model('mall_ad').where({ad_position_id: 1}).select();
     // const channel = await this.model('mall_channel').order({sort_order: 'asc'}).select();
-    const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1, is_on_sale: 1}).limit(4).order('sort_order desc').select();
-    const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where({is_hot: 1, is_on_sale: 1}).limit(3).order('sort_order desc').select();
+    const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1, is_on_sale: 1}).limit(4).order('id desc').select();
+    const where = {is_on_sale: 1};
+    const goods = await this.model('mall_order_goods').field(['goods_id']).limit(4).order('id desc').select();
+    const ids = [];
+    for (const good of goods) {
+      ids.push(good.goods_id);
+    }
+    where.id = ['IN', ids];
+    const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where(where).limit(4).select();
     const brandList = await this.model('mall_brand').where({is_new: 1}).order({new_sort_order: 'asc'}).limit(4).select();
     // const topicList = await this.model('mall_topic').limit(3).select();
 
@@ -25,7 +32,7 @@ module.exports = class extends Base {
       banner: banner,
       // channel: channel,
       newGoodsList: newGoods,
-      hotGoodsList: hotGoods,
+      hotGoodsList: hotGoods.reverse(),
       brandList: brandList,
       // topicList: topicList,
       categoryList: newCategoryList

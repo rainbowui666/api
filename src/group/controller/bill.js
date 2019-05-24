@@ -96,9 +96,9 @@ module.exports = class extends Base {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const billId = this.post('billId');
-    const key = 'getDetailByBillIdAndCategoryAction' + billId;
-    // const cacheList = await this.cache(key);
-    const cacheList = null;
+    const key = 'getDetailByBillIdAndCategoryAction' + billId + page + size;
+    const cacheList = await this.cache(key);
+    // const cacheList = null;
     if (cacheList) {
       this.json(cacheList);
     } else {

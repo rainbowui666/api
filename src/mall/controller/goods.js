@@ -9,12 +9,19 @@ module.exports = class extends Base {
   }
 
   async getHotGoodsAction() {
-    const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where({is_hot: 1, is_on_sale: 1}).order('sort_order desc').limit(4).select();
-    this.json(hotGoods);
+    const where = {is_on_sale: 1};
+    const goods = await this.model('mall_order_goods').field(['goods_id']).limit(4).order('id desc').select();
+    const ids = [];
+    for (const good of goods) {
+      ids.push(good.goods_id);
+    }
+    where.id = ['IN', ids];
+    const hotGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price', 'goods_brief']).where(where).limit(4).select();
+    this.json(hotGoods.reverse());
   }
 
   async getNewGoodsAction() {
-    const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1, is_on_sale: 1}).order('sort_order desc').limit(4).select();
+    const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1, is_on_sale: 1}).order('id desc').limit(4).select();
     this.json(newGoods);
   }
   /**

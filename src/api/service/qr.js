@@ -11,9 +11,9 @@ module.exports = class extends think.Service {
   buildGroupUrl(id, isPrivate) {
     let url = null;
     if (isPrivate) {
-      url = `https://group.huanjiaohu.com/#/groupShop/${id}`;
+      url = `https://group.huanjiaohu.com/group/buy?id=${id}`;
     } else {
-      url = `https://group.huanjiaohu.com/#/groupShop/${id}?private=${id}`;
+      url = `https://group.huanjiaohu.com/group/buy?id=${id}`;
     }
     return url;
   }

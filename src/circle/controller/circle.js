@@ -17,6 +17,26 @@ module.exports = class extends Base {
     this.json(c);
   }
 
+  async myCircleListAction() {
+    const model = this.model('circle').alias('c');
+    model.field(['distinct c.id']).join({
+      table: 'circle_img',
+      join: 'inner',
+      as: 'i',
+      on: ['i.circle_id', 'c.id']
+    });
+    const where = { 'c.type': 0, 'c.status': 0 };
+    const list = await model.where(where).order('c.id DESC').select();
+    const returnList = {data: []};
+    for (const c of list) {
+      const cModel = this.buildModel();
+      const circle = await cModel.where({ 'c.id': c.id }).order('c.insert_date DESC').find();
+      await this.handleCircle(circle);
+      returnList.data.push(circle);
+    }
+    return this.json(returnList);
+  }
+
   buildModel() {
     const model = this.model('circle').alias('c');
     model.field(['c.*', 'u.headimgurl', 'u.city_name', 'u.name', 'u.tag', 's.bowl_type bowlType', 's.bowl_filter bowlFilter', 's.bowl_system bowlSystem', 's.bowl_size bowlSize', 's.bowl_brand bowlBrand', 's.light_brand lightBrand', 's.protein_type proteinType', 's.stream_type streamType', 's.cover_url coverUrl']).join({

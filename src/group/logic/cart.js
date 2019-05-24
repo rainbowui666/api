@@ -55,8 +55,8 @@ module.exports = class extends think.Logic {
       cartId: {int: true, required: true, trim: true},
       billDetailId: {int: true, required: true, trim: true},
       billDetailNum: {int: true, required: true, trim: true},
-      sum: {float: true, required: true, trim: true},
-      freight: {float: true, required: true, trim: true}
+      sum: {float: true, trim: true},
+      freight: {float: true, trim: true}
     };
   }
   listAction() {

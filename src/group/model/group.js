@@ -14,7 +14,7 @@ module.exports = class extends think.Model {
     if (!think.isEmpty(userId)) {
       whereMap += ` and gb.user_id = '%${userId}%' `;
     }
-    const list = await model.field(['gb.*', '(select type from user where id=gb.user_id) user_type', 'date_format(gb.end_date, \'%m-%d %H:%i\') end_date_format', 'gb.bill_id billId', 'b.name bill_name', 'c.name city_name', 'p.name province_name', 'u.name supplier_name'])
+    const list = await model.field(['gb.*', 'b.is_one_step', '(select type from user where id=gb.user_id) user_type', 'date_format(gb.end_date, \'%m-%d %H:%i\') end_date_format', 'gb.bill_id billId', 'b.name bill_name', 'c.name city_name', 'p.name province_name', 'u.name supplier_name'])
       .join({
         table: 'citys',
         join: 'inner',
@@ -38,7 +38,7 @@ module.exports = class extends think.Model {
         join: 'inner',
         as: 'u',
         on: ['b.supplier_id', 'u.id']
-      }).where(whereMap).order(['gb.status DESC', 'gb.id DESC', 'gb.end_date DESC']).page(page, size).countSelect();
+      }).where(whereMap).order(['gb.status DESC', 'b.is_one_step', 'gb.id DESC', 'gb.end_date DESC']).page(page, size).countSelect();
     for (const item of list.data) {
       if (item['status'] !== 0) {
         if (moment(item['end_date']).isAfter(moment())) {
@@ -47,6 +47,14 @@ module.exports = class extends think.Model {
           item['status'] = 0;
           await this.model('group_bill').where({'id': item['id']}).update({'status': 0});
         }
+      }
+      if (item.status === 0) {
+        item.tag = ['已结束'];
+      } else {
+        item.tag = ['热团中'];
+      }
+      if (Number(item['is_one_step']) === 0) {
+        item.tag.unshift('礁岩海水自营');
       }
       const sumObj = await this.model('cart').field(['sum(sum) sum']).where({'group_bill_id': item['id'], 'is_confirm': 1}).find();
       item['sum'] = sumObj.sum || 0;

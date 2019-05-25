@@ -54,7 +54,8 @@ module.exports = class extends think.Model {
         item.tag = ['热团中'];
       }
       if (Number(item['is_one_step']) === 0) {
-        item.tag.unshift('礁岩海水自营');
+        item.tag.unshift('返券团');
+        item.tag.unshift('礁岩海水认证');
       }
       const sumObj = await this.model('cart').field(['sum(sum) sum']).where({'group_bill_id': item['id'], 'is_confirm': 1}).find();
       item['sum'] = sumObj.sum || 0;

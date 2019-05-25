@@ -96,10 +96,16 @@ module.exports = class extends Base {
     const page = this.post('page') || 1;
     const size = this.post('size') || 10;
     const billId = this.post('billId');
-    const key = 'getDetailByBillIdAndCategoryAction' + billId + page + size;
+    const cartId = this.post('cartId');
+    const category = this.post('category');
+    const key = 'getDetailByBillIdAndCategoryAction' + billId + page + size + category;
     const cacheList = await this.cache(key);
     // const cacheList = null;
-    if (cacheList) {
+    if (cacheList && cacheList.data) {
+      for (const item of cacheList.data) {
+        const sumObj = await this.model('cart_detail').field(['bill_detail_num']).where({'cart_id': cartId, 'bill_detail_id': item.id}).find() || {};
+        item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+      }
       this.json(cacheList);
     } else {
       const model = this.model('bill_detail').alias('d');
@@ -111,12 +117,12 @@ module.exports = class extends Base {
       });
       const whereMap = {};
       whereMap['d.bill_id'] = this.post('billId');
-      if (this.post('category') === 'other') {
+      if (category === 'other') {
         whereMap['d.material_id'] = 0;
       } else if (!think.isEmpty(this.post('name'))) {
         whereMap['d.name'] = ['like', `%${this.post('name')}%`];
       } else {
-        whereMap['m.category'] = this.post('category');
+        whereMap['m.category'] = category;
       }
       const order = this.post('priceOrder');
       let list = null;
@@ -128,6 +134,12 @@ module.exports = class extends Base {
       await this.cache(key, list, {
         timeout: 36 * 60 * 60 * 1000
       });
+      if (list.data) {
+        for (const item of list.data) {
+          const sumObj = await this.model('cart_detail').field(['bill_detail_num']).where({'cart_id': cartId, 'bill_detail_id': item.id}).find() || {};
+          item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+        }
+      }
       this.json(list);
     }
   }

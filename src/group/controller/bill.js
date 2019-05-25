@@ -102,10 +102,19 @@ module.exports = class extends Base {
     const cacheList = await this.cache(key);
     // const cacheList = null;
     if (cacheList && cacheList.data) {
+      const sumObjs = await this.model('cart_detail').field(['bill_detail_num', 'bill_detail_id']).where({'cart_id': cartId}).select() || [];
       for (const item of cacheList.data) {
-        const sumObj = await this.model('cart_detail').field(['bill_detail_num']).where({'cart_id': cartId, 'bill_detail_id': item.id}).find() || {};
-        item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+        item.number = 0;
+        for (const sumObj of sumObjs) {
+          if (item.id === sumObj.bill_detail_id) {
+            item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+          }
+        }
       }
+      // for (const item of cacheList.data) {
+      //   const sumObj = await this.model('cart_detail').field(['bill_detail_num']).where({'cart_id': cartId, 'bill_detail_id': item.id}).find() || {};
+      //   item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+      // }
       this.json(cacheList);
     } else {
       const model = this.model('bill_detail').alias('d');
@@ -135,9 +144,63 @@ module.exports = class extends Base {
         timeout: 36 * 60 * 60 * 1000
       });
       if (list.data) {
+        const sumObjs = await this.model('cart_detail').field(['bill_detail_num', 'bill_detail_id']).where({'cart_id': cartId}).select() || [];
         for (const item of list.data) {
-          const sumObj = await this.model('cart_detail').field(['bill_detail_num']).where({'cart_id': cartId, 'bill_detail_id': item.id}).find() || {};
-          item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+          for (const sumObj of sumObjs) {
+            item.number = 0;
+            if (item.id === sumObj.bill_detail_id) {
+              item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+            }
+          }
+        }
+        // for (const item of list.data) {
+        //   const sumObj = await this.model('cart_detail').field(['bill_detail_num']).where({'cart_id': cartId, 'bill_detail_id': item.id}).find() || {};
+        //   item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+        // }
+      }
+      this.json(list);
+    }
+  }
+  async getDetailsByBillIdAction() {
+    const billId = this.post('billId');
+    const cartId = this.post('cartId');
+    const key = 'getDetailsByBillIdAction' + billId;
+    const cacheList = await this.cache(key);
+    if (cacheList) {
+      const sumObjs = await this.model('cart_detail').field(['bill_detail_num', 'bill_detail_id']).where({'cart_id': cartId}).select() || [];
+      for (const item of cacheList) {
+        item.number = 0;
+        for (const sumObj of sumObjs) {
+          if (item.id === sumObj.bill_detail_id) {
+            item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+          }
+        }
+      }
+      this.json(cacheList);
+    } else {
+      const model = this.model('bill_detail').alias('d');
+      model.field(['d.*']).join({
+        table: 'material',
+        join: 'left',
+        as: 'm',
+        on: ['d.material_id', 'm.id']
+      });
+      const whereMap = {};
+      whereMap['d.bill_id'] = billId;
+      const list = await model.where(whereMap).order(['d.recommend desc']).select();
+
+      await this.cache(key, list, {
+        timeout: 36 * 60 * 60 * 1000
+      });
+      if (list.length > 0) {
+        const sumObjs = await this.model('cart_detail').field(['bill_detail_num', 'bill_detail_id']).where({'cart_id': cartId}).select() || [];
+        for (const item of list) {
+          item.number = 0;
+          for (const sumObj of sumObjs) {
+            if (item.id === sumObj.bill_detail_id) {
+              item.number = sumObj.bill_detail_num ? sumObj.bill_detail_num : 0;
+            }
+          }
         }
       }
       this.json(list);

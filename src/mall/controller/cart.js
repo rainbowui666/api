@@ -89,6 +89,7 @@ module.exports = class extends Base {
         productInfo.retail_price = 0;
       }
       const cartData = {
+        freight: productInfo.freight,
         goods_id: goodsId,
         product_id: productId,
         goods_sn: productInfo.goods_sn,
@@ -327,6 +328,16 @@ module.exports = class extends Base {
     const freightCfg = Number(this.config('goods.freight'));
     if (goodsTotalPrice >= freightCfg) {
       freightPrice = 0.00;
+    }
+
+    let spFreight = 0;
+    _.each(checkedGoodsList, (cart) => {
+      if (cart.freight) {
+        spFreight = spFreight + (cart.freight * cart.number);
+      }
+    });
+    if (spFreight > 0) {
+      freightPrice = spFreight;
     }
 
     // 计算订单的费用

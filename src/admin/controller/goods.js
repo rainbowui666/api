@@ -397,6 +397,7 @@ module.exports = class extends Base {
     const goodsSpecificationIds = this.post('goodsSpecificationIds');
     const goodsNumber = this.post('goodsNumber');
     const retailPrice = this.post('retailPrice');
+    const freight = this.post('freight');
     const arr = goodsSpecificationIds.split('_');
     let r = [];
     if (arr && arr.length > 0) {
@@ -408,6 +409,7 @@ module.exports = class extends Base {
       goods_id: goodsId,
       goods_specification_ids: r.join('_'),
       goods_number: goodsNumber,
+      freight: freight,
       retail_price: retailPrice
     };
     const id = await this.model('mall_product').add(obj);

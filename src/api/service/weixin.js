@@ -88,8 +88,7 @@ module.exports = class extends think.Service {
       },
       json: true
     };
-    const a = await rp(options);
-    console.log(a);
+    await rp(options);
   }
   async sendExpressMessage(token, message) {
     const options = {

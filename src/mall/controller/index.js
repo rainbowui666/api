@@ -6,7 +6,7 @@ module.exports = class extends Base {
     // const channel = await this.model('mall_channel').order({sort_order: 'asc'}).select();
     const newGoods = await this.model('mall_goods').field(['id', 'name', 'list_pic_url', 'retail_price']).where({is_new: 1, is_on_sale: 1}).limit(4).order('id desc').select();
     const where = {is_on_sale: 1};
-    const goods = await this.model('mall_order_goods').field(['goods_id']).limit(4).order('id desc').select();
+    const goods = await this.model('mall_order_goods').field(['goods_id']).order('id desc').select();
     const ids = [];
     for (const good of goods) {
       ids.push(good.goods_id);

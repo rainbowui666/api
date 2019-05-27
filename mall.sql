@@ -1178,6 +1178,7 @@ alter table mall_cart add column immediately_buy int;
 alter table mall_order add column prepay_id varchar(200);
 alter table region add column freight int;
 alter table region add code freight varchar(10);
+alter table mall_product add column freight double(7,2);
 
 --
 -- Dumping events for database 'mall'

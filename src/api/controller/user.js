@@ -692,15 +692,21 @@ module.exports = class extends Base {
   }
   async publishCouponListAction() {
     const couponObj = await this.model('coupon').where({isPublish: 1}).select();
-
-    const t = new Date();
-    const d = t.getDate();
-    const month = t.getMonth() + 1;
-    const effort = t.getFullYear() + '-' + (month > 9 ? month : '0' + month) + '-' + (d > 9 ? d + 7 : '0' + d + 7);
+    var today = new Date();
+    var nd = new Date();
+    nd = nd.valueOf();
+    nd = nd + 7 * 24 * 60 * 60 * 1000;
+    nd = new Date(nd);
+    var y = nd.getFullYear();
+    var m = nd.getMonth() + 1;
+    var d = nd.getDate();
+    if (m <= 9) m = '0' + m;
+    if (d <= 9) d = '0' + d;
+    var cdate = y + '-' + m + '-' + d;
     for (const c of couponObj) {
       c['priceCondition'] = c['price_condition'];
-      c['effortDate'] = effort;
-      c['userCoupon'] = await this.model('user_coupon').where({coupon_id: c.id, user_id: this.getLoginUserId(), used_time: ['>', t.getTime() / 1000]}).find() || null;
+      c['effortDate'] = cdate;
+      c['userCoupon'] = await this.model('user_coupon').where({coupon_id: c.id, user_id: this.getLoginUserId(), used_time: ['>', today.getTime() / 1000]}).find() || null;
     }
     this.json(couponObj);
   }

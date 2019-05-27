@@ -10,7 +10,7 @@ module.exports = class extends Base {
 
   async getHotGoodsAction() {
     const where = {is_on_sale: 1};
-    const goods = await this.model('mall_order_goods').field(['goods_id']).limit(4).order('id desc').select();
+    const goods = await this.model('mall_order_goods').field(['goods_id']).order('id desc').select();
     const ids = [];
     for (const good of goods) {
       ids.push(good.goods_id);

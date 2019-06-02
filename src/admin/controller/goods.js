@@ -164,6 +164,7 @@ module.exports = class extends Base {
     const promotionDesc = this.post('promotionDesc');
     const promotionTag = this.post('promotionTag');
     const isLimited = this.post('isLimited');
+    const isOnSale = this.post('is_on_sale');
 
     const goods = {
       category_id: categoryId,
@@ -182,7 +183,8 @@ module.exports = class extends Base {
       retail_price: retailPrice,
       promotion_desc: promotionDesc,
       promotion_tag: promotionTag,
-      is_limited: isLimited
+      is_limited: isLimited,
+      is_on_sale: isOnSale
     };
     await this.model('mall_goods').where({id}).update(goods);
     this.json(goods);
@@ -233,7 +235,7 @@ module.exports = class extends Base {
     const goodsQuery = this.model('mall_goods');
 
     // 查询条件的map
-    const whereMap = {is_delete: 0, is_on_sale: 1};
+    const whereMap = {is_delete: 0};
     if (!think.isEmpty(isNew)) {
       whereMap.is_new = isNew;
     }

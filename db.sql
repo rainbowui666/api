@@ -223,6 +223,7 @@ create table focus(
 
 alter table focus add column notice_id int;
 alter table focus add column circle_id int;
+alter table focus add column active_id varchar(100);
 
 create table black_list(
     id int not null auto_increment,

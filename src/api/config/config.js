@@ -39,6 +39,7 @@ module.exports = {
     'material/randomList',
     'material/randomImageList',
     'active/getActiveList',
+    'active/getLastActive',
     'location/getChina',
     'location/getProvinces',
     'information/getSubscriptionList',

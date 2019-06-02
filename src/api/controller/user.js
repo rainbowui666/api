@@ -233,6 +233,17 @@ module.exports = class extends Base {
     }
   }
 
+  // async testAction() {
+  //   const recommend = 31;
+  //   if (recommend) {
+  //     // if (counts.length === 3) {
+  //     //   await this.controller('cart', 'mall').addAction(1181039, 492, 1, recommend, 'gift');
+  //     // }
+  //     await this.controller('cart', 'mall').addAction(1181029, 682, 1, recommend, 'gift');
+  //     await this.controller('cart', 'mall').addAction(1181023, 356, 1, recommend, 'gift');
+  //   }
+  // }
+
   async loginByMiniProgramAction() {
     const avatarUrl = this.post('avatarUrl');
     const name = this.post('name');
@@ -264,7 +275,7 @@ module.exports = class extends Base {
           await this.controller('cart', 'mall').addAction(1181039, 492, 1, recommend, 'gift');
         }
         if (counts.length === 6) {
-          await this.controller('cart', 'mall').addAction(1181029, 397, 1, recommend, 'gift');
+          await this.controller('cart', 'mall').addAction(1181029, 682, 1, recommend, 'gift');
         }
         if (counts.length === 9) {
           await this.controller('cart', 'mall').addAction(1181023, 356, 1, recommend, 'gift');

@@ -5,8 +5,9 @@ module.exports = class extends Base {
    * 获取购物车中的数据
    * @returns {Promise.<{cartList: *, cartTotal: {goodsCount: number, goodsAmount: number, checkedGoodsCount: number, checkedGoodsAmount: number}}>}
    */
-  async getCart(immediatelyToBuy) {
-    const where = {user_id: this.getLoginUserId(), session_id: 1};
+  async getCart(immediatelyToBuy, _userId) {
+    const userId = _userId || this.getLoginUserId();
+    const where = {user_id: userId, session_id: 1};
     if (!immediatelyToBuy && typeof (immediatelyToBuy) !== 'undefined') {
       where.immediately_buy = immediatelyToBuy;
     }
@@ -51,12 +52,12 @@ module.exports = class extends Base {
    * 添加商品到购物车
    * @returns {Promise.<*>}
    */
-  async addAction(_goodsId, _productId, _number, userId, type) {
+  async addAction(_goodsId, _productId, _number, _userId, type) {
     const goodsId = this.post('goodsId') || _goodsId;
     const productId = this.post('productId') || _productId;
     const number = this.post('number') || _number;
     const immediatelyBuy = this.post('immediatelyBuy');
-
+    const userId = _userId || this.getLoginUserId();
     // 判断商品是否可以购买
     const goodsInfo = await this.model('mall_goods').where({id: goodsId}).find();
     if (think.isEmpty(goodsInfo) || goodsInfo.is_delete === 1) {
@@ -69,10 +70,9 @@ module.exports = class extends Base {
       return this.fail('库存不足');
     }
 
-    // 判断购物车中是否存在此规格商品
-    await this.model('mall_cart').where({immediately_buy: 1, user_id: this.getLoginUserId()}).delete();
+    await this.model('mall_cart').where({immediately_buy: 1, user_id: userId}).delete();
 
-    const cartInfo = await this.model('mall_cart').where({goods_id: goodsId, product_id: productId, user_id: this.getLoginUserId()}).find();
+    const cartInfo = await this.model('mall_cart').where({goods_id: goodsId, product_id: productId, user_id: userId}).find();
     if (think.isEmpty(cartInfo)) {
       // 添加操作
 
@@ -97,7 +97,7 @@ module.exports = class extends Base {
         list_pic_url: goodsInfo.list_pic_url,
         number: number,
         session_id: 1,
-        user_id: this.getLoginUserId() || userId,
+        user_id: userId,
         retail_price: productInfo.retail_price,
         market_price: productInfo.retail_price,
         goods_specifition_name_value: goodsSepcifitionValue.join(';'),
@@ -120,7 +120,7 @@ module.exports = class extends Base {
         id: cartInfo.id
       }).increment('number', number);
     }
-    return this.success(await this.getCart());
+    return this.success(await this.getCart(immediatelyBuy, userId));
   }
 
   // 更新指定的购物车信息

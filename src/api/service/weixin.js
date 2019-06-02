@@ -78,12 +78,37 @@ module.exports = class extends think.Service {
           'path': 'pages/center/orderDetail/main?returnSubmit=yes&id=' + message.order_id
         },
         data: {
-          'first': {'value': `${message.goods_name} 要退款了`, 'color': '#2d8cf0'},
+          'first': {'value': '有鱼友要退款了看看啥原因', 'color': '#2d8cf0'},
           'keyword1': {'value': message.order_sn, 'color': '#17233d'},
-          'keyword2': {'value': message.account, 'color': '#17233d'},
+          'keyword2': {'value': `${message.account}元`, 'color': '#17233d'},
           'keyword3': {'value': message.address, 'color': '#17233d'},
           'keyword4': {'value': message.description, 'color': '#17233d'},
-          'remark': {'value': message.description, 'color': '#ff9900'}
+          'remark': {'value': `鱼友买了 ${message.goods_name} 这些东西要退款了`, 'color': '#ff9900'}
+        }
+      },
+      json: true
+    };
+    await rp(options);
+  }
+  async sendAdminBuyMessage(token, message) {
+    const options = {
+      method: 'POST',
+      url: 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
+      body: {
+        touser: message.openid,
+        template_id: '2lSDwdfQA6ojjII3Z_m2_maXk3jvmqfDRvGZzChDMZc',
+        miniprogram: {
+          'appid': 'wx9f635f06da7360d7',
+          'path': 'pages/center/orderDetail/main?returnSubmit=yes&id=' + message.order_id
+        },
+        data: {
+          'first': {'value': '鱼友购买的商品已经支付成功，赶快发货吧', 'color': '#2d8cf0'},
+          'keyword1': {'value': message.order_sn, 'color': '#17233d'},
+          'keyword2': {'value': message.goods_name, 'color': '#17233d'},
+          'keyword3': {'value': `${message.account}元`, 'color': '#ff9900'},
+          'keyword4': {'value': '已支付', 'color': '#17233d'},
+          'keyword5': {'value': message.pay_time, 'color': '#17233d'},
+          'remark': {'value': `快递发往 ${message.address}, 如果有问题可以拨打鱼友电话${message.phone}`, 'color': '#ff9900'}
         }
       },
       json: true

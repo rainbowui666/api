@@ -200,6 +200,32 @@ module.exports = class extends Base {
     }
   }
 
+  async returnUpdateStatusAction() {
+    const orderId = this.post('orderId');
+    const status = this.post('status');
+    const orderModel = this.service('mall_order', 'mall');
+    await orderModel.updateOrderStatus(orderId, status);
+    return this.success('操作成功');
+  }
+
+  async modifyPriceAction() {
+    const orderId = this.post('orderId');
+    const orderInfo = await this.model('mall_order').where({ id: orderId }).find();
+    if (think.isEmpty(orderInfo)) {
+      return this.fail('订单不存在');
+    } else if (Number(orderInfo.order_status) !== 0) {
+      return this.fail('订单状态不正确');
+    } else {
+      const modifyPrice = this.post('modifyPrice');
+      if (Number(modifyPrice) > 0) {
+        await this.model('mall_order').where({ id: orderId }).update({actual_price: modifyPrice});
+        return this.success('操作成功');
+      } else {
+        return this.fail('修改价格不正确');
+      }
+    }
+  }
+
   async returnAction() {
     const orderId = this.post('orderId');
     const userId = this.post('userId');

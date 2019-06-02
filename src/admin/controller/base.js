@@ -25,7 +25,7 @@ module.exports = class extends think.Controller {
             }
           }
           if (this.ctx.controller === 'goods' || this.ctx.controller === 'order' || this.ctx.controller === 'brand') {
-            if (this.ctx.state.user.type.indexOf('tggly') < 0) {
+            if (this.ctx.state.user.type.indexOf('scgly') < 0) {
               return this.fail(401, '无权访问');
             }
           }

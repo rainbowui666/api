@@ -1,5 +1,6 @@
 /* eslint-disable no-multi-spaces */
 const Base = require('./base.js');
+const _ = require('lodash');
 
 module.exports = class extends Base {
   /**
@@ -34,10 +35,46 @@ module.exports = class extends Base {
         spbill_create_ip: ''
       });
       const perpayId = returnParams.package.split('=')[1];
-      await this.model('mall_order').where({ id: orderId }).update({'prepay_id': perpayId, order_sn: orderInfo.order_sn});
+      const currentTime = parseInt(this.getTime() / 1000);
+      this.sendMessageToMallMeanger(orderInfo, currentTime);
+      await this.model('mall_order').where({ id: orderId }).update({'pay_time': currentTime, 'prepay_id': perpayId, order_sn: orderInfo.order_sn});
       return this.success(returnParams);
     } catch (err) {
       return this.fail('微信支付失败');
+    }
+  }
+  async sendMessageToMallMeanger(order, payTime) {
+    const goods = await this.model('mall_order_goods').where({order_id: order.id}).select();
+    const names = goods.map((good) => {
+      return good.goods_name;
+    });
+    const wexinService = this.service('weixin', 'api');
+    const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
+    const model = this.model('user').alias('u');
+    const list = await model.field(['u.public_openid', 'u.phone'])
+      .join({
+        table: 'user_type_relation',
+        join: 'inner',
+        as: 'r',
+        on: ['r.user_id', 'u.id']
+      })
+      .where({'r.type_id': 11}).select();
+
+    for (const user of list) {
+      const message = {
+        order_id: order.id,
+        order_sn: order.order_sn,
+        goods_name: names.join(' '),
+        address: order.address,
+        account: order.actual_price,
+        phone: user.phone,
+        prepay_id: order.prepay_id,
+        pay_time: payTime,
+        openid: user.public_openid
+      };
+      if (user.public_openid) {
+        await wexinService.sendAdminBuyMessage(_.values(token)[0], message);
+      }
     }
   }
   async meinotifyAction() {

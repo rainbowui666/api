@@ -6,6 +6,7 @@ module.exports = {
 
   // 可以公开访问的Action
   publicAction: [
-    'circle/list'
+    'circle/list',
+    'circle/myCircleList'
   ]
 };

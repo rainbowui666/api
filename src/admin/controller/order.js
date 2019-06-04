@@ -29,6 +29,8 @@ module.exports = class extends Base {
     const where = {};
     if (!think.isEmpty(status)) {
       where.order_status = status;
+    } else {
+      where.order_status = ['in', ['201', '202', '203']];
     }
     const orderList = await this.model('mall_order').where(where).order('id desc').page(page, size).countSelect();
     const newOrderList = [];

@@ -36,13 +36,13 @@ module.exports = class extends Base {
       });
       const perpayId = returnParams.package.split('=')[1];
       const currentTime = parseInt(this.getTime() / 1000);
-      this.sendMessageToMallMeanger(orderInfo, currentTime);
       await this.model('mall_order').where({ id: orderId }).update({'pay_time': currentTime, 'prepay_id': perpayId, order_sn: orderInfo.order_sn});
       return this.success(returnParams);
     } catch (err) {
       return this.fail('微信支付失败');
     }
   }
+
   async sendMessageToMallMeanger(order, payTime) {
     const goods = await this.model('mall_order_goods').where({order_id: order.id}).select();
     const names = goods.map((good) => {
@@ -84,6 +84,8 @@ module.exports = class extends Base {
     if (appId && Number(appId) === 31291) {
       const orderModel = this.service('mall_order', 'mall');
       const orderInfo = await orderModel.getOrderByOrderSn(outTradeNo);
+      const currentTime = parseInt(this.getTime() / 1000);
+      this.sendMessageToMallMeanger(orderInfo, currentTime);
       if (think.isEmpty(orderInfo)) {
         return this.json({'status': 'false'});
       } else {

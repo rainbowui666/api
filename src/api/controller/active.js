@@ -35,7 +35,7 @@ module.exports = class extends Base {
     };
     const sessionData = await rp(options);
     const userId = this.getLoginUserId();
-    if (userId) {
+    if (userId && sessionData.item && sessionData.item.length > 0) {
       const activeId = sessionData.item[0].media_id;
       const focus = await this.model('focus').where({active_id: activeId, user_id: userId}).find();
       if (think.isEmpty(focus)) {
@@ -45,18 +45,16 @@ module.exports = class extends Base {
         });
         return this.json({
           show: true,
-          data: sessionData.item[0].content.news_item[0]
+          data: sessionData.item[0].content.news_item ? sessionData.item[0].content.news_item[0] : {}
         });
       } else {
         return this.json({
-          show: false,
-          data: sessionData.item[0].content.news_item[0]
+          show: false
         });
       }
     } else {
       return this.json({
-        show: false,
-        data: sessionData.item[0].content.news_item[0]
+        show: false
       });
     }
   }

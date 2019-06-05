@@ -263,7 +263,7 @@ module.exports = class extends Base {
       as: 'c',
       on: ['u.coupon_id', 'c.id']
     });
-    const list = await model.where({'u.user_id': userId}).select();
+    const list = await model.where({'u.user_id': userId, 'u.used_time': ['>', new Date().getTime() / 1000]}).select();
     for (const item of list) {
       item.used_time = think.datetime(new Date(item.used_time * 1000), 'YYYY-MM-DD');
     }

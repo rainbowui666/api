@@ -8,8 +8,10 @@ module.exports = class extends Base {
   async getCart(immediatelyToBuy, _userId) {
     const userId = _userId || this.getLoginUserId();
     const where = {user_id: userId, session_id: 1};
-    if (!immediatelyToBuy && typeof (immediatelyToBuy) !== 'undefined') {
-      where.immediately_buy = immediatelyToBuy;
+    if (typeof (immediatelyToBuy) !== 'undefined' && Number(immediatelyToBuy) === 1) {
+      where.immediately_buy = 1;
+    } else {
+      where.immediately_buy = ['=', null];
     }
     const cartList = await this.model('mall_cart').where(where).select();
     // 获取购物车统计信息
@@ -73,7 +75,7 @@ module.exports = class extends Base {
     await this.model('mall_cart').where({immediately_buy: 1, user_id: userId}).delete();
 
     const cartInfo = await this.model('mall_cart').where({goods_id: goodsId, product_id: productId, user_id: userId}).find();
-    if (think.isEmpty(cartInfo)) {
+    if (think.isEmpty(cartInfo) || Number(immediatelyBuy) === 1) {
       // 添加操作
 
       // 添加规格名和值
@@ -104,7 +106,7 @@ module.exports = class extends Base {
         goods_specifition_ids: productInfo.goods_specification_ids,
         checked: 1
       };
-      if (immediatelyBuy === 1) {
+      if (Number(immediatelyBuy) === 1) {
         cartData.immediately_buy = immediatelyBuy;
       }
       await this.model('mall_cart').add(cartData);

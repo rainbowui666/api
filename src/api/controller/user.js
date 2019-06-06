@@ -107,7 +107,9 @@ module.exports = class extends Base {
     // 根据unionid查找用户是否已经注册
     const user = sessionData.unionid ? await this.model('user').where({ unionid: sessionData.unionid }).find() : await this.model('user').where({ openid: sessionData.openid }).find();
     if (think.isEmpty(user)) {
-      return this.fail('登录失败');
+      return this.json({
+        type: 'yy'
+      });
       // const options = {
       //   method: 'GET',
       //   url: 'https://api.weixin.qq.com/sns/userinfo',

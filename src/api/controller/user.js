@@ -105,42 +105,43 @@ module.exports = class extends Base {
       return this.fail('登录失败');
     }
     // 根据unionid查找用户是否已经注册
-    let user = sessionData.unionid ? await this.model('user').where({ unionid: sessionData.unionid }).find() : null;
+    const user = sessionData.unionid ? await this.model('user').where({ unionid: sessionData.unionid }).find() : await this.model('user').where({ openid: sessionData.openid }).find();
     if (think.isEmpty(user)) {
-      const options = {
-        method: 'GET',
-        url: 'https://api.weixin.qq.com/sns/userinfo',
-        qs: {
-          access_token: sessionData.access_token,
-          openid: sessionData.openid
-        }
-      };
+      return this.fail('登录失败');
+      // const options = {
+      //   method: 'GET',
+      //   url: 'https://api.weixin.qq.com/sns/userinfo',
+      //   qs: {
+      //     access_token: sessionData.access_token,
+      //     openid: sessionData.openid
+      //   }
+      // };
 
-      const userInfoJson = await rp(options);
-      const userInfo = JSON.parse(userInfoJson);
+      // const userInfoJson = await rp(options);
+      // const userInfo = JSON.parse(userInfoJson);
 
-      const userInfoObj = await this.model('user').where({ name: userInfo.nickname }).find();
-      if (!think.isEmpty(userInfoObj)) {
-        user = userInfoObj;
-      } else {
-        user = {
-          name: userInfo.nickname,
-          nickname: userInfo.nickname,
-          password: '0ff8ecf84a686258caeb350dbc8040d6',
-          city: 'shc',
-          phone: '18888888888',
-          type: 'yy',
-          province: 'sh',
-          country: userInfo.country,
-          headimgurl: userInfo.headimgurl || '',
-          sex: userInfo.sex || 1, // 性别 0：未知、1：男、2：女
-          province_name: userInfo.province,
-          city_name: userInfo.city,
-          unionid: userInfo.unionid
-        };
-        user.id = await this.model('user').add(user);
-        await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
-      }
+      // const userInfoObj = await this.model('user').where({ name: userInfo.nickname }).find();
+      // if (!think.isEmpty(userInfoObj)) {
+      //   user = userInfoObj;
+      // } else {
+      //   user = {
+      //     name: userInfo.nickname,
+      //     nickname: userInfo.nickname,
+      //     password: '0ff8ecf84a686258caeb350dbc8040d6',
+      //     city: 'shc',
+      //     phone: '18888888888',
+      //     type: 'yy',
+      //     province: 'sh',
+      //     country: userInfo.country,
+      //     headimgurl: userInfo.headimgurl || '',
+      //     sex: userInfo.sex || 1, // 性别 0：未知、1：男、2：女
+      //     province_name: userInfo.province,
+      //     city_name: userInfo.city,
+      //     unionid: userInfo.unionid
+      //   };
+      //   user.id = await this.model('user').add(user);
+      //   await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
+      // }
     }
     // 更新登录信息
     await this.model('user').where({ id: user.id }).update({

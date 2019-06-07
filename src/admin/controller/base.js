@@ -3,6 +3,10 @@ module.exports = class extends think.Controller {
     // 根据token值获取用户id
     this.ctx.state.token = this.ctx.header['authorization'] || this.get('authorization') || '';
     const tokenSerivce = think.service('token', 'api');
+
+    if (this.ctx.request.url.split('authorization=').length === 2) {
+      this.ctx.state.token = this.ctx.request.url.split('authorization=')[1];
+    }
     this.ctx.state.user = await tokenSerivce.getUser(this.ctx.state.token);
     const publicController = this.config('publicController');
     const publicAction = this.config('publicAction');

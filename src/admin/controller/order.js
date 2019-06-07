@@ -1,26 +1,74 @@
 const Base = require('./base.js');
 const moment = require('moment');
 const _ = require('lodash');
+const xlsx = require('node-xlsx');
+
 module.exports = class extends Base {
-  /**
-   * 获取订单列表
-   * @return {Promise} []
-   */
   async deliveryAction() {
-    if (this.isCli) {
-      const orderList = await this.model('order').deliveryOrderList();
-      for (const order of orderList) {
-        const orderModel = this.service('mall_order', 'mall');
-        orderModel.updateOrderStatus(order.id, 203);
-        await this.model('user_point').add({
-          user_id: this.getLoginUserId(),
-          point: 200,
-          type: 'mall',
-          description: '商城购物奖励'
-        });
-        return this.success('操作成功');
-      }
+    const orderList = await this.model('order').deliveryOrderList();
+    for (const order of orderList) {
+      const orderModel = this.service('mall_order', 'mall');
+      orderModel.updateOrderStatus(order.id, 203);
+      await this.model('user_point').add({
+        user_id: this.getLoginUserId(),
+        point: 200,
+        type: 'mall',
+        description: '商城购物奖励'
+      });
+      return this.success('操作成功');
     }
+  }
+  async outputAction() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const outList = [];
+    for (let m = 1; m <= 12; m++) {
+      const month = m < 10 ? '0' + m : m;
+      const orderList = await this.model('order').outputList(year, month);
+      const header = [['订单号', '姓名', '下单时间', '省市', '运费', '收到', '支出', '收益', '备注']];
+      let actualPriceSum = 0;
+      let outPriceSum = 0;
+      let incomeSum = 0;
+      for (const order of orderList) {
+        const _itemList = [];
+        _itemList.push(order.order_sn);
+        _itemList.push(order.consignee);
+        _itemList.push(order.add_time);
+        _itemList.push(order.province);
+        _itemList.push(order.freight_price);
+        _itemList.push(order.actual_price);
+        _itemList.push(order.out_price);
+        _itemList.push(order.income);
+        _itemList.push(order.note);
+        actualPriceSum += order.actual_price;
+        outPriceSum += order.out_price ? order.out_price : 0;
+        incomeSum += order.income ? order.income : 0;
+        header.push(_itemList);
+      }
+      const _itemList = [];
+      _itemList.push('');
+      _itemList.push('');
+      _itemList.push('');
+      _itemList.push('');
+      _itemList.push('共计');
+      _itemList.push(actualPriceSum);
+      _itemList.push(outPriceSum);
+      _itemList.push(incomeSum);
+      header.push(_itemList);
+      const sheet = {name: month + '月', data: header};
+      outList.push(sheet);
+    }
+    const buffer = xlsx.build(outList);
+    this.type = 'application/vnd.ms-excel';
+    this.ctx.attachment('mall.xlsx');
+    this.body = buffer;
+  }
+  async updateAction() {
+    const orderId = this.post('id');
+    const outPrice = this.post('out_price');
+    const note = this.post('note');
+    await this.model('mall_order').where({id: orderId}).limit(1).update({out_price: outPrice, note});
+    return this.success('操作成功');
   }
   async listAction() {
     const page = this.post('page') || 1;

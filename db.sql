@@ -499,3 +499,18 @@ create table user_point(
     description  varchar(500), 
     primary key(id)
 );
+
+create table mall_group(
+    id int not null auto_increment,
+    goods_id int not null,
+    group_number int not null,
+    end_time int not null,
+    type varchar(10),
+    title  varchar(500),
+    group_price double(8,2) not null,
+    market_price double(8,2) not null,
+    primary key(id)
+);
+alter table mall_group add column freight double(7,2);
+alter table mall_group add column note varchar(500);
+alter table mall_group add column cheat int default 0;

@@ -8,6 +8,28 @@ module.exports = class extends Base {
     return this.success(goodsList);
   }
 
+  async getOpenGroupAction() {
+    const date = new Date().getTime() / 1000;
+    const groups = await this.model('mall_group').alias('g').field(['g.*', 'm.list_pic_url']).where({'g.end_time': ['>=', date]}).join({
+      table: 'mall_goods',
+      join: 'inner',
+      as: 'm',
+      on: ['g.goods_id', 'm.id']
+    }).select();
+    return this.json(groups);
+  }
+
+  async getOpenGroupByIdAction() {
+    const id = this.post('groupId');
+    const groups = await this.model('mall_group').alias('g').field(['g.*', 'm.list_pic_url']).where({'g.id': id}).join({
+      table: 'mall_goods',
+      join: 'inner',
+      as: 'm',
+      on: ['g.goods_id', 'm.id']
+    }).find();
+    return this.json(groups);
+  }
+
   async getHotGoodsAction() {
     const where = {is_on_sale: 1};
     const goods = await this.model('mall_order_goods').field(['goods_id']).order('id desc').select();

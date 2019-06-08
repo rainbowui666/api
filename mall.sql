@@ -1183,6 +1183,9 @@ alter table region add column freight int;
 alter table region add code freight varchar(10);
 alter table mall_product add column freight double(7,2);
 alter table mall_cart add column freight double(7,2);
+alter table mall_cart add column is_group int;
+alter table mall_cart add column group_id int;
+alter table mall_order add column group_id int;
 
 --
 -- Dumping events for database 'mall'

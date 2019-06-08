@@ -125,6 +125,46 @@ module.exports = class extends Base {
     return this.success(await this.getCart(immediatelyBuy, userId));
   }
 
+  async addGroupAction() {
+    const goodsId = this.post('goodsId');
+    const number = this.post('number');
+    const groupId = this.post('groupId');
+    const immediatelyBuy = this.post('immediatelyBuy');
+    const userId = this.getLoginUserId();
+    // 判断商品是否可以购买
+    const goodsInfo = await this.model('mall_goods').where({id: goodsId}).find();
+    if (think.isEmpty(goodsInfo) || goodsInfo.is_delete === 1) {
+      return this.fail('商品已下架');
+    }
+
+    await this.model('mall_cart').where({immediately_buy: 1, user_id: userId}).delete();
+    const group = await this.model('mall_group').where({id: groupId}).find();
+    // 添加规格名和值
+
+    const cartData = {
+      freight: group.freight,
+      goods_id: goodsId,
+      product_id: 0,
+      goods_sn: goodsInfo.goods_sn,
+      goods_name: goodsInfo.name,
+      list_pic_url: goodsInfo.list_pic_url,
+      number: number,
+      session_id: 1,
+      user_id: userId,
+      retail_price: group.group_price,
+      market_price: group.market_price,
+      goods_specifition_name_value: group.title,
+      goods_specifition_ids: 0,
+      group_id: group.id,
+      checked: 1
+    };
+    if (Number(immediatelyBuy) === 1) {
+      cartData.immediately_buy = immediatelyBuy;
+    }
+    await this.model('mall_cart').add(cartData);
+    return this.success(await this.getCart(immediatelyBuy, userId));
+  }
+
   // 更新指定的购物车信息
   async updateAction() {
     const goodsId = this.post('goodsId');
@@ -332,18 +372,37 @@ module.exports = class extends Base {
       freightPrice = 0.00;
     }
 
-    let spFreight = 0;
-    _.each(checkedGoodsList, (cart) => {
-      if (cart.freight) {
-        spFreight = spFreight + (cart.freight * cart.number);
+    let spFreight = -1;
+    // _.each(checkedGoodsList, (cart) => {
+    //   if (cart.freight) {
+    //     spFreight = spFreight + (cart.freight * cart.number);
+    //   }
+    // });
+    let group = null;
+    if (checkedGoodsList && checkedGoodsList.length > 0) {
+      for (const cart of checkedGoodsList) {
+        if (cart.freight) {
+          spFreight = spFreight + (cart.freight * cart.number);
+        }
+        if (cart.group_id) {
+          group = await this.model('mall_group').where({id: cart.group_id}).find();
+          cart.group = group;
+          spFreight = group.freight;
+        }
       }
-    });
-    if (spFreight > 0) {
+    }
+
+    if (spFreight >= 0) {
       freightPrice = spFreight;
     }
 
     // 计算订单的费用
-    let orderTotalPrice = cartData.cartTotal.checkedGoodsAmount + freightPrice - couponPrice; // 订单的总价
+    let orderTotalPrice = 0;
+    if (group) {
+      orderTotalPrice = group.group_price + freightPrice;
+    } else {
+      orderTotalPrice = cartData.cartTotal.checkedGoodsAmount + freightPrice - couponPrice;
+    }
 
     let actualPrice = orderTotalPrice <= 0 ? 0.01 : orderTotalPrice;
 

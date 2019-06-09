@@ -37,6 +37,14 @@ module.exports = class extends Base {
     return this.success(orderList);
   }
 
+  async getGroupListAction() {
+    const groupId = this.post('groupId') || 0;
+    const where = {'group_id': groupId};
+    where.order_status = '201';
+    const orderList = await this.model('mall_order').where(where).order('id desc').select();
+    return this.json(orderList);
+  }
+
   /**
    * 获取订单详情
    * @return {Promise} []
@@ -138,6 +146,8 @@ module.exports = class extends Base {
     // const orderTotalPrice = goodsTotalPrice + freightPrice - couponPrice - accountPrice; // 订单的总价
     const actualPrice = orderTotalPrice <= 0 ? 0.01 : orderTotalPrice;
     const currentTime = parseInt(this.getTime() / 1000);
+
+    const groupId = this.post('groupId');
     const orderInfo = {
       order_sn: this.service('mall_order', 'mall').generateOrderNumber(),
       user_id: this.getLoginUserId(),
@@ -156,7 +166,8 @@ module.exports = class extends Base {
       add_time: currentTime,
       goods_price: goodsTotalPrice,
       order_price: orderTotalPrice,
-      actual_price: actualPrice
+      actual_price: actualPrice,
+      group_id: groupId
     };
     // 开启事务，插入订单信息和订单商品
     const orderId = await this.model('mall_order').add(orderInfo);

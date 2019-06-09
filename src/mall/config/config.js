@@ -14,6 +14,7 @@ module.exports = {
   // 可以公开访问的Action
   publicAction: [
     'pay/notify',
-    'pay/meinotify'
+    'pay/meinotify',
+    'goods/getOpenGroup'
   ]
 };

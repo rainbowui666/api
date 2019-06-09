@@ -3,6 +3,51 @@ const fs = require('fs');
 const { loadImage, createCanvas, Image } = require('canvas');
 const _ = require('lodash');
 module.exports = class extends Base {
+  async openGroupAction() {
+    const title = this.post('title');
+    const goodsId = this.post('goods_id');
+    const groupNumber = this.post('group_number');
+    const marketPrice = this.post('market_price');
+    const groupPrice = this.post('group_price');
+    const freight = this.post('freight');
+    const note = this.post('note');
+    const cheat = this.post('cheat');
+    const groupId = this.post('id');
+    const endTime = new Date(this.post('end_time')).getTime() / 1000;
+    const group = {
+      title,
+      goods_id: goodsId,
+      group_number: groupNumber,
+      market_price: marketPrice,
+      group_price: groupPrice,
+      freight,
+      note,
+      cheat,
+      end_time: endTime
+    };
+    if (groupId) {
+      await this.model('mall_group').where({id: groupId}).update(group);
+      group.id = groupId;
+    } else {
+      const id = await this.model('mall_group').add(group);
+      group.id = id;
+    }
+
+    return this.json(group);
+  }
+
+  async deleteOpenGroupAction() {
+    const id = this.post('id');
+    await this.model('mall_group').where({id}).delete();
+    return this.success('操作成功');
+  }
+
+  async getOpenGroupAction() {
+    const id = this.post('goods_id');
+    const date = new Date().getTime() / 1000;
+    const group = await this.model('mall_group').where({goods_id: id, end_time: ['>=', date]}).find();
+    return this.json(group);
+  }
   async buildGoodsDescription(goodsId, img) {
     const imgPath = this.config('image.goods') + '/desc/' + goodsId;
     if (fs.existsSync(imgPath)) {

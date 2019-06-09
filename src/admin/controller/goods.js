@@ -11,7 +11,6 @@ module.exports = class extends Base {
     const groupPrice = this.post('group_price');
     const freight = this.post('freight');
     const note = this.post('note');
-    const cheat = this.post('cheat');
     const groupId = this.post('id');
     const endTime = new Date(this.post('end_time')).getTime() / 1000;
     const group = {
@@ -22,7 +21,6 @@ module.exports = class extends Base {
       group_price: groupPrice,
       freight,
       note,
-      cheat,
       end_time: endTime
     };
     if (groupId) {
@@ -39,6 +37,24 @@ module.exports = class extends Base {
   async deleteOpenGroupAction() {
     const id = this.post('id');
     await this.model('mall_group').where({id}).delete();
+    return this.success('操作成功');
+  }
+  async cheatGroupAction() {
+    const id = this.post('id');
+    const cheat = this.post('cheat');
+    const group = await this.model('mall_group').where({id}).find();
+    let num = Math.floor(Math.random() * (1 - 100) + 100);
+    if (num < 10) {
+      num = '00' + num;
+    } else if (num < 100) {
+      num = '0' + num;
+    }
+    group.cheat = cheat;
+    if (!group.cheat_ids) {
+      group.cheat_ids = '';
+    }
+    group.cheat_ids += num + ',';
+    await this.model('mall_group').where({id}).update(group);
     return this.success('操作成功');
   }
 

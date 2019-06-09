@@ -514,3 +514,5 @@ create table mall_group(
 alter table mall_group add column freight double(7,2);
 alter table mall_group add column note varchar(500);
 alter table mall_group add column cheat int default 0;
+alter table mall_group add column cheat_ids varchar(500);
+

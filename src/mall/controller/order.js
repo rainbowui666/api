@@ -40,7 +40,7 @@ module.exports = class extends Base {
   async getGroupListAction() {
     const groupId = this.post('groupId') || 0;
     const where = {'group_id': groupId};
-    where.order_status = '201';
+    where.order_status = ['>=', 201];
     const orderList = await this.model('mall_order').where(where).order('id desc').select();
     return this.json(orderList);
   }

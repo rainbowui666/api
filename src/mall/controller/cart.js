@@ -61,7 +61,7 @@ module.exports = class extends Base {
     const immediatelyBuy = this.post('immediatelyBuy');
     const userId = _userId || this.getLoginUserId();
     // 判断商品是否可以购买
-    const goodsInfo = await this.model('mall_goods').where({id: goodsId}).find();
+    const goodsInfo = await this.model('mall_goods').where({id: goodsId, is_on_sale: 1}).find();
     if (think.isEmpty(goodsInfo) || goodsInfo.is_delete === 1) {
       return this.fail('商品已下架');
     }
@@ -132,37 +132,45 @@ module.exports = class extends Base {
     const immediatelyBuy = this.post('immediatelyBuy');
     const userId = this.getLoginUserId();
     // 判断商品是否可以购买
-    const goodsInfo = await this.model('mall_goods').where({id: goodsId}).find();
+    const goodsInfo = await this.model('mall_goods').where({id: goodsId, is_on_sale: 1}).find();
     if (think.isEmpty(goodsInfo) || goodsInfo.is_delete === 1) {
       return this.fail('商品已下架');
     }
 
-    await this.model('mall_cart').where({immediately_buy: 1, user_id: userId}).delete();
-    const group = await this.model('mall_group').where({id: groupId}).find();
-    // 添加规格名和值
-
-    const cartData = {
-      freight: group.freight,
-      goods_id: goodsId,
-      product_id: 0,
-      goods_sn: goodsInfo.goods_sn,
-      goods_name: goodsInfo.name,
-      list_pic_url: goodsInfo.list_pic_url,
-      number: number,
-      session_id: 1,
-      user_id: userId,
-      retail_price: group.group_price,
-      market_price: group.market_price,
-      goods_specifition_name_value: group.title,
-      goods_specifition_ids: 0,
-      group_id: group.id,
-      checked: 1
-    };
-    if (Number(immediatelyBuy) === 1) {
-      cartData.immediately_buy = immediatelyBuy;
+    const orderInfo = await this.model('mall_order').where({group_id: groupId, order_status: ['>=', 201]}).find();
+    if (!think.isEmpty(orderInfo)) {
+      return this.fail('您已参团');
     }
-    await this.model('mall_cart').add(cartData);
-    return this.success(await this.getCart(immediatelyBuy, userId));
+
+    await this.model('mall_cart').where({immediately_buy: 1, user_id: userId}).delete();
+    const date = new Date().getTime() / 1000;
+    const group = await this.model('mall_group').where({id: groupId, 'end_time': ['>', date]}).find();
+    if (!think.isEmpty(group)) {
+      const cartData = {
+        freight: group.freight,
+        goods_id: goodsId,
+        product_id: 0,
+        goods_sn: goodsInfo.goods_sn,
+        goods_name: goodsInfo.name,
+        list_pic_url: goodsInfo.list_pic_url,
+        number: number,
+        session_id: 1,
+        user_id: userId,
+        retail_price: group.group_price,
+        market_price: group.market_price,
+        goods_specifition_name_value: group.title,
+        goods_specifition_ids: 0,
+        group_id: group.id,
+        checked: 1
+      };
+      if (Number(immediatelyBuy) === 1) {
+        cartData.immediately_buy = immediatelyBuy;
+      }
+      await this.model('mall_cart').add(cartData);
+      return this.success(await this.getCart(immediatelyBuy, userId));
+    } else {
+      return this.fail('团购已经结束');
+    }
   }
 
   // 更新指定的购物车信息

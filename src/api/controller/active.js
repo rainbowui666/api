@@ -35,8 +35,10 @@ module.exports = class extends Base {
     };
     const sessionData = await rp(options);
     const userId = this.getLoginUserId();
-    if (userId && sessionData.item && sessionData.item.length > 0) {
-      const activeId = sessionData.item[0].media_id;
+    if (userId && sessionData.item && sessionData.item.length > 0 && sessionData.item[0].content.news_item && sessionData.item[0].content.news_item.length > 0) {
+      const news = sessionData.item[0].content.news_item[0];
+      const activeId = news.thumb_media_id;
+      delete news.content;
       const focus = await this.model('focus').where({active_id: activeId, user_id: userId}).find();
       if (think.isEmpty(focus)) {
         await this.model('focus').add({
@@ -45,7 +47,7 @@ module.exports = class extends Base {
         });
         return this.json({
           show: true,
-          data: sessionData.item[0].content.news_item ? sessionData.item[0].content.news_item[0] : {}
+          data: news
         });
       } else {
         return this.json({

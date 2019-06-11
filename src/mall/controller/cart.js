@@ -137,7 +137,7 @@ module.exports = class extends Base {
       return this.fail('商品已下架');
     }
 
-    const orderInfo = await this.model('mall_order').where({group_id: groupId, order_status: ['>=', 201]}).find();
+    const orderInfo = await this.model('mall_order').where({user_id: userId, group_id: groupId, order_status: ['>=', 201]}).find();
     if (!think.isEmpty(orderInfo)) {
       return this.fail('您已参团');
     }

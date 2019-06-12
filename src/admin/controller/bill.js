@@ -200,7 +200,7 @@ module.exports = class extends Base {
               const userList = await this.model('user').where({type: ['IN', ['cjyy', 'cjtz']]}).select();
               const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
               _.each(userList, (item) => {
-                if (!think.isEmpty(item['openid'])) {
+                if (!think.isEmpty(item['public_openid'])) {
                   wexinService.sendAddBillMessage(_.values(token)[0], item, bill);
                 }
               });

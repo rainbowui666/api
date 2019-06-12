@@ -132,7 +132,7 @@ module.exports = class extends Base {
       group['id'] = groupId;
       group['city_name'] = city.name;
       const wexinService = this.service('weixin', 'api');
-      const userList = await this.model('user').where({province: group.province, openid: ['!=', null]}).select();
+      const userList = await this.model('user').where({province: group.province, public_openid: ['!=', null]}).select();
       const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
       _.each(userList, (item) => {
         wexinService.sendOpenGroupMessage(_.values(token)[0], item, group);
@@ -319,7 +319,7 @@ module.exports = class extends Base {
       as: 'u',
       on: ['c.user_id', 'u.id']
     });
-    const userList = await model.where({'u.openid': ['!=', null], 'c.sum': ['!=', 0], 'c.group_bill_id': this.post('groupId')}).select();
+    const userList = await model.where({'u.public_openid': ['!=', null], 'c.sum': ['!=', 0], 'c.group_bill_id': this.post('groupId')}).select();
     const wexinService = this.service('weixin', 'api');
     const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
     _.each(userList, (item) => {

@@ -30,7 +30,7 @@ module.exports = class extends think.Service {
     }
   }
   async getToken(appid, secret) {
-    const token = await think.cache(appid);
+    const token = null;
     if (token) {
       return JSON.parse(token);
     } else {
@@ -46,7 +46,7 @@ module.exports = class extends think.Service {
 
       const sessionData = await rp(options);
       think.cache(appid, sessionData, {
-        timeout: 60 * 60 * 2 * 1000
+        timeout: 60 * 60 * 2
       });
       return JSON.parse(sessionData);
     }
@@ -61,6 +61,23 @@ module.exports = class extends think.Service {
         appid: think.config('weixin.mini_appid'),
         js_code: code
       }
+    };
+    const sessionData = await rp(options);
+    return JSON.parse(sessionData);
+  }
+  async getPublicUserListOpenid(token) {
+    const options = {
+      method: 'GET',
+      url: 'https://api.weixin.qq.com/cgi-bin/user/get?access_token=' + token
+    };
+    const sessionData = await rp(options);
+    return JSON.parse(sessionData);
+  }
+  async getUserInfoByPublicOpenid(token, openid) {
+    const url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' + token + '&openid=' + openid + '&lang=zh_CN';
+    const options = {
+      method: 'GET',
+      url: url
     };
     const sessionData = await rp(options);
     return JSON.parse(sessionData);
@@ -212,7 +229,7 @@ module.exports = class extends think.Service {
       method: 'POST',
       url: 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
       body: {
-        touser: user['openid'],
+        touser: user['public_openid'],
         template_id: 'KuLyRiWNY-DTCKWdUzXQkkG5LOxTP-rNQ3Xjle-xDgg',
         miniprogram: {
           'appid': 'wx9f635f06da7360d7',
@@ -238,7 +255,7 @@ module.exports = class extends think.Service {
       method: 'POST',
       url: 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
       body: {
-        touser: user['openid'],
+        touser: user['public_openid'],
         template_id: 'WD1NaoO9bncFhmVKDq49O_t6qc09mp-iEB1x_eS33aY',
         miniprogram: {
           'appid': 'wx9f635f06da7360d7',
@@ -264,7 +281,7 @@ module.exports = class extends think.Service {
       method: 'POST',
       url: 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
       body: {
-        touser: user['openid'],
+        touser: user['public_openid'],
         template_id: 'KLrD5MRG69-AUKWjf8_L8qo6cDTizo2-2o4j-DQ-QIU',
         miniprogram: {
           'appid': 'wx9f635f06da7360d7',

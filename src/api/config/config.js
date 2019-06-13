@@ -25,7 +25,6 @@ module.exports = {
     'user/getAvatar',
     'user/getLocationAvatar',
     'user/decryptUserInfoData',
-    'user/asyncPublicOpenid',
     'ad/getNumber',
     'notice/get',
     'notice/handleWxNotify',

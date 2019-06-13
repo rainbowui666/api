@@ -747,14 +747,4 @@ module.exports = class extends Base {
       return this.json({msg: '已经领了'});
     }
   }
-
-  async asyncPublicOpenidAction() {
-    const wexinService = this.service('weixin', 'api');
-    const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
-    const userList = await wexinService.getPublicUserListOpenid(_.values(token)[0]);
-    for (const id of userList.data.openid) {
-      const user = await wexinService.getUserInfoByPublicOpenid(_.values(token)[0], id);
-      await this.model('user').where({unionid: user.unionid}).update({'public_openid': user.openid});
-    }
-  }
 };

@@ -23,6 +23,7 @@ module.exports = {
     'user/forgetPassword',
     'user/register',
     'user/getAvatar',
+    'user/test',
     'user/getLocationAvatar',
     'user/decryptUserInfoData',
     'ad/getNumber',

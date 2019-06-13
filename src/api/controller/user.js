@@ -747,4 +747,8 @@ module.exports = class extends Base {
       return this.json({msg: '已经领了'});
     }
   }
+
+  async testAction() {
+
+  }
 };

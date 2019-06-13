@@ -83,6 +83,32 @@ module.exports = class extends think.Service {
     return JSON.parse(sessionData);
   }
 
+  async sendOpenMallGroupMessage(token, message) {
+    const options = {
+      method: 'POST',
+      url: 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
+      body: {
+        touser: message.openid,
+        template_id: '99XSqnQPeCFrmEetOMgMCFIHhKMXoPyCk4_oxNdX7yA',
+        miniprogram: {
+          'appid': 'wx9f635f06da7360d7',
+          'pagepath': 'pages/mall/group/main?id=' + message.goodsId + '&group_id=' + message.groupId
+        },
+        data: {
+          'first': {'value': '礁岩海水超性价比的拼团活动又又又开始了！', 'color': '#17233d'},
+          'keyword1': {'value': message.title, 'color': '#2d8cf0'},
+          'keyword2': {'value': `${message.price}元`, 'color': '#17233d'},
+          'keyword3': {'value': '礁岩海水', 'color': '#17233d'},
+          'keyword4': {'value': message.number, 'color': '#17233d'},
+          'keyword5': {'value': message.endTime, 'color': '#17233d'},
+          'remark': {'value': `${message.note}`, 'color': '#ff9900'}
+        }
+      },
+      json: true
+    };
+    await rp(options);
+  }
+
   async sendAdminReturnMessage(token, message) {
     const options = {
       method: 'POST',
@@ -92,7 +118,7 @@ module.exports = class extends think.Service {
         template_id: 'QIDPaomrFHFpx4gbyFsoaayYnp5Xy0FZhOGJl316kkY',
         miniprogram: {
           'appid': 'wx9f635f06da7360d7',
-          'path': 'pages/center/orderDetail/main?returnSubmit=yes&id=' + message.order_id
+          'pagepath': 'pages/center/orderDetail/main?returnSubmit=yes&id=' + message.order_id
         },
         data: {
           'first': {'value': '有鱼友要退款了看看啥原因', 'color': '#2d8cf0'},
@@ -116,7 +142,7 @@ module.exports = class extends think.Service {
         template_id: '2lSDwdfQA6ojjII3Z_m2_maXk3jvmqfDRvGZzChDMZc',
         miniprogram: {
           'appid': 'wx9f635f06da7360d7',
-          'path': 'pages/center/orderDetail/main?returnSubmit=yes&id=' + message.order_id
+          'pagepath': 'pages/center/orderDetail/main?returnSubmit=yes&id=' + message.order_id
         },
         data: {
           'first': {'value': '鱼友购买的商品已经支付成功，赶快发货吧', 'color': '#2d8cf0'},

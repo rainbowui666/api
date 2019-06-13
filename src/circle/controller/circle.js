@@ -1,7 +1,6 @@
 const Base = require('./base.js');
 const fs = require('fs');
 const images = require('images');
-const _ = require('lodash');
 
 module.exports = class extends Base {
   async getByUserIdAction() {

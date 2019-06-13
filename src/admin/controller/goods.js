@@ -29,6 +29,22 @@ module.exports = class extends Base {
     } else {
       const id = await this.model('mall_group').add(group);
       group.id = id;
+      const wexinService = this.service('weixin', 'api');
+      const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
+      const userList = await this.model('user').where({'public_openid': ['!=', null]}).select();
+      const message = {
+        goodsId,
+        groupId: id,
+        title,
+        price: groupPrice,
+        number: groupNumber,
+        endTime: think.datetime(new Date(this.post('end_time')), 'YYYY-MM-DD HH:mm:ss'),
+        note
+      };
+      for (const user of userList) {
+        message.openid = user.public_openid;
+        wexinService.sendOpenMallGroupMessage(_.values(token)[0], message);
+      }
     }
 
     return this.json(group);

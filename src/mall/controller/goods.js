@@ -18,7 +18,7 @@ module.exports = class extends Base {
     }).select();
     const grouplist = [];
     for (const group of groups) {
-      const count = await this.model('mall_order').field('count(1) count').where({group_id: group.id}).find();
+      const count = await this.model('mall_order').field('count(1) count').where({group_id: group.id, order_status: ['>=', 201]}).find();
       const number = group.group_number - (count.count + group.cheat);
       if (number > 0) {
         grouplist.push(group);
@@ -36,6 +36,23 @@ module.exports = class extends Base {
       as: 'm',
       on: ['g.goods_id', 'm.id']
     }).order('g.id desc').page(page, size).countSelect();
+
+    if (groups.data.length > 0) {
+      for (const group of groups.data) {
+        const count = await this.model('mall_order').field('count(1) count').where({group_id: group.id, order_status: ['>=', 201]}).find();
+        const number = group.group_number - (count.count + group.cheat);
+        if (number > 0) {
+          group.status = 1;
+        } else {
+          group.status = 0;
+        }
+      }
+    }
+
+    groups.data.sort((a, b) => {
+      return b.status - a.status;
+    });
+
     return this.json(groups);
   }
 

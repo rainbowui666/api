@@ -16,7 +16,15 @@ module.exports = class extends Base {
       as: 'm',
       on: ['g.goods_id', 'm.id']
     }).select();
-    return this.json(groups);
+    const grouplist = [];
+    for (const group of groups) {
+      const count = await this.model('mall_order').field('count(1) count').where({group_id: group.id}).find();
+      const number = group.group_number - (count.count + group.cheat);
+      if (number > 0) {
+        grouplist.push(group);
+      }
+    }
+    return this.json(grouplist);
   }
 
   async getOpenGroupListAction() {

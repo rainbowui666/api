@@ -469,7 +469,7 @@ module.exports = class extends Base {
         const billDetail = await this.model('bill_detail').where({id: billDetailId}).find();
         let freight = Number(billDetail.price) * billDetailNum * Number(group.freight);
         if (Number(group.top_freight) !== 0) {
-          freight = freight > group.top_freight ? group.top_freight : freight;
+          freight = freight >= group.top_freight * billDetailNum ? group.top_freight * billDetailNum : freight;
         }
         if (think.isEmpty(cartDetail)) {
           await this.model('cart_detail').where({bill_detail_id: billDetailId, cart_id: cartId}).add({

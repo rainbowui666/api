@@ -344,11 +344,41 @@ module.exports = class extends Base {
       return v.checked === 1;
     });
 
-    // 获取可用的优惠券信息，功能还示实现
-    let couponPrice = 0.00; // 使用优惠券减免的金额
-    let goodsTotalPrice = cartData.cartTotal.checkedGoodsAmount; // 商品总价
-    // const couponListALL = await this.model('user_coupon').where({used: 0, user_id: this.getLoginUserId(), used_time: ['>', new Date().getTime() / 1000]}).select() || [];
+    // 特殊逻辑
+    let spFreight = -1;
+    let group = null;
+    let spPrice = 0;
+    if (checkedGoodsList && checkedGoodsList.length > 0) {
+      let freight = 0;
+      for (const cart of checkedGoodsList) {
+        if (cart.freight) {
+          spPrice += cart.retail_price;
+          freight = freight + (cart.freight * cart.number);
+        }
+        if (cart.group_id) {
+          group = await this.model('mall_group').where({id: cart.group_id}).find();
+          cart.group = group;
+          freight = group.freight;
+        }
+      }
+      spFreight = freight;
+    }
 
+    // 商品总价
+    let goodsTotalPrice = cartData.cartTotal.checkedGoodsAmount;
+
+    // 根据收货地址计算运费
+    let freightPrice = checkedAddress.freight;
+    const freightCfg = Number(this.config('goods.freight'));
+    if (goodsTotalPrice >= freightCfg) {
+      freightPrice = 0.00;
+    }
+    if (spFreight >= 0) {
+      freightPrice = freightPrice + spFreight;
+    }
+
+    // 使用优惠券减免的金额
+    let couponPrice = 0.00;
     const model = this.model('user_coupon').alias('u');
     model.field(['u.*', 'c.name', 'c.tag', 'c.description', 'c.price', 'c.price_condition']).join({
       table: 'coupon',
@@ -361,7 +391,7 @@ module.exports = class extends Base {
       return c.useing === 1;
     });
     const couponListCondition = couponListALL.filter((c) => {
-      return c.price_condition && goodsTotalPrice >= c.price_condition;
+      return c.price_condition && goodsTotalPrice - spPrice >= c.price_condition;
     }) || [];
     const couponListNoCondition = couponListALL.filter((c) => {
       return !c.price_condition;
@@ -373,41 +403,11 @@ module.exports = class extends Base {
         couponPrice = coupon[0].price;
       }
     }
-    // 根据收货地址计算运费
-    let freightPrice = checkedAddress.freight;
-    const freightCfg = Number(this.config('goods.freight'));
-    if (goodsTotalPrice >= freightCfg) {
-      freightPrice = 0.00;
-    }
-
-    let spFreight = -1;
-    // _.each(checkedGoodsList, (cart) => {
-    //   if (cart.freight) {
-    //     spFreight = spFreight + (cart.freight * cart.number);
-    //   }
-    // });
-    let group = null;
-    if (checkedGoodsList && checkedGoodsList.length > 0) {
-      for (const cart of checkedGoodsList) {
-        if (cart.freight) {
-          spFreight = spFreight + (cart.freight * cart.number);
-        }
-        if (cart.group_id) {
-          group = await this.model('mall_group').where({id: cart.group_id}).find();
-          cart.group = group;
-          spFreight = group.freight;
-        }
-      }
-    }
-
-    if (spFreight >= 0) {
-      freightPrice = spFreight;
-    }
 
     // 计算订单的费用
     let orderTotalPrice = 0;
     if (group) {
-      orderTotalPrice = group.group_price + freightPrice;
+      orderTotalPrice = group.group_price + spFreight;
     } else {
       orderTotalPrice = cartData.cartTotal.checkedGoodsAmount + freightPrice - couponPrice;
     }

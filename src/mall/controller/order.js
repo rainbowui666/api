@@ -50,7 +50,7 @@ module.exports = class extends Base {
    * @return {Promise} []
    */
   async detailAction() {
-    const orderId = this.get('orderId');
+    const orderId = this.post('orderId');
     const orderInfo = await this.model('mall_order').where({ user_id: this.getLoginUserId(), id: orderId }).find();
 
     if (think.isEmpty(orderInfo)) {

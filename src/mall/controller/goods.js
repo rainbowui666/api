@@ -19,6 +19,18 @@ module.exports = class extends Base {
     return this.json(groups);
   }
 
+  async getOpenGroupListAction() {
+    const page = this.get('page') || 1;
+    const size = this.get('size') || 10;
+    const groups = await this.model('mall_group').alias('g').field(['g.*', 'm.list_pic_url']).join({
+      table: 'mall_goods',
+      join: 'inner',
+      as: 'm',
+      on: ['g.goods_id', 'm.id']
+    }).order('g.id desc').page(page, size).countSelect();
+    return this.json(groups);
+  }
+
   async getOpenGroupByIdAction() {
     const id = this.post('groupId');
     const groups = await this.model('mall_group').alias('g').field(['g.*', 'm.list_pic_url']).where({'g.id': id}).join({

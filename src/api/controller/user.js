@@ -105,61 +105,88 @@ module.exports = class extends Base {
       return this.fail('登录失败');
     }
     // 根据unionid查找用户是否已经注册
-    const user = sessionData.unionid ? await this.model('user').where({ unionid: sessionData.unionid }).find() : await this.model('user').where({ openid: sessionData.openid }).find();
+    let user = await this.model('user').where({ unionid: sessionData.unionid, type: ['!=', 'yy'] }).find();
     if (think.isEmpty(user)) {
-      return this.json({
-        type: 'yy'
+      const options = {
+        method: 'GET',
+        url: 'https://api.weixin.qq.com/sns/userinfo',
+        qs: {
+          access_token: sessionData.access_token,
+          openid: sessionData.openid
+        }
+      };
+
+      const userInfoJson = await rp(options);
+      const userInfo = JSON.parse(userInfoJson);
+
+      // const userInfoObj = await this.model('user').where({ name: userInfo.nickname, type: 'cjtz' }).find();
+      // eslint-disable-next-line no-dupe-keys
+      const userInfoObj = await this.model('user').where({name: userInfo.nickname, _complex: {type: 'cjy', type: 'cjtz', _logic: 'or'}}).find();
+      if (!think.isEmpty(userInfoObj)) {
+        user = userInfoObj;
+        // 更新登录信息
+        await this.model('user').where({ id: user.id }).update({
+          insert_date: moment().format('YYYYMMDD'),
+          headimgurl: sessionData.headimgurl,
+          unionid: sessionData.unionid
+        });
+        // 获得token
+        const TokenSerivce = this.service('token', 'api');
+        const sessionKey = await TokenSerivce.create(user);
+
+        if (think.isEmpty(sessionKey)) {
+          return this.fail('登录失败');
+        }
+        user.token = sessionKey;
+        delete user['password'];
+        return this.json(user);
+      } else {
+        return this.json({
+          type: 'yy'
+        });
+        // const userInfoObj = await this.model('user').where({ name: userInfo.nickname, type: 'cjy' }).find();
+        // if (!think.isEmpty(userInfoObj)) {
+        //   user = userInfoObj;
+        // } else {
+        //   return this.json({
+        //     type: 'yy'
+        //   });
+        // }
+
+        // user = {
+        //   name: userInfo.nickname,
+        //   nickname: userInfo.nickname,
+        //   password: '0ff8ecf84a686258caeb350dbc8040d6',
+        //   city: 'shc',
+        //   phone: '18888888888',
+        //   type: 'yy',
+        //   province: 'sh',
+        //   country: userInfo.country,
+        //   headimgurl: userInfo.headimgurl || '',
+        //   sex: userInfo.sex || 1, // 性别 0：未知、1：男、2：女
+        //   province_name: userInfo.province,
+        //   city_name: userInfo.city,
+        //   unionid: userInfo.unionid
+        // };
+        // user.id = await this.model('user').add(user);
+        // await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
+      }
+    } else {
+      await this.model('user').where({ id: user.id }).update({
+        insert_date: moment().format('YYYYMMDD'),
+        headimgurl: sessionData.headimgurl
       });
-      // const options = {
-      //   method: 'GET',
-      //   url: 'https://api.weixin.qq.com/sns/userinfo',
-      //   qs: {
-      //     access_token: sessionData.access_token,
-      //     openid: sessionData.openid
-      //   }
-      // };
+      // 获得token
+      const TokenSerivce = this.service('token', 'api');
+      const sessionKey = await TokenSerivce.create(user);
 
-      // const userInfoJson = await rp(options);
-      // const userInfo = JSON.parse(userInfoJson);
-
-      // const userInfoObj = await this.model('user').where({ name: userInfo.nickname }).find();
-      // if (!think.isEmpty(userInfoObj)) {
-      //   user = userInfoObj;
-      // } else {
-      //   user = {
-      //     name: userInfo.nickname,
-      //     nickname: userInfo.nickname,
-      //     password: '0ff8ecf84a686258caeb350dbc8040d6',
-      //     city: 'shc',
-      //     phone: '18888888888',
-      //     type: 'yy',
-      //     province: 'sh',
-      //     country: userInfo.country,
-      //     headimgurl: userInfo.headimgurl || '',
-      //     sex: userInfo.sex || 1, // 性别 0：未知、1：男、2：女
-      //     province_name: userInfo.province,
-      //     city_name: userInfo.city,
-      //     unionid: userInfo.unionid
-      //   };
-      //   user.id = await this.model('user').add(user);
-      //   await this.model('user_type_relation').add({'user_id': user.id, 'type_id': 1});
-      // }
+      if (think.isEmpty(sessionKey)) {
+        return this.fail('登录失败');
+      }
+      user.token = sessionKey;
+      delete user['password'];
+      return this.json(user);
     }
-    // 更新登录信息
-    await this.model('user').where({ id: user.id }).update({
-      insert_date: moment().format('YYYYMMDD'),
-      headimgurl: sessionData.headimgurl
-    });
-    // 获得token
-    const TokenSerivce = this.service('token', 'api');
-    const sessionKey = await TokenSerivce.create(user);
-
-    if (think.isEmpty(sessionKey)) {
-      return this.fail('登录失败');
-    }
-    user.token = sessionKey;
-    delete user['password'];
-    return this.json(user);
   }
 
   async checkNameAction() {
@@ -720,7 +747,7 @@ module.exports = class extends Base {
     for (const c of couponObj) {
       c['priceCondition'] = c['price_condition'];
       c['effortDate'] = cdate;
-      c['userCoupon'] = await this.model('user_coupon').where({coupon_id: c.id, user_id: this.getLoginUserId(), used_time: ['>', today.getTime() / 1000]}).find() || null;
+      c['userCoupon'] = await this.model('user_coupon').where({coupon_id: c.id, user_id: this.getLoginUserId(), used_time: ['>', today.getTime() / 1000], used: 0}).find() || null;
     }
     this.json(couponObj);
   }

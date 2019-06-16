@@ -31,7 +31,7 @@ module.exports = class extends Base {
       group.id = id;
       const wexinService = this.service('weixin', 'api');
       const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
-      const userList = await this.model('user').where({'public_openid': ['!=', null]}).select();
+      const userList = await wexinService.getPublicUserListOpenid(_.values(token)[0]);
       const message = {
         goodsId,
         groupId: id,
@@ -41,8 +41,8 @@ module.exports = class extends Base {
         endTime: think.datetime(new Date(this.post('end_time')), 'YYYY-MM-DD HH:mm:ss'),
         note
       };
-      for (const user of userList) {
-        message.openid = user.public_openid;
+      for (const id of userList.data.openid) {
+        message.openid = id;
         wexinService.sendOpenMallGroupMessage(_.values(token)[0], message);
       }
     }

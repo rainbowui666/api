@@ -17,19 +17,26 @@ module.exports = class extends Base {
       on: ['g.goods_id', 'm.id']
     }).select();
     const grouplist = [];
+    const secondlist = [];
+
     for (const group of groups) {
       const count = await this.model('mall_order').field('count(1) count').where({group_id: group.id, order_status: ['>=', 201]}).find();
       const number = group.group_number - (count.count + group.cheat);
-      if (number > 0) {
+      if (number > 0 && !group.type) {
         grouplist.push(group);
       }
+      if (number > 0 && Number(group.type) === 1) {
+        secondlist.push(group);
+      }
     }
-    return this.json(grouplist);
+    return this.json({grouplist, secondlist});
   }
 
   async getOpenGroupListAction() {
-    const page = this.get('page') || 1;
-    const size = this.get('size') || 10;
+    const page = this.post('page') || 1;
+    const size = this.post('size') || 10;
+    const date = new Date().getTime() / 1000;
+
     const groups = await this.model('mall_group').alias('g').field(['g.*', 'm.list_pic_url']).join({
       table: 'mall_goods',
       join: 'inner',
@@ -41,7 +48,7 @@ module.exports = class extends Base {
       for (const group of groups.data) {
         const count = await this.model('mall_order').field('count(1) count').where({group_id: group.id, order_status: ['>=', 201]}).find();
         const number = group.group_number - (count.count + group.cheat);
-        if (number > 0) {
+        if (number > 0 && group.end_time >= date) {
           group.status = 1;
         } else {
           group.status = 0;

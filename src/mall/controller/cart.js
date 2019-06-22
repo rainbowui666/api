@@ -1,5 +1,6 @@
 const Base = require('./base.js');
 const _ = require('lodash');
+const cache = require('memory-cache');
 module.exports = class extends Base {
   /**
    * 获取购物车中的数据
@@ -128,9 +129,18 @@ module.exports = class extends Base {
   async addGroupAction() {
     const goodsId = this.post('goodsId');
     const number = this.post('number');
+    const type = this.post('type');
     const groupId = this.post('groupId');
     const immediatelyBuy = this.post('immediatelyBuy');
     const userId = this.getLoginUserId();
+    if (type === 'second') {
+      const secondGroup = cache.get('groupId');
+      if (secondGroup) {
+        return this.fail('该商品已经被秒');
+      } else {
+        cache.put('groupId', 1);
+      }
+    }
     // 判断商品是否可以购买
     const goodsInfo = await this.model('mall_goods').where({id: goodsId, is_on_sale: 1}).find();
     if (think.isEmpty(goodsInfo) || goodsInfo.is_delete === 1) {
@@ -344,26 +354,6 @@ module.exports = class extends Base {
       return v.checked === 1;
     });
 
-    // 特殊逻辑
-    let spFreight = -1;
-    let group = null;
-    let spPrice = 0;
-    if (checkedGoodsList && checkedGoodsList.length > 0) {
-      let freight = 0;
-      for (const cart of checkedGoodsList) {
-        if (cart.freight) {
-          spPrice += cart.retail_price;
-          freight = freight + (cart.freight * cart.number);
-        }
-        if (cart.group_id) {
-          group = await this.model('mall_group').where({id: cart.group_id}).find();
-          cart.group = group;
-          freight = group.freight;
-        }
-      }
-      spFreight = freight;
-    }
-
     // 商品总价
     let goodsTotalPrice = cartData.cartTotal.checkedGoodsAmount;
 
@@ -373,10 +363,44 @@ module.exports = class extends Base {
     if (goodsTotalPrice >= freightCfg) {
       freightPrice = 0.00;
     }
+
+    // 特殊逻辑
+    let spFreight = 0;
+    let spPrice = 0;
+    if (checkedGoodsList && checkedGoodsList.length > 0) {
+      let freight = -1;
+      for (const cart of checkedGoodsList) {
+        if (cart.freight) {
+          spPrice += cart.retail_price;
+          freight = freight + (cart.freight * cart.number);
+        }
+      }
+      spFreight = freight;
+    }
+
     if (spFreight >= 0) {
       freightPrice = freightPrice + spFreight;
     }
 
+    // 团购
+    let group = null;
+    let groupFreight = -1;
+    if (checkedGoodsList && checkedGoodsList.length > 0) {
+      let freight = -1;
+      for (const cart of checkedGoodsList) {
+        if (cart.group_id) {
+          group = await this.model('mall_group').where({id: cart.group_id}).find();
+          cart.group = group;
+          if (group.freight != null && Number(group.freight) >= 0) {
+            freight = group.freight;
+          }
+        }
+      }
+      groupFreight = freight;
+    }
+    if (groupFreight >= 0) {
+      freightPrice = groupFreight;
+    }
     // 使用优惠券减免的金额
     let couponPrice = 0.00;
     const model = this.model('user_coupon').alias('u');
@@ -407,7 +431,7 @@ module.exports = class extends Base {
     // 计算订单的费用
     let orderTotalPrice = 0;
     if (group) {
-      orderTotalPrice = group.group_price + spFreight;
+      orderTotalPrice = group.group_price + freightPrice;
     } else {
       orderTotalPrice = cartData.cartTotal.checkedGoodsAmount + freightPrice - couponPrice;
     }

@@ -1,6 +1,7 @@
 
 module.exports = class extends think.Model {
   deliveryOrderList() {
+    // update mall_order set order_status=203 where id in ( select * from ( SELECT id FROM mall_order  WHERE  TO_DAYS(CURDATE()) - TO_DAYS(from_unixtime(add_time*1000)) > 5 and order_status=202) tmp)
     return this.query(`SELECT * FROM mall_order  WHERE  TO_DAYS(CURDATE()) - TO_DAYS(from_unixtime(add_time*1000)) > 5 and order_status=202`);
   }
   outputList(year, month) {

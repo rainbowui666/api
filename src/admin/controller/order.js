@@ -10,12 +10,11 @@ module.exports = class extends Base {
       const orderModel = this.service('mall_order', 'mall');
       orderModel.updateOrderStatus(order.id, 203);
       await this.model('user_point').add({
-        user_id: this.getLoginUserId(),
+        user_id: order.user_id,
         point: 200,
         type: 'mall',
         description: '商城购物奖励'
       });
-      return this.success('操作成功');
     }
   }
   async outputAction() {

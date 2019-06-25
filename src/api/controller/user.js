@@ -776,6 +776,49 @@ module.exports = class extends Base {
   }
 
   async testAction() {
+    // const orderService = this.service('mall_order', 'mall');
+    const groupId = this.post('group_id') || 1;
+    const goodsId = this.post('goods_id') || 1;
+    const owerUserId = this.post('ower_user_id') || 1;
+    const userId = this.getLoginUserId();
+    const date = new Date().getTime() / 1000;
+    const group = await this.model('mall_group').where({id: groupId, 'end_time': ['>=', date]}).find();
+    if (think.isEmpty(group)) {
+      return this.fail('砍价活动结束了');
+    }
 
+    const cuts = await this.model('mall_group_cut').where({group_id: groupId}).select();
+    let user = _.find(cuts, (cut) => {
+      return cut.user_id === userId;
+    });
+    let price = 0;
+    _.each(cuts, (cut) => {
+      price += cut.cut_price;
+    });
+    group.market_price = 19;
+    const totleCurPrice = group.market_price - price - group.group_price;
+
+    user = null;
+    if (think.isEmpty(user)) {
+      const ran = price === 0 ? 99 : Math.ceil(Math.random() * 100);
+      let cutPrice = 0;
+      if (ran < 55) {
+        cutPrice = Math.ceil(Math.random() * totleCurPrice / 4);
+      } else if (ran > 55 < 95) {
+        cutPrice = Math.ceil(Math.random() * totleCurPrice / 3);
+      } else if (ran > 95 < 100) {
+        cutPrice = Math.ceil(Math.random() * totleCurPrice / 2);
+      }
+
+      this.model('mall_group_cut').add({
+        goods_id: goodsId,
+        group_id: groupId,
+        user_id: userId,
+        ower_user_id: owerUserId,
+        cut_price: cutPrice
+      });
+    } else {
+      return this.fail('您已经砍了一刀了');
+    }
   }
 };

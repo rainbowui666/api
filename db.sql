@@ -516,3 +516,13 @@ alter table mall_group add column note varchar(500);
 alter table mall_group add column cheat int default 0;
 alter table mall_group add column cheat_ids varchar(500);
 
+create table mall_group_cut(
+    id int not null auto_increment,
+    goods_id int not null,
+    group_id int not null,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id int not null,
+    ower_user_id int not null,
+    cut_price double(8,2) not null,
+    primary key(id)
+);

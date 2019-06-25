@@ -12,6 +12,7 @@ module.exports = class extends Base {
     const freight = this.post('freight');
     const note = this.post('note');
     const groupId = this.post('id');
+    const isMessage = this.post('isMessage');
     const endTime = new Date(this.post('end_time')).getTime() / 1000;
     const group = {
       title,
@@ -29,21 +30,23 @@ module.exports = class extends Base {
     } else {
       const id = await this.model('mall_group').add(group);
       group.id = id;
-      const wexinService = this.service('weixin', 'api');
-      const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
-      const userList = await wexinService.getPublicUserListOpenid(_.values(token)[0]);
-      const message = {
-        goodsId,
-        groupId: id,
-        title,
-        price: groupPrice,
-        number: groupNumber,
-        endTime: think.datetime(new Date(this.post('end_time')), 'YYYY-MM-DD HH:mm:ss'),
-        note
-      };
-      for (const id of userList.data.openid) {
-        message.openid = id;
-        wexinService.sendOpenMallGroupMessage(_.values(token)[0], message);
+      if (!isMessage) {
+        const wexinService = this.service('weixin', 'api');
+        const token = await wexinService.getToken(think.config('weixin.public_appid'), think.config('weixin.public_secret'));
+        const userList = await wexinService.getPublicUserListOpenid(_.values(token)[0]);
+        const message = {
+          goodsId,
+          groupId: id,
+          title,
+          price: groupPrice,
+          number: groupNumber,
+          endTime: think.datetime(new Date(this.post('end_time')), 'YYYY-MM-DD HH:mm:ss'),
+          note
+        };
+        for (const id of userList.data.openid) {
+          message.openid = id;
+          wexinService.sendOpenMallGroupMessage(_.values(token)[0], message);
+        }
       }
     }
 
